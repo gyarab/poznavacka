@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Poznávačka</string>
+    <string name="welcome_title">POZNÁVAČKA</string>
+    <string name="all_learnt_message_0">\nMožná už to umíš!</string>
+    <string name="all_learnt_message_1">\nAle spíš ne…</string>
+    <string name="todo">TODO</string>
+    <string name="switch1">Obojživelníci</string>
+    <string name="switch2">Plazi</string>
+    <string name="switch3">Ptáci - 1</string>
+    <string name="switch4">Ptáci - 2</string>
+    <string name="switch5">Ptáci - 3</string>
+</resources>

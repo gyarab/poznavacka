@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "882289086797",
+    "firebase_url": "https://poznavacka-dd333.firebaseio.com",
+    "project_id": "poznavacka-dd333",
+    "storage_bucket": "poznavacka-dd333.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:882289086797:android:e87daef6e596b1da576704",
+        "android_client_info": {
+          "package_name": "com.example.timad.poznavacka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "882289086797-7e4kbu4ps4flccgpjircuvd05u0i99rk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "8d415aa26d0ac5534262aa89e1457f04fb807372"
+          }
+        },
+        {
+          "client_id": "882289086797-70nfl4kjvampic9nj0ql3ioeoikv6882.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "882289086797-70nfl4kjvampic9nj0ql3ioeoikv6882.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
