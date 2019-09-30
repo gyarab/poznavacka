@@ -120,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
                 hideScene();
                 fab_restart.hide();
                 sceneView.setClickable(true);
-                Intent welcomeIntent = new Intent(MainActivity.this, WelcomeActivity.class);
+                Intent welcomeIntent = new Intent(MainActivity.this, SwitchActivity.class);
                 startActivity(welcomeIntent);
                 imageView_classic.setVisibility(View.INVISIBLE);
                 imageView.setVisibility(View.VISIBLE);

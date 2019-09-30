@@ -11,16 +11,24 @@
         android:roundIcon="@drawable/brinkos_ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/WelcomeScreenTheme">
-        <activity android:name=".WelcomeActivity"
+        <activity
+            android:name=".SwitchActivity"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity android:name=".MainActivity"
             android:theme="@style/WelcomeScreenTheme"
             android:screenOrientation="portrait">
+        </activity>
+        <activity
+            android:name=".WelcomeActivity"
+            android:theme="@style/WelcomeScreenTheme"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
         </activity>
     </application>
 
