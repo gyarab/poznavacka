@@ -9,5 +9,6 @@
     <string name="switch3">Ptáci - 1</string>
     <string name="switch4">Ptáci - 2</string>
     <string name="switch5">Ptáci - 3</string>
-    <string name="startmainactivitybutton">startMainActivityButton</string>
+    <string name="start_main_activity_button">startMainActivityButton</string>
+    <string name="button_new_list">New List</string>
 </resources>

@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
-import androidx.appcompat.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.Switch;
@@ -12,6 +11,8 @@ import android.widget.Switch;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 
 public class SwitchActivity extends AppCompatActivity {

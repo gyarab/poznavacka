@@ -44,8 +44,7 @@
         tools:srcCompat="@tools:sample/avatars" />
 
 
-
-    <com.makeramen.roundedimageview.RoundedImageView xmlns:app="http://schemas.android.com/apk/res-auto"
+    <com.makeramen.roundedimageview.RoundedImageView
         android:id="@+id/imageView"
         android:layout_width="330dp"
         android:layout_height="wrap_content"

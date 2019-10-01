@@ -4,7 +4,7 @@
     package="com.example.timad.poznavacka">
 
     <application
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:hardwareAccelerated="false"
         android:largeHeap="true"
         android:icon="@drawable/brinkos_ic_launcher"
@@ -27,7 +27,6 @@
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
