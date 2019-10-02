@@ -27,7 +27,7 @@
         android:shadowDx="0"
         android:shadowDy="0"
         android:shadowRadius="5"
-        android:elevation="20dp"
+        android:elevation="10dp"
 
         android:textAllCaps="true"
         android:text="@string/go_button"

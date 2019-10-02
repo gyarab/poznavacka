@@ -10,4 +10,5 @@
     <string name="switch4">Ptáci - 2</string>
     <string name="switch5">Ptáci - 3</string>
     <string name="startmainactivitybutton">startMainActivityButton</string>
+    <string name="go_button">GO</string>
 </resources>
