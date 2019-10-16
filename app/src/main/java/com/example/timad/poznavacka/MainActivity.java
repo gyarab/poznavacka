@@ -30,36 +30,51 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab_restart;
     View sceneView;
 
+    //load this from firebase database
     List<String> zastupci = Arrays.asList("Mlok skvrnitý", "Velemlok čínský", "Čolek obecný", "Čolek velký", "Červor", "Ropucha obecná", "Rosnička obecná", "Kuňka obecná", "Skokan hnědý", "Skokan zelený", "Kožatka velká", "Kareta obecná", "Želva sloní", "Želva nádherná", "Želva bahenní", "Hatérie novozélandská", "Gekon zední", "Leguán zelený", "Ještěrka obecná", "Ještěrka zelená", "Slepýš křehký", "Anakonda velká", "Kobra indická", "Taipan velký", "Užovka obojková", "Užovka podplamatá", "Zmije obecná", "Krokodýl nilský", "Aligátor severoamerický", "Gaviál indický", "Pštros dvouprstý", "Nandu pampový", "Kasuár přilbový", "Emu hnědý", "Kachna divoká", "Polák chocholačka", "Morčák velký");
     List<String> rady = Arrays.asList("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Hatérie", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Krokodýli", "Krokodýli", "Krokodýli", "Pštrosi", "Nanduové", "Kasuárové", "Kasuárové", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí");
     List<String> tridy = Arrays.asList("Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci");
 
+    static boolean loaded = false;
+    static ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
     int puvodniPocetVsechZastupcu;
     int pocetVsechZastupcu;
-    static ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
     int currentZastupce;
-    protected Resources res;
+
+    protected Resources res; //instead load from firebase storage
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        res = getResources();
         init();
 
+        //hiding the scene
+        hideScene();
+        fab_restart.hide();
+
+        res = getResources(); //vymenit za firebase
+
+        if (loaded) {
+
+        /*
         Log.d("zastupci", String.valueOf(zastupci.size()));
         Log.d("rady", String.valueOf(rady.size()));
         Log.d("tridy", String.valueOf(tridy.size()));
+         */
 
-        puvodniPocetVsechZastupcu = nenauceniZastupci.size();
-        pocetVsechZastupcu = puvodniPocetVsechZastupcu;
+            puvodniPocetVsechZastupcu = nenauceniZastupci.size();
+            pocetVsechZastupcu = puvodniPocetVsechZastupcu;
 
 
-        //first appearance
-        hideScene();
-        fab_restart.hide();
-        updateScene(get_setRandomisedCurrentZastupce());
+            //first appearance
+            updateScene(get_setRandomisedCurrentZastupce());
+        } else {
+
+            textView.setText(R.string.select_list);
+        }
+
 
         sceneView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,12 +148,12 @@ public class MainActivity extends AppCompatActivity {
 
     private int get_setRandomisedCurrentZastupce() {
         //if (pocetVsechZastupcu > 1) {
-            int randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
-            while (nenauceniZastupci.get(randomisedCurrentZastupce) == currentZastupce) {
-                randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
-            }
-            currentZastupce = nenauceniZastupci.get(randomisedCurrentZastupce);
-            return currentZastupce;
+        int randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
+        while (nenauceniZastupci.get(randomisedCurrentZastupce) == currentZastupce) {
+            randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
+        }
+        currentZastupce = nenauceniZastupci.get(randomisedCurrentZastupce);
+        return currentZastupce;
         /*} else {
             return currentZastupce;
         }*/
@@ -157,12 +172,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateScene(int i) {
         imageView.setImageDrawable(ResourcesCompat.getDrawable(res, getResources().getIdentifier("image" + i, "drawable", getPackageName()), null));
-        if (i < 10) {
-            textView.setText(String.format("%s\n%s", tridy.get(i), zastupci.get(i)));
-
-        } else {
-            textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));
-        }
+        textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));
     }
 
     private void showScene() {

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".WelcomeActivity">
+    tools:context=".ListsActivity">
 
     <Button
         android:id="@+id/buttonNewList"
@@ -15,7 +15,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/button_new_list"
+        android:text="@string/new_list"
         android:textAllCaps="false"
         android:textSize="20sp"
         android:textColor="#FFFFFF"

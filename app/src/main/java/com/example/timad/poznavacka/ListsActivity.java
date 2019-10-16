@@ -6,13 +6,13 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class WelcomeActivity extends AppCompatActivity {
+public class ListsActivity extends AppCompatActivity {
 
     Button new_list_button;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_welcome);
+        setContentView(R.layout.activity_lists);
         init();
     }
 

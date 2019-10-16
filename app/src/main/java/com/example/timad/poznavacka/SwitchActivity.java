@@ -5,6 +5,7 @@ import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.Switch;
 
@@ -22,7 +23,7 @@ public class SwitchActivity extends AppCompatActivity {
     Switch switch3;
     Switch switch4;
     Switch switch5;
-    ImageButton go_btn;
+    Button go_btn;
     StorageReference storage;
 
     int SPLASH_TIME_OUT = 0;
