@@ -11,13 +11,14 @@
         android:label="@string/app_name"
         android:roundIcon="@drawable/brinkos_ic_launcher"
         android:supportsRtl="true"
-        android:theme="@style/WelcomeScreenTheme">
+        android:theme="@style/AppTheme">
         <activity
             android:name=".SwitchActivity"
             android:screenOrientation="portrait">
         </activity>
+
         <activity android:name=".MainActivity"
-            android:theme="@style/WelcomeScreenTheme"
+            android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -25,10 +26,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <activity
             android:name=".ListsActivity"
-            android:theme="@style/WelcomeScreenTheme"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>
