@@ -30,6 +30,7 @@
         <activity
             android:name=".ListsActivity"
             android:screenOrientation="portrait" />
+        <activity android:name=".PracticeActivity" />
     </application>
 
 </manifest>
