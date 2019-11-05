@@ -19,7 +19,7 @@ import java.util.Random;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-public class PracticeActivity extends AppCompatActivity {
+public class PracticeActivity extends MainActivity {
 
     TextView textView;
     ImageView imageView;
@@ -46,7 +46,7 @@ public class PracticeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_practice);
         init();
 
         //hiding the scene

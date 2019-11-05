@@ -6,7 +6,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class ListsActivity extends AppCompatActivity {
+public class ListsActivity extends MainActivity {
 
     Button new_list_button;
 

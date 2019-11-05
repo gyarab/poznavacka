@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class SwitchActivity extends AppCompatActivity {
+public class SwitchActivity extends MainActivity {
 
     Switch switch1;
     Switch switch2;
