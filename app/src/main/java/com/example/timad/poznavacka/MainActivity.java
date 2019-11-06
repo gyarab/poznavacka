@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 break;
             }
 
-            case R.id.nav_current: {
+            case R.id.nav_practice: {
                 Intent intent = new Intent(this, PracticeActivity.class);
                 startActivity(intent);
                 break;
