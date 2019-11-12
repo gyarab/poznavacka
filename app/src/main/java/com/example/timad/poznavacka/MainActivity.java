@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity implements
                 break;
             }
 
-            case R.id.nav_current: {
+            case R.id.nav_practice: {
 
                 break;
             }
