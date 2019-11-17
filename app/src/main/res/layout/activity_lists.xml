@@ -5,7 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".ListsActivity">
+    tools:context=".ListsActivity"
+    tools:actionBarNavMode="standard"
+    tools:openDrawer="start">
 
     <Button
         android:id="@+id/buttonNewList"
@@ -22,5 +24,14 @@
         android:textStyle="bold"
         android:typeface="monospace"
         android:background="@drawable/custom_button" />
+
+    <com.google.android.material.navigation.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_gravity="start"
+        android:fitsSystemWindows="true"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/drawer_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

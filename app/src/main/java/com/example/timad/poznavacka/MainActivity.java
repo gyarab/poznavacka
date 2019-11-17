@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 
@@ -46,12 +47,14 @@ public class MainActivity extends AppCompatActivity implements
 
         switch (menuItem.getItemId()) {
             case R.id.nav_lists: {
-
+                Intent intent = new Intent(this, ListsActivity.class);
+                startActivity(intent);
                 break;
             }
 
             case R.id.nav_practice: {
-
+                Intent intent = new Intent(this, PracticeActivity.class);
+                startActivity(intent);
                 break;
             }
         }
