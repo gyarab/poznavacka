@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/nav_practice"
+        android:icon="@drawable/ic_play_circle_outline_black_24dp"
+        android:title="@string/practice_list" />
+
+    <item
+        android:id="@+id/nav_lists"
+        android:icon="@drawable/ic_view_list_black_24dp"
+        android:title="@string/my_lists" />
+    <item
+        android:id="@+id/nav_share"
+        android:icon="@drawable/ic_share_black_24dp"
+        android:title="@string/share_list" />
+
+    <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/ic_send_black_24dp"
+        android:title="@string/contact_us" />
+
+
+</menu>

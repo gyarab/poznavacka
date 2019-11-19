@@ -18,6 +18,18 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
     }
+    sourceSets {
+        main {
+            java {
+                exclude 'com.example.timad.poznavacka.MainActivity1'
+            }
+        }
+        androidTest {
+            java {
+                exclude 'com.example.timad.poznavacka.MainActivity1'
+            }
+        }
+    }
 }
 
 repositories {

@@ -19,7 +19,7 @@ import java.util.Random;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
-public class PracticeActivity extends MainActivity {
+public class PracticeActivity extends AppCompatActivity {
 
     TextView textView;
     ImageView imageView;

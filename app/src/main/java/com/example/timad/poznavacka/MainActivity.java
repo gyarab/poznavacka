@@ -2,83 +2,62 @@ package com.example.timad.poznavacka;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 
-import com.google.android.material.navigation.NavigationView;
-
-import java.util.Objects;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.viewpager.widget.ViewPager;
 
-public class MainActivity extends AppCompatActivity implements
-        NavigationView.OnNavigationItemSelectedListener {
+public class MainActivity extends AppCompatActivity {
+    private static final String TAG = "MainActivity";
 
-    DrawerLayout drawerLayout;
-    NavigationView navigationView;
-    ActionBarDrawerToggle toggle;
+    private ViewPager mViewPager;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        init();
-        drawerLayout.addDrawerListener(toggle);
-        toggle.syncState();
-        Objects.requireNonNull(getSupportActionBar()).setDisplayHomeAsUpEnabled(true);
-        if (navigationView != null) {
-            navigationView.setNavigationItemSelectedListener(this);
-        }
-    }
 
-    private void init() {
-        drawerLayout = findViewById(R.id.drawer_layout);
-        navigationView = findViewById(R.id.nav_view);
-        toggle = new ActionBarDrawerToggle(this, drawerLayout, R.string.open, R.string.close);
-    }
-
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-        switch (menuItem.getItemId()) {
-            case R.id.nav_lists: {
-                Intent intent = new Intent(this, ListsActivity.class);
-                startActivity(intent);
-                break;
-            }
-
-            case R.id.nav_practice: {
-                Intent intent = new Intent(this, PracticeActivity.class);
-                startActivity(intent);
-                break;
-            }
-        }
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(0);
         menuItem.setChecked(true);
-        drawerLayout.closeDrawer(GravityCompat.START);
-        return true;
-    }
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_practice:
+                        Intent intent0 = new Intent(MainActivity.this, PracticeActivity.class);
+                        startActivity(intent0);
+                        break;
+
+                    case R.id.nav_lists:
+                        Intent intent1 = new Intent(MainActivity.this, ListsActivity.class);
+                        startActivity(intent1);
+                        break;
+
+                    case R.id.nav_share:
+                        /*Intent intent2 = new Intent(MainActivity.this, ActivityTwo.class);
+                        startActivity(intent2);*/
+                        break;
+
+                    case R.id.nav_contact:
+                        /*Intent intent3 = new Intent(MainActivity.this, ActivityThree.class);
+                        startActivity(intent3);*/
+                        break;
+
+                }
 
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (toggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
-    }
+                return false;
+            }
+        });
 
-
-    @Override
-    public void onBackPressed() {
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
-            super.onBackPressed();
-        }
     }
 }

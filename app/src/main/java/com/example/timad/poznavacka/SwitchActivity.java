@@ -6,7 +6,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ImageButton;
 import android.widget.Switch;
 
 import com.google.firebase.storage.StorageReference;
@@ -16,7 +15,7 @@ import java.util.ArrayList;
 import androidx.appcompat.app.AppCompatActivity;
 
 
-public class SwitchActivity extends MainActivity {
+public class SwitchActivity extends AppCompatActivity {
 
     Switch switch1;
     Switch switch2;
@@ -75,7 +74,7 @@ public class SwitchActivity extends MainActivity {
                             }
 
                             PracticeActivity.nenauceniZastupci = listToPass;
-                            Intent homeIntent = new Intent(SwitchActivity.this, MainActivity.class);
+                            Intent homeIntent = new Intent(SwitchActivity.this, PracticeActivity.class);
                             startActivity(homeIntent);
                             finish();
                         } else {
