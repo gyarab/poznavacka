@@ -10,16 +10,37 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
 
 
 public class ListsActivity extends AppCompatActivity {
 
     Button new_list_button;
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLManager;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
         init();
+
+        /* RecyclerView
+         * Potřeba předělat na načítání názvů poznávaček ze souborů */
+        ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+        zastupceArr.add(new Zastupce("Line 1", "Line 2"));
+        zastupceArr.add(new Zastupce("Line 3", "Line 4"));
+
+        mRecyclerView = findViewById(R.id.recyclerViewL);
+        mRecyclerView.setHasFixedSize(true);
+        mLManager = new LinearLayoutManager(this);
+        mAdapter = new RWAdapter(zastupceArr);
+
+        mRecyclerView.setLayoutManager(mLManager);
+        mRecyclerView.setAdapter(mAdapter);
 
         /*
 

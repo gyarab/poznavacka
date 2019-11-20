@@ -66,7 +66,7 @@ public class DB {
     }
 
     public void downloadFile(StorageReference storageRef, String name){
-        StorageReference islandRef = storageRef.child("images/island.jpg");
+        StorageReference islandRef = storageRef.child("images/island.jpg"); /* cesta bude možná jiná */
 
         File localFile = null;
         try {
