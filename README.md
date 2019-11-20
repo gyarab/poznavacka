@@ -14,6 +14,6 @@ Vytváření testů - jen pro učitele ???
   <li>vyhodnocování testů</li>
   <li>sdílení testů přes profily ???</li>
   </ul>
-Profily ???
+Profily ??? - žákovské/učitelské (viz Kahoot)
 
   
