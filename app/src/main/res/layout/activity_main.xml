@@ -39,7 +39,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/bottomNavView_Bar"
-                android:background="@drawable/white_grey_border_top"
+                android:background="@drawable/navigation_border_top"
                 app:menu="@menu/bottom_navigation_menu">
 
 
