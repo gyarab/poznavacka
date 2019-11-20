@@ -1,26 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
 
-    <Button
-        android:layout_marginTop="15dp"
-        android:layout_centerHorizontal="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btnTEST"
-        android:text="TESTBTN 1" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewL"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/buttonNewList"
+        android:padding="4dp"
+        android:scrollbars="vertical" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <Button
+        android:id="@+id/buttonNewList"
+        android:layout_width="250dp"
+        android:layout_height="50dp"
         android:layout_centerHorizontal="true"
-        android:textSize="25sp"
-        android:text="Tab1"
-        android:layout_marginTop="40dp"
-        android:id="@+id/textTab1"
-        android:layout_below="@+id/btnTEST" />
+        android:background="@drawable/custom_button"
+        android:text="@string/new_list"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:typeface="monospace"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </RelativeLayout>
