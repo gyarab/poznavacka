@@ -4,6 +4,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -12,11 +15,28 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class TestActivity extends AppCompatActivity {
 
+    Button enterPinButton;
+    EditText pinInput;
+    String PIN;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
+        init();
+
+        enterPinButton.setOnClickListener(new View.OnClickListener() {
+
+            public void onClick(View view) {
+                PIN = String.valueOf(pinInput.getText());
+
+                /*
+
+                proceed to testing
+
+                 */
+            }
+        });
 
 
         //navigation
@@ -58,5 +78,10 @@ public class TestActivity extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void init() {
+        enterPinButton = findViewById(R.id.enter_pin_button);
+        pinInput = findViewById(R.id.pin_input);
     }
 }

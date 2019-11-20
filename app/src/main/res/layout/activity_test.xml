@@ -9,36 +9,69 @@
 
 
     <RelativeLayout
+        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
 
         <RelativeLayout
-            android:layout_above="@+id/bottomBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomBar"
+            android:layout_marginBottom="1dp">
 
-            <androidx.viewpager.widget.ViewPager
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/container"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <EditText
+                android:id="@+id/pin_input"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="280dp"
+                android:layout_marginEnd="100dp"
+                android:layout_marginBottom="330dp"
+                android:background="@color/colorWhite"
+                android:gravity="center"
+                android:hint="@string/pin"
+                android:importantForAutofill="no"
+                android:inputType="number"
+                android:singleLine="true"
+                android:textColorHint="@color/colorGrey"
+                android:visibility="visible"
+                tools:visibility="visible" />
 
-            </androidx.viewpager.widget.ViewPager>
+            <Button
+                android:id="@+id/enter_pin_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/pin_input"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_alignParentBottom="true"
+                android:layout_marginStart="100dp"
+                android:layout_marginTop="-330dp"
+                android:layout_marginEnd="100dp"
+                android:layout_marginBottom="270dp"
+                android:gravity="center_vertical"
+                android:text="@string/enter_pin_button"
+                android:textAlignment="center"
+                android:background="@color/black"
+                android:textColor="@color/colorWhite" />
 
         </RelativeLayout>
 
-
         <RelativeLayout
+            android:id="@+id/bottomBar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/bottomBar"
             android:layout_alignParentBottom="true">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavView_Bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/bottomNavView_Bar"
                 android:background="@drawable/navigation_border_top"
                 app:itemIconTint="@color/bnv_tab_item_foreground"
                 app:itemTextColor="@color/bnv_tab_item_foreground"
