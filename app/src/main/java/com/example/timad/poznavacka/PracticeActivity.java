@@ -4,10 +4,13 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.os.Handler;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.res.ResourcesCompat;
 
@@ -143,6 +147,46 @@ public class PracticeActivity extends AppCompatActivity {
                 startActivity(welcomeIntent);
                 imageView_classic.setVisibility(View.INVISIBLE);
                 imageView.setVisibility(View.VISIBLE);
+            }
+        });
+
+
+        //navigation
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(0);
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_practice:
+                        /*Intent intent0 = new Intent(ListsActivity.this, PracticeActivity.class);
+                        startActivity(intent0);*/
+                        break;
+
+                    case R.id.nav_lists:
+                        Intent intent1 = new Intent(PracticeActivity.this, ListsActivity.class);
+                        startActivity(intent1);
+                        break;
+
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(PracticeActivity.this, TestActivity.class);
+                        startActivity(intent3);
+                        break;
+
+                    case R.id.nav_share:
+                        /*Intent intent2 = new Intent(MainActivity.this, ActivityTwo.class);
+                        startActivity(intent2);*/
+                        break;
+
+
+                }
+
+
+                return false;
             }
         });
     }

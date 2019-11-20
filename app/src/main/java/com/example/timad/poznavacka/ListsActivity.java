@@ -21,6 +21,17 @@ public class ListsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_lists);
         init();
 
+        /*
+
+        DELETE LIST
+        CREATE LIST
+        SELECT LIST
+
+         */
+
+
+
+
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
@@ -39,8 +50,13 @@ public class ListsActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_lists:
-                        Intent intent1 = new Intent(ListsActivity.this, ListsActivity.class);
-                        startActivity(intent1);
+                        /*Intent intent1 = new Intent(ListsActivity.this, ListsActivity.class);
+                        startActivity(intent1);*/
+                        break;
+
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(ListsActivity.this, TestActivity.class);
+                        startActivity(intent3);
                         break;
 
                     case R.id.nav_share:
@@ -48,10 +64,6 @@ public class ListsActivity extends AppCompatActivity {
                         startActivity(intent2);*/
                         break;
 
-                    case R.id.nav_contact:
-                        /*Intent intent3 = new Intent(MainActivity.this, ActivityThree.class);
-                        startActivity(intent3);*/
-                        break;
 
                 }
 

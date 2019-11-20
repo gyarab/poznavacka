@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".ListsActivity">
+    tools:context=".TestActivity">
 
 
     <RelativeLayout
@@ -18,21 +18,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/buttonNewList"
-                android:layout_width="250dp"
-                android:layout_height="50dp"
-                android:layout_marginTop="50dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                android:text="@string/new_list"
-                android:textAllCaps="false"
-                android:textSize="20sp"
-                android:textColor="#FFFFFF"
-                android:textStyle="bold"
-                android:typeface="monospace"
-                android:background="@drawable/custom_button" />
+            <androidx.viewpager.widget.ViewPager
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/container"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            </androidx.viewpager.widget.ViewPager>
 
         </RelativeLayout>
 
