@@ -25,6 +25,12 @@ public class ListsActivity extends AppCompatActivity {
 
         DELETE LIST
         CREATE LIST
+        switche = jeden pro automatické vybrání obrázku (buď z wikipedie nebo první z vyhledávání)
+                  pokud bude tvůrce listu chtít třídu nebo řád:
+                        druhý pro automatické vybrání třídy a řádu (z wikipedie, mám nástřel v pythonu)
+
+
+        IMPORT LIST
         SELECT LIST
 
          */
