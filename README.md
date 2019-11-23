@@ -16,4 +16,4 @@ Vytváření testů - jen pro učitele ???
   </ul>
 Profily ??? - žákovské/učitelské (viz Kahoot)
 
-<li>databáze - Firestore, ne Realtime Databsase</li>
+databáze - Firestore, ne Realtime Databsase
