@@ -29,6 +29,15 @@
             android:layout_below="@id/itemText1"
             android:layout_marginStart="8dp" />
 
+        <ImageView
+            android:id="@+id/img_delete"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentTop="true"
+            />
+        <!-- android:srcCompat="@drawable/ic_delete" -->
+
     </RelativeLayout>
 
 </androidx.cardview.widget.CardView>
