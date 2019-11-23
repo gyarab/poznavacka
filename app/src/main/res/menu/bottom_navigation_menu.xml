@@ -17,9 +17,8 @@
         android:title="@string/test" />
 
     <item
-        android:id="@+id/nav_share"
-        android:icon="@drawable/ic_share_black_24dp"
-        android:title="@string/share_list" />
-
+        android:id="@+id/nav_account"
+        android:icon="@drawable/ic_account_circle_black_24dp"
+        android:title="@string/account" />
 
 </menu>

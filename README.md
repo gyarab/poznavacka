@@ -12,7 +12,7 @@ Vytváření testů - jen pro učitele ???
 <ul>
   <li>zpřístupnění testů</li>
   <li>vyhodnocování testů</li>
-  <li>sdílení testů přes profily ???</li>
+  <li>sdílení testů přes profily ??? - přes kódy?</li>
   </ul>
 Profily ??? - žákovské/učitelské (viz Kahoot)
 

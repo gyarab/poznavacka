@@ -36,6 +36,7 @@
         </activity>
         <activity android:name=".PracticeActivity" />
         <activity android:name=".TestActivity" />
+        <activity android:name=".AccountActivity" />
     </application>
 
 </manifest>

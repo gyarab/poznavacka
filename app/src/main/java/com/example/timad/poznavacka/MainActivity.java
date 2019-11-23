@@ -42,15 +42,15 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(intent1);
                         break;
 
-                    case R.id.nav_share:
-                        /*Intent intent2 = new Intent(MainActivity.this, ActivityTwo.class);
-                        startActivity(intent2);*/
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(MainActivity.this, TestActivity.class);
+                        startActivity(intent3);
                         break;
 
-                    case R.id.nav_test:
-                        /*Intent intent3 = new Intent(MainActivity.this, ActivityThree.class);
-                        startActivity(intent3);*/
-                        break;
+                    case R.id.nav_account:
+                        /*Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
+                        startActivity(intent4);
+                        break;*/
 
                 }
 
