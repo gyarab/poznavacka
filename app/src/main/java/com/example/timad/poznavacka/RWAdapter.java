@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/** Pracuje s recyclerWiev **/
 public class RWAdapter extends RecyclerView.Adapter<RWAdapter.ZastupceViewHolder> {
     private ArrayList<Zastupce> mZastupceList;
 

@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka;
 
+/** Polozka v seznamu poznavacek **/
 public class Zastupce {
     private String text1;
     private String text2;
