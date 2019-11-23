@@ -84,11 +84,10 @@ public class ListsActivity extends AppCompatActivity {
                         startActivity(intent3);
                         break;
 
-                    case R.id.nav_share:
-                        /*Intent intent2 = new Intent(MainActivity.this, ActivityTwo.class);
-                        startActivity(intent2);*/
+                    case R.id.nav_account:
+                        Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
+                        startActivity(intent4);
                         break;
-
 
                 }
 

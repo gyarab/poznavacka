@@ -1,9 +1,6 @@
 package com.example.timad.poznavacka;
 
-import android.content.ContentResolver;
 import android.net.Uri;
-
-import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -16,10 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
+
 public class DB {
     /* ZDE bude kod pro spojeni s databazi
      * potřeba připojit k Firebase v Tools > Firebase
-     * DO main activity vyhlásit proměnný: StorageReference a možná i DatabaseReference
+     * DO main activity vyhlásit proměnný: StorageReference a možná i DatabaseReference (asi myslis jine aktivity/fragment, main je useless
      * v OnCreate StorageReference = FirebaseStorage.getInstance().getReference(s:"nazev_slozky"); */
 
     /**
