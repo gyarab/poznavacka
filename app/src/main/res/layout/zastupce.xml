@@ -35,6 +35,7 @@
             android:layout_height="50dp"
             android:layout_alignParentEnd="true"
             android:layout_alignParentTop="true"
+            app:srcCompat="@drawable/ic_delete"
             />
         <!-- android:srcCompat="@drawable/ic_delete" -->
 
