@@ -9,30 +9,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:padding="10dp"
-        android:scrollbars="none">
+        android:scrollbars="vertical">
 
         <EditText
             android:id="@+id/userInputTitle"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
             android:textColor="@color/colorWhite"
-            android:inputType="textPersonName"
+            android:inputType="none"
             android:hint="Title"
             android:textColorHint="@color/colorWhite" />
 
         <EditText
-        android:layout_marginTop="15dp"
+            android:id="@+id/dividingCharacter"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="35dp"
+            android:ems="10"
+            android:inputType="none"
+            android:hint="Enter a dividing word/character"
+            android:textColorHint="@color/colorWhite"
+            android:layout_below="@id/userInputTitle" />
+
+        <EditText
+            android:layout_marginTop="15dp"
             android:id="@+id/userInputRepresentatives"
             android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:hint="The representatives"
             android:textColorHint="@color/colorWhite"
             android:ems="10"
             android:textColor="@color/colorWhite"
             android:inputType="textMultiLine"
-            android:layout_below="@id/userInputTitle" />
+            android:layout_below="@id/dividingCharacter" />
 
     <TextView
         android:layout_width="wrap_content"
@@ -45,6 +56,15 @@
         android:id="@+id/textUnderUserInput"
         android:layout_below="@+id/userInputRepresentatives" />
 
+        <Switch
+            android:id="@+id/autoRadDruhSwitch"
+            android:layout_marginTop="15dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/autoRadDruhSwitch"
+            android:textColor="@color/colorWhite"
+            android:layout_below="@id/textUnderUserInput" />
+
         <Button
             android:layout_marginTop="15dp"
             android:layout_centerHorizontal="true"
@@ -52,7 +72,8 @@
             android:layout_height="wrap_content"
             android:id="@+id/createButton"
             android:text="@string/create_button"
-            android:layout_below="@id/textUnderUserInput" />
+            android:layout_below="@id/autoRadDruhSwitch" />
+
 
     </RelativeLayout>
 

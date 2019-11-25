@@ -6,7 +6,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -27,13 +26,13 @@ public class FirestoreImpl {
     }
 
 
-    public void uploadData(Map<String, Object> zastupce, String collectionRef) {
-        db.collection(collectionRef)
-                .add(zastupce)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+    public void uploadRepresentative(String collectionRef, String documentRef, Map<String, Object> zastupce) {
+        db.collection(collectionRef).document(documentRef)
+                .set(zastupce)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "Representative added");
                     }
                 })
                 .addOnFailureListener(new OnFailureListener() {

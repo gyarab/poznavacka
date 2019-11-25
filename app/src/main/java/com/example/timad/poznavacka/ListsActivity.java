@@ -19,6 +19,8 @@ import androidx.viewpager.widget.ViewPager;
 
 public class ListsActivity extends AppCompatActivity {
 
+    private static final String TAG = "ListsActivity";
+
     private SectionsPageAdapter mSectionsPageAdapter;
     private ViewPager mViewPager;
 
