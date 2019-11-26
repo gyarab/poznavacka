@@ -28,7 +28,7 @@ public class CreateListFragment extends Fragment {
     private static final String KEY_TITLE = "title";
     private static final String KEY_RAD = "rad";
     private static final String KEY_DRUH = "druh";
-    private static final String KEY_ZASTUPCE = "zastupce";
+    private static final String KEY_ZASTUPCE = "poznavackaInfo";
     private static final String KEY_IMGREF = "imageRef";
 
     private Button btnCREATE;
@@ -102,10 +102,10 @@ public class CreateListFragment extends Fragment {
 
         //test
 
-        // Create a new zastupce with a reference to an image
+        // Create a new poznavackaInfo with a reference to an image
         /*Map<String, Object> zkouska1 = new HashMap<>();
         zkouska1.put(KEY_TITLE, "zkouskaTitle");
-        zkouska1.put("zastupce", "zkouskaZástupce1");
+        zkouska1.put("poznavackaInfo", "zkouskaZástupce1");
         zkouska1.put("druh", "zkouskaDruh1");
         zkouska1.put("rad", "zkouskaŘád1");
         zkouska1.put("imgRef", 265);*/
