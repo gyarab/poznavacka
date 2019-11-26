@@ -33,7 +33,6 @@ public class ListsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
-        init();
 
         /*
 
@@ -119,11 +118,5 @@ public class ListsActivity extends AppCompatActivity {
     public void setViewPager(int fragmentNumber) {
         mViewPager.setCurrentItem(fragmentNumber);
     }
-
-
-    private void init() {
-
-    }
-
 
 }

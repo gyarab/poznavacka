@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:id="@+id/relativeLayout"
@@ -16,72 +16,72 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:textColor="@color/colorWhite"
-            android:inputType="none"
             android:hint="Title"
-            android:textColorHint="@color/colorWhite" />
+            android:inputType="none"
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
         <EditText
             android:id="@+id/dividingCharacter"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/userInputTitle"
             android:layout_marginTop="35dp"
             android:ems="10"
-            android:inputType="none"
             android:hint="Enter a dividing word/character"
-            android:textColorHint="@color/colorWhite"
-            android:layout_below="@id/userInputTitle" />
+            android:inputType="none"
+            android:textColorHint="@color/colorGrey" />
 
         <EditText
-            android:layout_marginTop="15dp"
             android:id="@+id/userInputRepresentatives"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_below="@id/dividingCharacter"
             android:layout_centerHorizontal="true"
-            android:hint="The representatives"
-            android:textColorHint="@color/colorWhite"
+            android:layout_marginTop="15dp"
             android:ems="10"
-            android:textColor="@color/colorWhite"
+            android:hint="The representatives"
             android:inputType="textMultiLine"
-            android:layout_below="@id/dividingCharacter" />
+            android:textColor="@color/colorWhite"
+            android:textColorHint="@color/colorGrey" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerHorizontal="true"
-        android:textSize="15sp"
-        android:textColor="@color/colorWhite"
-        android:text="@string/create_fragment_text"
-        android:layout_marginTop="40dp"
-        android:id="@+id/textUnderUserInput"
-        android:layout_below="@+id/userInputRepresentatives" />
+        <TextView
+            android:id="@+id/textUnderUserInput"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userInputRepresentatives"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="40dp"
+            android:text="@string/create_fragment_text"
+            android:textColor="@color/colorWhite"
+            android:textSize="15sp" />
 
         <Switch
             android:id="@+id/autoRadDruhSwitch"
-            android:layout_marginTop="15dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/textUnderUserInput"
+            android:layout_marginTop="15dp"
             android:text="@string/autoRadDruhSwitch"
-            android:textColor="@color/colorWhite"
-            android:layout_below="@id/textUnderUserInput" />
+            android:textColor="@color/colorWhite" />
 
         <Button
-            android:layout_marginTop="15dp"
-            android:layout_centerHorizontal="true"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:id="@+id/createButton"
-            android:text="@string/create_button"
-            android:layout_below="@id/autoRadDruhSwitch" />
-
-        <Button
-            android:layout_marginTop="15dp"
-            android:layout_centerHorizontal="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/autoRadDruhSwitch"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/create_button" />
+
+        <Button
             android:id="@+id/saveButton"
-            android:text="@string/save_button"
-            android:layout_below="@id/createButton" />
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/createButton"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="15dp"
+            android:text="@string/save_button" />
 
 
     </RelativeLayout>

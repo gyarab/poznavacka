@@ -31,4 +31,5 @@
     <string name="create_button">CREATE</string>
     <string name="autoRadDruhSwitch">auto-insert druh, řád (cz only)  </string>
     <string name="save_button">SAVE</string>
+    <string name="wait_text">Please, wait for your teacher to start the test</string>
 </resources>

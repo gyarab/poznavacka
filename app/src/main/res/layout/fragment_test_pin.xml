@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/pin_input"
+        android:layout_width="150dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_height="50dp"
+        android:background="@color/colorWhite"
+        android:hint="@string/pin"
+        android:importantForAutofill="no"
+        android:inputType="number"
+        android:singleLine="true"
+        android:gravity="center"
+        android:textColorHint="@color/colorGrey" />
+
+    <Button
+        android:id="@+id/enter_pin_button"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pin_input"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_vertical"
+        android:text="@string/enter_pin_button"
+        android:textAlignment="center"
+        android:background="@color/black"
+        android:textColor="@color/colorWhite" />
+
+</RelativeLayout>
