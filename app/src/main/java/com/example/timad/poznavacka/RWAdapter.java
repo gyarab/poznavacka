@@ -1,6 +1,5 @@
 package com.example.timad.poznavacka;
 
-import android.content.ClipData;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,12 +9,11 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 /** Pracuje s recyclerWiev **/
-public class RWAdapter extends RecyclerView.Adapter<RWAdapter.ZastupceViewHolder> {
-    private ArrayList<Zastupce> mZastupceList;
+public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoViewHolder> {
+    private ArrayList<PoznavackaInfo> mPoznavackaInfoList;
     private OnItemClickListener mListener;
 
     public interface OnItemClickListener {
@@ -27,12 +25,12 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.ZastupceViewHolder
         mListener = listener;
     }
 
-    public static class ZastupceViewHolder extends RecyclerView.ViewHolder{
+    public static class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder{
         public TextView textView1;
         public TextView textView2;
         public ImageView deleteImg;
 
-        public ZastupceViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
+        public PoznavackaInfoViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             textView1 = itemView.findViewById(R.id.itemText1);
             textView2 = itemView.findViewById(R.id.itemText2);
@@ -64,27 +62,27 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.ZastupceViewHolder
         }
     }
 
-    public RWAdapter(ArrayList<Zastupce> zastupceList){
-        mZastupceList = zastupceList;
+    public RWAdapter(ArrayList<PoznavackaInfo> poznavackaInfoList){
+        mPoznavackaInfoList = poznavackaInfoList;
     }
 
     @NonNull
     @Override
-    public ZastupceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
-        ZastupceViewHolder zvh = new ZastupceViewHolder(v, mListener);
+    public PoznavackaInfoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.poznavacka_info, parent, false);
+        PoznavackaInfoViewHolder zvh = new PoznavackaInfoViewHolder(v, mListener);
         return zvh;
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ZastupceViewHolder holder, int position) {
-        Zastupce currentZastupce = mZastupceList.get(position);
-        holder.textView1.setText(currentZastupce.getText1());
-        holder.textView1.setText(currentZastupce.getText2());
+    public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
+        PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
+        holder.textView1.setText(currentPoznavackaInfo.getText1());
+        holder.textView1.setText(currentPoznavackaInfo.getText2());
     }
 
     @Override
     public int getItemCount() {
-        return mZastupceList.size();
+        return mPoznavackaInfoList.size();
     }
 }

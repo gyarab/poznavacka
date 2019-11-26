@@ -20,7 +20,7 @@ public class MyListsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
-    private ArrayList<Zastupce> mZastupceArr;
+    private ArrayList<PoznavackaInfo> mPoznavackaInfoArr;
 
     @Nullable
     @Override
@@ -34,7 +34,7 @@ public class MyListsFragment extends Fragment {
         mRecyclerView = view.findViewById(R.id.recyclerViewL);
         mRecyclerView.setHasFixedSize(true);
         mLManager = new LinearLayoutManager(getContext());
-        mAdapter = new RWAdapter(mZastupceArr);
+        mAdapter = new RWAdapter(mPoznavackaInfoArr);
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -42,7 +42,7 @@ public class MyListsFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 /* udělej něco s tim
-                mZastupceArr.get(position);
+                mPoznavackaInfoArr.get(position);
                 mAdaper.notify */
             }
 
@@ -58,9 +58,9 @@ public class MyListsFragment extends Fragment {
     /** Načte názvy poznávaček
      * Potřeba předělat na načítání názvů poznávaček ze souborů */
     public void createArr(){
-        mZastupceArr = new ArrayList<>();
-        mZastupceArr.add(new Zastupce("Line 1", "Line 2"));
-        mZastupceArr.add(new Zastupce("Line 3", "Line 4"));
+        mPoznavackaInfoArr = new ArrayList<>();
+        mPoznavackaInfoArr.add(new PoznavackaInfo("Line 1", "Line 2"));
+        mPoznavackaInfoArr.add(new PoznavackaInfo("Line 3", "Line 4"));
     }
 
     /** Nvm */
@@ -70,13 +70,13 @@ public class MyListsFragment extends Fragment {
 
     /* Asi nebude potřeba */
     public void addItem(){
-        mZastupceArr.add(new Zastupce("novy zastupce", "..."));
+        mPoznavackaInfoArr.add(new PoznavackaInfo("novy poznavackaInfo", "..."));
         mAdapter.notifyDataSetChanged();
     }
 
     /* Ještě je potřeba implementovat smazání souboru */
     public void removeItem(int pos){
-        mZastupceArr.remove(pos);
+        mPoznavackaInfoArr.remove(pos);
         mAdapter.notifyDataSetChanged();
     }
 }
