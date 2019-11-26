@@ -1,8 +1,6 @@
 package com.example.timad.poznavacka;
 
 import android.os.Bundle;
-import android.os.Handler;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,7 +55,7 @@ public class CreateListFragment extends Fragment {
         autoRadDruhSwitch = view.findViewById(R.id.autoRadDruhSwitch);
         db = FirebaseFirestore.getInstance(); //testing
 
-
+/*
         //jenom testovani
         new JSoup().execute("Pes_domácí");
         Handler h = new Handler();
@@ -66,7 +64,7 @@ public class CreateListFragment extends Fragment {
                 Log.d(TAG, testString);
             }
 
-        }, 2000);
+        }, 2000);*/
 
 
 

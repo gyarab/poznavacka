@@ -74,6 +74,15 @@
             android:text="@string/create_button"
             android:layout_below="@id/autoRadDruhSwitch" />
 
+        <Button
+            android:layout_marginTop="15dp"
+            android:layout_centerHorizontal="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/saveButton"
+            android:text="@string/save_button"
+            android:layout_below="@id/createButton" />
+
 
     </RelativeLayout>
 
