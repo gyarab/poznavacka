@@ -39,7 +39,6 @@
             android:layout_alignParentTop="true"
             app:srcCompat="@drawable/ic_delete"
             />
-        <!-- android:srcCompat="@drawable/ic_delete" -->
 
     </RelativeLayout>
 

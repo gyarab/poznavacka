@@ -1,7 +1,5 @@
 package com.example.timad.poznavacka;
 
-import android.widget.RelativeLayout;
-
 /** Polozka v seznamu poznavacek **/
 public class PoznavackaInfo {
     private String text1;
