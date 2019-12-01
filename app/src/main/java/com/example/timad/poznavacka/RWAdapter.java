@@ -1,12 +1,15 @@
 package com.example.timad.poznavacka;
 
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
@@ -29,12 +32,14 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         public TextView textView1;
         public TextView textView2;
         public ImageView deleteImg;
+        public CardView cView;
 
         public PoznavackaInfoViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             textView1 = itemView.findViewById(R.id.itemText1);
             textView2 = itemView.findViewById(R.id.itemText2);
             deleteImg = itemView.findViewById(R.id.img_delete);
+            cView = itemView.findViewById(R.id.cardView1);
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -78,7 +83,13 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
         holder.textView1.setText(currentPoznavackaInfo.getText1());
-        holder.textView1.setText(currentPoznavackaInfo.getText2());
+        holder.textView2.setText(currentPoznavackaInfo.getText2());
+
+        if(MyListsFragment.mActivePoznavackaInfo==position){
+            holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));
+        }else{
+            holder.cView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+        }
     }
 
     @Override

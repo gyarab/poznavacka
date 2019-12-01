@@ -21,6 +21,7 @@ public class MyListsFragment extends Fragment {
     private RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<PoznavackaInfo> mPoznavackaInfoArr;
+    public static int mActivePoznavackaInfo;
 
     @Nullable
     @Override
@@ -42,13 +43,22 @@ public class MyListsFragment extends Fragment {
             @Override
             public void onItemClick(int position) {
                 /* udělej něco s tim
-                mPoznavackaInfoArr.get(position);
-                mAdaper.notify */
+                mAdaper.notify... */
+
+                mActivePoznavackaInfo = position;
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onDeleteClick(int position) {
                 removeItem(position);
+                if(position >= mActivePoznavackaInfo){
+                    mActivePoznavackaInfo -= 1;
+                }
+                if(mActivePoznavackaInfo > mAdapter.getItemCount()){
+                    mActivePoznavackaInfo = 0;
+                }
+                mAdapter.notifyDataSetChanged();
             }
         });
 
@@ -61,6 +71,10 @@ public class MyListsFragment extends Fragment {
         mPoznavackaInfoArr = new ArrayList<>();
         mPoznavackaInfoArr.add(new PoznavackaInfo("Line 1", "Line 2"));
         mPoznavackaInfoArr.add(new PoznavackaInfo("Line 3", "Line 4"));
+
+        if(mPoznavackaInfoArr.size() > 0){
+
+        }
     }
 
     /** Nvm */
@@ -79,4 +93,5 @@ public class MyListsFragment extends Fragment {
         mPoznavackaInfoArr.remove(pos);
         mAdapter.notifyDataSetChanged();
     }
+
 }
