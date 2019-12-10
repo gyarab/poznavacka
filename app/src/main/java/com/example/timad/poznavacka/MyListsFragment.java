@@ -52,10 +52,9 @@ public class MyListsFragment extends Fragment {
             @Override
             public void onDeleteClick(int position) {
                 removeItem(position);
-                if(position >= mActivePoznavackaInfo){
+                if(position <= mActivePoznavackaInfo){
                     mActivePoznavackaInfo -= 1;
-                }
-                if(mActivePoznavackaInfo > mAdapter.getItemCount()){
+                } else if(mActivePoznavackaInfo > mAdapter.getItemCount()){
                     mActivePoznavackaInfo = 0;
                 }
                 mAdapter.notifyDataSetChanged();

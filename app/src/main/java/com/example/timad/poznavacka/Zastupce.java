@@ -31,7 +31,7 @@ public class Zastupce {
     }
 
     public String getKmen(){
-        return druh;
+        return kmen;
     }
 
     public void setKmen(String kmen) {

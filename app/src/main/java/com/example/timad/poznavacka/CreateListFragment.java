@@ -18,6 +18,8 @@ import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 public class CreateListFragment extends Fragment {
@@ -44,6 +46,12 @@ public class CreateListFragment extends Fragment {
 
     public static String testString;
 
+    /* RecyclerView */
+    private RecyclerView mRecyclerView;
+    private RecyclerView.Adapter mAdapter;
+    private RecyclerView.LayoutManager mLManager;
+    private ArrayList<Zastupce> mZastupceArr;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -66,7 +74,18 @@ public class CreateListFragment extends Fragment {
 
         }, 2000);*/
 
+        /* RecyclerView */
+        mZastupceArr = new ArrayList<>();
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
 
+        mRecyclerView = view.findViewById(R.id.recyclerViewZ);
+        mRecyclerView.setHasFixedSize(false);
+        mLManager = new LinearLayoutManager(getContext());
+        mAdapter = new ZastupceAdapter(mZastupceArr);
+
+        mRecyclerView.setLayoutManager(mLManager);
+        mRecyclerView.setAdapter(mAdapter);
 
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override

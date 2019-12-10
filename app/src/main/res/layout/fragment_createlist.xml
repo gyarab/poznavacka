@@ -8,8 +8,7 @@
         android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:padding="10dp"
-        android:scrollbars="vertical">
+        android:padding="10dp">
 
         <EditText
             android:id="@+id/userInputTitle"
@@ -84,10 +83,11 @@
             android:text="@string/save_button" />
 
         <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewZ"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/saveButton"
-            android:scrollbars="vertical"/>
+            android:scrollbars="vertical" />
 
 
     </RelativeLayout>

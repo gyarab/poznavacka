@@ -75,8 +75,8 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     @Override
     public PoznavackaInfoViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.poznavacka_info, parent, false);
-        PoznavackaInfoViewHolder zvh = new PoznavackaInfoViewHolder(v, mListener);
-        return zvh;
+        PoznavackaInfoViewHolder ipvh = new PoznavackaInfoViewHolder(v, mListener);
+        return ipvh;
     }
 
     @Override
