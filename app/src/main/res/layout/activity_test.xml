@@ -9,55 +9,61 @@
 
 
     <RelativeLayout
-        android:id="@+id/relativeLayout"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/bottomBar"
-            android:layout_marginBottom="1dp">
+            android:layout_height="50dp"
+            android:id="@+id/topBar">
 
-            <EditText
-                android:id="@+id/pin_input"
-                android:layout_width="150dp"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_height="50dp"
-                android:background="@color/colorWhite"
-                android:hint="@string/pin"
-                android:importantForAutofill="no"
-                android:inputType="number"
-                android:singleLine="true"
-                android:gravity="center"
-                android:textColorHint="@color/colorGrey" />
+            <com.google.android.material.appbar.AppBarLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <Button
-                android:id="@+id/enter_pin_button"
-                android:layout_width="150dp"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/pin_input"
-                android:layout_centerHorizontal="true"
-                android:gravity="center_vertical"
-                android:text="@string/enter_pin_button"
-                android:textAlignment="center"
-                android:background="@color/black"
-                android:textColor="@color/colorWhite" />
+
+                <com.google.android.material.tabs.TabLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tabs"
+                    android:background="@drawable/navigation_border_bottom"
+                    app:tabIconTint="@color/colorWhite">
+
+
+                </com.google.android.material.tabs.TabLayout>
+
+            </com.google.android.material.appbar.AppBarLayout>
 
         </RelativeLayout>
 
+
         <RelativeLayout
-            android:id="@+id/bottomBar"
+            android:layout_below="@+id/topBar"
+            android:layout_above="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.viewpager.widget.ViewPager
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/container"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+            </androidx.viewpager.widget.ViewPager>
+
+        </RelativeLayout>
+
+
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
+            android:id="@+id/bottomBar"
             android:layout_alignParentBottom="true">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottomNavView_Bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:id="@+id/bottomNavView_Bar"
                 android:background="@drawable/navigation_border_top"
                 app:itemIconTint="@color/bnv_tab_item_foreground"
                 app:itemTextColor="@color/bnv_tab_item_foreground"
@@ -69,6 +75,5 @@
 
 
     </RelativeLayout>
-
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

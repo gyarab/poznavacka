@@ -19,15 +19,7 @@ public class TestWaitFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
-        btnTEST = (Button) view.findViewById(R.id.btnTEST);
-
-        btnTEST.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Toast.makeText(getActivity(), "TESTING BUTTON CLICK 1", Toast.LENGTH_SHORT).show();
-            }
-        });
+        View view = inflater.inflate(R.layout.fragment_test_wait, container, false);
 
         return view;
     }

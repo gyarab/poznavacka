@@ -61,6 +61,7 @@ public class CreateListFragment extends Fragment {
         userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
         userInputTitle = view.findViewById(R.id.userInputTitle);
         autoRadDruhSwitch = view.findViewById(R.id.autoRadDruhSwitch);
+        userDividngString = view.findViewById(R.id.dividingCharacter);
         db = FirebaseFirestore.getInstance(); //testing
 
 /*

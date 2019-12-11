@@ -54,7 +54,6 @@ public class PracticeActivity extends AppCompatActivity {
         init();
 
         //hiding the scene
-        hideScene();
         fab_restart.hide();
 
         res = getResources(); //vymenit za firebase
@@ -85,7 +84,9 @@ public class PracticeActivity extends AppCompatActivity {
         sceneView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                showScene();
+                if (loaded) {
+                    showScene();
+                }
             }
         });
 

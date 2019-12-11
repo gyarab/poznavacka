@@ -9,35 +9,31 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.viewpager.widget.ViewPager;
 
 public class TestActivity extends AppCompatActivity {
 
-    Button enterPinButton;
-    EditText pinInput;
+    public static String TAG = "TestActivity";
 
-    String PIN;
+    private SectionsPageAdapter mSectionsPageAdapter;
+    private ViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test);
-        init();
 
-        enterPinButton.setOnClickListener(new View.OnClickListener() {
+        //fragments navigation
+        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        setupViewPager(mViewPager);
 
-            public void onClick(View view) {
-                PIN = String.valueOf(pinInput.getText());
-
-                /*
-
-                proceed to testing
-
-                 */
-            }
-        });
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
 
 
         //navigation
@@ -81,8 +77,17 @@ public class TestActivity extends AppCompatActivity {
 
     }
 
-    private void init() {
-        enterPinButton = findViewById(R.id.enter_pin_button);
-        pinInput = findViewById(R.id.pin_input);
+
+    private void setupViewPager(ViewPager viewPager) {
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
+        adapter.addFragment(new TestPINFragment());
+        adapter.addFragment(new TestWaitFragment());
+        viewPager.setAdapter(adapter);
     }
+
+    public void setViewPager(int fragmentNumber) {
+        mViewPager.setCurrentItem(fragmentNumber);
+    }
+
 }
+
