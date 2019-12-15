@@ -1,6 +1,9 @@
 package com.example.timad.poznavacka;
 
 import android.os.AsyncTask;
+import android.util.Log;
+
+import com.example.timad.poznavacka.activities.lists.CreateListFragment;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,6 +27,7 @@ public class JSoup extends AsyncTask<String, Void, String> {
         String text = builder.toString();
 
         url = url + text;
+        Log.d(TAG, url);
 
         Document document = null;
         try {

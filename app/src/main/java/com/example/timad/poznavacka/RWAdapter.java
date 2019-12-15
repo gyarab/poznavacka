@@ -5,14 +5,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
+
+import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 /** Pracuje s recyclerWiev **/
 public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoViewHolder> {

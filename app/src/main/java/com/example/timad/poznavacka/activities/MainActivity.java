@@ -1,10 +1,14 @@
-package com.example.timad.poznavacka;
+package com.example.timad.poznavacka.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.timad.poznavacka.BottomNavigationViewHelper;
+import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;

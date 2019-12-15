@@ -1,4 +1,4 @@
-package com.example.timad.poznavacka;
+package com.example.timad.poznavacka.activities;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -10,6 +10,10 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.timad.poznavacka.BottomNavigationViewHelper;
+import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 

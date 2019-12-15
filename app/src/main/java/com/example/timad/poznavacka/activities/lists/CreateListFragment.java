@@ -1,6 +1,8 @@
-package com.example.timad.poznavacka;
+package com.example.timad.poznavacka.activities.lists;
 
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +11,11 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.FirestoreImpl;
+import com.example.timad.poznavacka.JSoup;
+import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.Zastupce;
+import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -64,7 +71,7 @@ public class CreateListFragment extends Fragment {
         userDividngString = view.findViewById(R.id.dividingCharacter);
         db = FirebaseFirestore.getInstance(); //testing
 
-/*
+
         //jenom testovani
         new JSoup().execute("Pes_domácí");
         Handler h = new Handler();
@@ -73,7 +80,7 @@ public class CreateListFragment extends Fragment {
                 Log.d(TAG, testString);
             }
 
-        }, 2000);*/
+        }, 2000);
 
         /* RecyclerView */
         mZastupceArr = new ArrayList<>();

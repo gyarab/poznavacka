@@ -1,9 +1,13 @@
-package com.example.timad.poznavacka;
+package com.example.timad.poznavacka.activities.lists;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
+import com.example.timad.poznavacka.PoznavackaInfo;
+import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.RWAdapter;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatDelegate;

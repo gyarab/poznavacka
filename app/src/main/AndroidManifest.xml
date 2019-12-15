@@ -15,18 +15,19 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SwitchActivity"
+            android:name=".activities.SwitchActivity"
             android:screenOrientation="portrait">
         </activity>
 
-        <activity android:name=".MainActivity"
+        <activity
+            android:name=".activities.MainActivity"
             android:theme="@style/AppTheme"
             android:screenOrientation="portrait">
         </activity>
 
 
         <activity
-            android:name=".ListsActivity"
+            android:name=".activities.lists.ListsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -35,10 +36,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".PracticeActivity" />
-        <activity android:name=".TestActivity" />
+        <activity android:name=".activities.PracticeActivity" />
+        <activity android:name=".activities.test.TestActivity" />
         <activity android:name=".FirestoreImpl" />
-        <activity android:name=".AccountActivity" />
+        <activity android:name=".activities.AccountActivity" />
     </application>
 
 </manifest>
