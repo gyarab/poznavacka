@@ -6,7 +6,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -31,14 +30,16 @@ public class TestPINFragment extends Fragment {
 
             public void onClick(View view) {
                 PIN = String.valueOf(pinInput.getText());
-
                 /*
 
-                proceed to testing
+                verify the PIN
 
                  */
+                TestActivity.mViewPager.setCurrentItem(1); //if verified go wait
+
             }
         });
+
 
         return view;
     }

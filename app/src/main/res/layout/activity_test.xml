@@ -17,22 +17,6 @@
             android:layout_height="50dp"
             android:id="@+id/topBar">
 
-            <com.google.android.material.appbar.AppBarLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-
-                <com.google.android.material.tabs.TabLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/tabs"
-                    android:background="@drawable/navigation_border_bottom"
-                    app:tabIconTint="@color/colorWhite">
-
-
-                </com.google.android.material.tabs.TabLayout>
-
-            </com.google.android.material.appbar.AppBarLayout>
 
         </RelativeLayout>
 
@@ -43,13 +27,13 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <androidx.viewpager.widget.ViewPager
+            <com.example.timad.poznavacka.LockableViewPager
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/container"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            </androidx.viewpager.widget.ViewPager>
+            </com.example.timad.poznavacka.LockableViewPager>
 
         </RelativeLayout>
 

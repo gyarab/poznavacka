@@ -11,6 +11,8 @@ public class SectionsPageAdapter extends FragmentPagerAdapter {
 
     private final List<Fragment> mFragmentList = new ArrayList<>();
 
+    private boolean swipeable = true;
+
 
     public void addFragment(Fragment fragment) {
         mFragmentList.add(fragment);

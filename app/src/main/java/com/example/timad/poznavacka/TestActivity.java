@@ -4,23 +4,18 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.tabs.TabLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
 
 public class TestActivity extends AppCompatActivity {
 
     public static String TAG = "TestActivity";
 
-    private SectionsPageAdapter mSectionsPageAdapter;
-    private ViewPager mViewPager;
+    protected SectionsPageAdapter mSectionsPageAdapter;
+    public static LockableViewPager mViewPager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,11 +24,8 @@ public class TestActivity extends AppCompatActivity {
 
         //fragments navigation
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
+        mViewPager = findViewById(R.id.container);
         setupViewPager(mViewPager);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
 
 
         //navigation
@@ -78,11 +70,12 @@ public class TestActivity extends AppCompatActivity {
     }
 
 
-    private void setupViewPager(ViewPager viewPager) {
+    private void setupViewPager(LockableViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new TestPINFragment());
         adapter.addFragment(new TestWaitFragment());
         viewPager.setAdapter(adapter);
+        viewPager.setSwipeable(false);
     }
 
     public void setViewPager(int fragmentNumber) {
