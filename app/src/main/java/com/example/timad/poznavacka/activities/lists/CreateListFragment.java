@@ -205,7 +205,8 @@ public class CreateListFragment extends Fragment {
 
     private String getWikipediaApiJSONcs(String searchText) throws IOException {
         searchText += " Wikipedia";
-        Document google = Jsoup.connect("https://www.google.com/search?q=" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla/5.0").get();
+        //Document google = Jsoup.connect("https://www.google.com/search?q=" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+        Document google = Jsoup.connect("https://www.google.com/search?q=" + searchText).userAgent("Mozilla").get();
         String wikipediaURL = google.getElementsByTag("cite").get(0).text();
         String wikipediaApiJSON = "https://www.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="
                 + URLEncoder.encode(wikipediaURL.substring(wikipediaURL.lastIndexOf("/") + 1, wikipediaURL.length()), "UTF-8");
