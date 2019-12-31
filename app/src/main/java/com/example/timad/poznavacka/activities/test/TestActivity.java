@@ -6,12 +6,13 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
+import com.example.timad.poznavacka.JSoup;
 import com.example.timad.poznavacka.LockableViewPager;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.activities.AccountActivity;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
+import com.example.timad.poznavacka.activities.lists.ListsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -33,6 +34,12 @@ public class TestActivity extends AppCompatActivity {
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.container);
         setupViewPager(mViewPager);
+
+
+        //testing
+        JSoup soup0 = new JSoup();
+        soup0.execute("this");
+
 
 
         //navigation

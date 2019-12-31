@@ -1,23 +1,32 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.FirestoreImpl;
-import com.example.timad.poznavacka.JSoup;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.jsoup.Connection;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
+
+import java.io.IOException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -39,6 +48,8 @@ public class CreateListFragment extends Fragment {
     private static final String KEY_IMGREF = "imageRef";
 
     private Button btnCREATE;
+    private Button btnSAVE;
+    private ProgressBar progressBar;
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
     private EditText userDividngString;
@@ -65,6 +76,8 @@ public class CreateListFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_createlist, container, false);
         firestoreImpl = new FirestoreImpl();
         btnCREATE = view.findViewById(R.id.createButton);
+        btnSAVE = view.findViewById(R.id.saveButton);
+        progressBar = view.findViewById(R.id.progressBar);
         userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
         userInputTitle = view.findViewById(R.id.userInputTitle);
         autoRadDruhSwitch = view.findViewById(R.id.autoRadDruhSwitch);
@@ -73,14 +86,11 @@ public class CreateListFragment extends Fragment {
 
 
         //jenom testovani
-        new JSoup().execute("Pes_domácí");
-        Handler h = new Handler();
-        h.postDelayed(new Runnable() {
-            public void run() {
-                Log.d(TAG, testString);
-            }
-
-        }, 2000);
+        try {
+            getWikipediaApiJSONcs("dog");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         /* RecyclerView */
         mZastupceArr = new ArrayList<>();
@@ -140,4 +150,71 @@ public class CreateListFragment extends Fragment {
         //firestoreImpl.readData("poznavackaExample");
         return view;
     }
+
+
+    private class JSoupNew extends AsyncTask<Void, Void, Void> {
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            String urlString = "https://www.seznam.cz/";
+            Connection con = Jsoup.connect(urlString)
+                    .userAgent("Mozilla");
+            Document doc = null;
+            try {
+                doc = con.get();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            if (doc != null) {
+                Log.d(TAG, doc.title());
+                Log.d(TAG, doc.text());
+                Elements links = doc.select("a");
+                for (Element link : links) {
+                    Log.d(TAG, "Link:" + link);
+                    Log.d(TAG, "Text:" + link.text());
+                }
+
+            }
+
+
+            return null;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressBar.setVisibility(View.VISIBLE);
+            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            progressBar.setVisibility(View.GONE);
+            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
+            mAdapter.notifyDataSetChanged();
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+        }
+    }
+
+
+    private String getWikipediaApiJSONcs(String searchText) throws IOException {
+        searchText += " Wikipedia";
+        Document google = Jsoup.connect("https://www.google.com/search?q=" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla/5.0").get();
+        String wikipediaURL = google.getElementsByTag("cite").get(0).text();
+        String wikipediaApiJSON = "https://www.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="
+                + URLEncoder.encode(wikipediaURL.substring(wikipediaURL.lastIndexOf("/") + 1, wikipediaURL.length()), "UTF-8");
+        Log.d("wikiseatch", wikipediaURL);
+        Log.d("wikiseatch", wikipediaApiJSON);
+
+        return "";
+    }
 }
+
+
+
