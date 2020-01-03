@@ -29,7 +29,7 @@
     <string name="account">Account</string>
     <string name="create_fragment_text"><u>We recommend to speak in the text</u>\nSplit the representatives using the entered word/character</string>
     <string name="create_button">CREATE</string>
-    <string name="autoRadDruhSwitch">auto-insert druh, řád (cz only)  </string>
+    <string name="autoRadDruhSwitch">auto-insert stuff  </string>
     <string name="save_button">SAVE</string>
     <string name="wait_text">Please, wait for your teacher to start the test</string>
 </resources>

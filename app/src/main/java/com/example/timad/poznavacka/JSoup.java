@@ -54,6 +54,7 @@ public class JSoup extends AsyncTask<String, Void, String> {
 
         if (doc != null) {
             Log.d(TAG, doc.title());
+
             Log.d(TAG, doc.text());
             Elements links = doc.select("a");
             for (Element link : links) {

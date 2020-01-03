@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -8,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -19,13 +21,11 @@ import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -64,11 +64,18 @@ public class CreateListFragment extends Fragment {
 
     public static String testString;
 
-    /* RecyclerView */
+    //RecyclerView
     private RecyclerView mRecyclerView;
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
+
+    /*// Pattern for recognizing a URL, based off RFC 3986
+    private static final Pattern urlPattern = Pattern.compile(
+            "(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)"
+                    + "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*"
+                    + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
+            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);*/
 
     @Nullable
     @Override
@@ -85,12 +92,6 @@ public class CreateListFragment extends Fragment {
         db = FirebaseFirestore.getInstance(); //testing
 
 
-        //jenom testovani
-        try {
-            getWikipediaApiJSONcs("dog");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
         /* RecyclerView */
         mZastupceArr = new ArrayList<>();
@@ -104,6 +105,20 @@ public class CreateListFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
+        final WikiSearch wikiSearch = new WikiSearch(this);
+
+
+        autoRadDruhSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    Intent intent = new Intent(getContext(), PopActivity.class);
+                    startActivity(intent);
+                } else {
+
+                }
+            }
+        });
 
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -135,6 +150,15 @@ public class CreateListFragment extends Fragment {
         });
 
 
+        btnSAVE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //testing
+                wikiSearch.execute();
+            }
+        });
+
+
         //test
 
         // Create a new poznavackaInfo with a reference to an image
@@ -152,31 +176,28 @@ public class CreateListFragment extends Fragment {
     }
 
 
-    private class JSoupNew extends AsyncTask<Void, Void, Void> {
+    private static class WikiSearch extends AsyncTask<Void, Void, Void> {
+
+        private WeakReference<CreateListFragment> fragmentWeakReference;
+
+        WikiSearch(CreateListFragment context) {
+            fragmentWeakReference = new WeakReference<>(context);
+        }
+
         @Override
         protected Void doInBackground(Void... voids) {
+            //String searchText = representatives.get(...);  //get all of the representatives
+            String searchText = "dendricoelum lacteum";
+            searchText = searchText.replace(" ", "_");
 
-            String urlString = "https://www.seznam.cz/";
-            Connection con = Jsoup.connect(urlString)
-                    .userAgent("Mozilla");
-            Document doc = null;
+            Document google = null;
+            Document googleExample = null;
             try {
-                doc = con.get();
+                google = Jsoup.connect("https://en.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").timeout(5000).get();
+                Log.d(TAG, google.outerHtml());
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
-            if (doc != null) {
-                Log.d(TAG, doc.title());
-                Log.d(TAG, doc.text());
-                Elements links = doc.select("a");
-                for (Element link : links) {
-                    Log.d(TAG, "Link:" + link);
-                    Log.d(TAG, "Text:" + link.text());
-                }
-
-            }
-
 
             return null;
         }
@@ -184,16 +205,18 @@ public class CreateListFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            progressBar.setVisibility(View.VISIBLE);
-            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_in));
+            CreateListFragment fragment = fragmentWeakReference.get();
+            fragment.progressBar.setVisibility(View.VISIBLE);
+            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));
         }
 
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            progressBar.setVisibility(View.GONE);
-            progressBar.startAnimation(AnimationUtils.loadAnimation(getActivity(), android.R.anim.fade_out));
-            mAdapter.notifyDataSetChanged();
+            CreateListFragment fragment = fragmentWeakReference.get();
+            fragment.progressBar.setVisibility(View.GONE);
+            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_out));
+            fragment.mAdapter.notifyDataSetChanged();
         }
 
         @Override
@@ -201,21 +224,6 @@ public class CreateListFragment extends Fragment {
             super.onCancelled();
         }
     }
-
-
-    private String getWikipediaApiJSONcs(String searchText) throws IOException {
-        searchText += " Wikipedia";
-        //Document google = Jsoup.connect("https://www.google.com/search?q=" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
-        Document google = Jsoup.connect("https://www.google.com/search?q=" + searchText).userAgent("Mozilla").get();
-        String wikipediaURL = google.getElementsByTag("cite").get(0).text();
-        String wikipediaApiJSON = "https://www.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro=&explaintext=&titles="
-                + URLEncoder.encode(wikipediaURL.substring(wikipediaURL.lastIndexOf("/") + 1, wikipediaURL.length()), "UTF-8");
-        Log.d("wikiseatch", wikipediaURL);
-        Log.d("wikiseatch", wikipediaApiJSON);
-
-        return "";
-    }
 }
-
 
 
