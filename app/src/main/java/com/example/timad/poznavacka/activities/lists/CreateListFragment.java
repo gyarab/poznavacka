@@ -3,6 +3,7 @@ package com.example.timad.poznavacka.activities.lists;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,6 +13,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -94,12 +96,29 @@ public class CreateListFragment extends Fragment {
 
 
         /* RecyclerView */
+        mRecyclerView = view.findViewById(R.id.recyclerViewZ);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = (int) ((float)displayMetrics.heightPixels * 0.7f);
+
+        //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
+        params.height = height;
+        mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
+
         mZastupceArr = new ArrayList<>();
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
 
-        mRecyclerView = view.findViewById(R.id.recyclerViewZ);
-        mRecyclerView.setHasFixedSize(false);
         mLManager = new LinearLayoutManager(getContext());
         mAdapter = new ZastupceAdapter(mZastupceArr);
 
