@@ -4,56 +4,60 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <RelativeLayout
-        android:id="@+id/relativeLayout"
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="10dp">
+        android:layout_height="match_parent">
 
-        <EditText
-            android:id="@+id/userInputTitle"
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:ems="10"
-            android:hint="Title"
-            android:inputType="none"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorGrey" />
+            android:padding="10dp">
 
-        <EditText
-            android:id="@+id/dividingCharacter"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/userInputTitle"
-            android:layout_marginTop="35dp"
-            android:ems="10"
-            android:hint="Enter a dividing word/character"
-            android:inputType="none"
-            android:textColorHint="@color/colorGrey" />
+            <EditText
+                android:id="@+id/userInputTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:ems="10"
+                android:hint="Title"
+                android:inputType="none"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@color/colorGrey" />
 
-        <EditText
-            android:id="@+id/userInputRepresentatives"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/dividingCharacter"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="15dp"
-            android:ems="10"
-            android:hint="The representatives"
-            android:inputType="textMultiLine"
-            android:textColor="@color/colorWhite"
-            android:textColorHint="@color/colorGrey" />
+            <EditText
+                android:id="@+id/dividingCharacter"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/userInputTitle"
+                android:layout_marginTop="35dp"
+                android:ems="10"
+                android:hint="Enter a dividing word/character"
+                android:inputType="none"
+                android:textColorHint="@color/colorGrey" />
 
-        <TextView
-            android:id="@+id/textUnderUserInput"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/userInputRepresentatives"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="40dp"
-            android:text="@string/create_fragment_text"
-            android:textColor="@color/colorWhite"
-            android:textSize="15sp" />
+            <EditText
+                android:id="@+id/userInputRepresentatives"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dividingCharacter"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="15dp"
+                android:ems="10"
+                android:hint="The representatives"
+                android:inputType="textMultiLine"
+                android:textColor="@color/colorWhite"
+                android:textColorHint="@color/colorGrey" />
+
+            <TextView
+                android:id="@+id/textUnderUserInput"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/userInputRepresentatives"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="40dp"
+                android:text="@string/create_fragment_text"
+                android:textColor="@color/colorWhite"
+                android:textSize="15sp" />
 
         <Switch
             android:id="@+id/autoImportSwitch"
@@ -77,14 +81,14 @@
             android:layout_toStartOf="@+id/progressBar"
             android:text="@string/create_button" />
 
-        <Button
-            android:id="@+id/saveButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignTop="@+id/progressBar"
-            android:layout_marginStart="30dp"
-            android:layout_toEndOf="@+id/progressBar"
-            android:text="@string/save_button" />
+            <Button
+                android:id="@+id/saveButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignTop="@+id/progressBar"
+                android:layout_marginStart="30dp"
+                android:layout_toEndOf="@+id/progressBar"
+                android:text="@string/save_button" />
 
         <ProgressBar
             android:id="@+id/progressBar"
@@ -95,14 +99,17 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="30dp" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recyclerViewZ"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_below="@+id/progressBar"
-            android:scrollbars="vertical" />
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewZ"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                android:layout_below="@+id/progressBar"
+                android:layout_marginTop="0dp">
+
+            </androidx.recyclerview.widget.RecyclerView>
 
 
-    </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
 
 </RelativeLayout>

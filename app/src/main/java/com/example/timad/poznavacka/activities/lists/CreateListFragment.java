@@ -99,6 +99,17 @@ public class CreateListFragment extends Fragment {
 
 
         /* RecyclerView */
+        mRecyclerView = view.findViewById(R.id.recyclerViewZ);
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = (int) ((float)displayMetrics.heightPixels * 0.7f);
+
+        //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
+        params.height = height;
+        mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
+
         mZastupceArr = new ArrayList<>();
         mRecyclerView = view.findViewById(R.id.recyclerViewZ);
 
@@ -112,6 +123,14 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
