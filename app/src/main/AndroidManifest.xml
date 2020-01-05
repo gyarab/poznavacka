@@ -14,14 +14,16 @@
         android:roundIcon="@drawable/brinkos_ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.lists.PopActivity"></activity>
+        <activity
+            android:name=".activities.lists.PopActivity"
+            android:theme="@style/AppTheme.Pop" />
         <activity
             android:name=".activities.SwitchActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait" />
         <activity
             android:name=".activities.MainActivity"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.lists.ListsActivity"
             android:screenOrientation="portrait"

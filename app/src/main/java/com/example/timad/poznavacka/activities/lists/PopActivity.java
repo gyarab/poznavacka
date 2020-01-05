@@ -22,7 +22,7 @@ public class PopActivity extends Activity {
         int height = dm.heightPixels;
 
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
-        getWindow().setLayout((int) (width * 0.8), (int) (height * 0.7));
+        getWindow().setLayout((int) (width * 0.8), (int) (height * 0.5));
 
 
     }

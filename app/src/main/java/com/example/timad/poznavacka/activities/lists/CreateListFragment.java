@@ -53,7 +53,9 @@ public class CreateListFragment extends Fragment {
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
     private EditText userDividngString;
+
     private Switch autoRadDruhSwitch;
+    private boolean switchPressedOnce;
 
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing
@@ -90,6 +92,7 @@ public class CreateListFragment extends Fragment {
         autoRadDruhSwitch = view.findViewById(R.id.autoRadDruhSwitch);
         userDividngString = view.findViewById(R.id.dividingCharacter);
         db = FirebaseFirestore.getInstance(); //testing
+        switchPressedOnce = false;
 
 
 
@@ -111,7 +114,8 @@ public class CreateListFragment extends Fragment {
         autoRadDruhSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
+                if (isChecked && !switchPressedOnce) {
+                    switchPressedOnce = true;
                     Intent intent = new Intent(getContext(), PopActivity.class);
                     startActivity(intent);
                 } else {
@@ -123,6 +127,18 @@ public class CreateListFragment extends Fragment {
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
+
+                //testing
+                wikiSearch.execute();
+            }
+        });
+
+
+        btnSAVE.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
                 title = userInputTitle.getText().toString();
                 dividingString = userDividngString.getText().toString();
                 String rawRepresentatives = userInputRepresentatives.getText().toString();
@@ -143,18 +159,6 @@ public class CreateListFragment extends Fragment {
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
 
                 }
-
-
-                Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
-            }
-        });
-
-
-        btnSAVE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //testing
-                wikiSearch.execute();
             }
         });
 
