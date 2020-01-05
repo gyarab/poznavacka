@@ -8,7 +8,7 @@
     tools:context=".activities.lists.PopActivity">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/PopDONEButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="60dp"
@@ -21,11 +21,46 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:paddingTop="20dp"
         android:text="@string/wiki_auto_import"
         android:textColor="@color/colorWhite"
-        android:textSize="25sp"
-        android:paddingTop="5dp"
+        android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/textWikiImportDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/text_wiki_import_description"
+        android:textColor="@color/colorWhite"
+        android:textSize="20sp"
+        android:paddingTop="25dp"
+        android:paddingStart="50dp"
+        android:paddingEnd="50dp"
+        android:textAlignment="center"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView2" />
+
+    <ImageView
+        android:id="@+id/arrowDown"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@android:drawable/arrow_down_float"
+        android:paddingTop="30dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textWikiImportDescription" />
+
+    <Spinner
+        android:id="@+id/languageSpinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/arrowDown" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

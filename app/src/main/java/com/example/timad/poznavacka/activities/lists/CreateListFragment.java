@@ -54,7 +54,7 @@ public class CreateListFragment extends Fragment {
     private EditText userInputRepresentatives;
     private EditText userDividngString;
 
-    private Switch autoRadDruhSwitch;
+    private Switch autoImportSwitch;
     private boolean switchPressedOnce;
 
     private FirestoreImpl firestoreImpl;
@@ -89,7 +89,7 @@ public class CreateListFragment extends Fragment {
         progressBar = view.findViewById(R.id.progressBar);
         userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
         userInputTitle = view.findViewById(R.id.userInputTitle);
-        autoRadDruhSwitch = view.findViewById(R.id.autoRadDruhSwitch);
+        autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
         userDividngString = view.findViewById(R.id.dividingCharacter);
         db = FirebaseFirestore.getInstance(); //testing
         switchPressedOnce = false;
@@ -111,7 +111,7 @@ public class CreateListFragment extends Fragment {
         final WikiSearch wikiSearch = new WikiSearch(this);
 
 
-        autoRadDruhSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked && !switchPressedOnce) {
@@ -151,7 +151,7 @@ public class CreateListFragment extends Fragment {
                     Map<String, Object> representativeInfo = new HashMap<>();
                     representativeInfo.put(KEY_ZASTUPCE, representatives.get(i));
                     representativeInfo.put(KEY_IMGREF, "imageRef - cislo/hash?");
-                    if (autoRadDruhSwitch.isChecked()) {
+                    if (autoImportSwitch.isChecked()) {
                         representativeInfo.put(KEY_DRUH, "dohledany druh");
                         representativeInfo.put(KEY_RAD, "dohledany rad");
                     }

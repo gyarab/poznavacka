@@ -27,9 +27,9 @@
     <string name="test">Test</string>
     <string name="enter_pin_button">ENTER</string>
     <string name="account">Account</string>
-    <string name="create_fragment_text"><u>We recommend to speak in the text</u>\nSplit the representatives using the entered word/character</string>
+    <string name="create_fragment_text"><u>Split the representatives using the entered word/character</u>\nYou have the option to speak in the text using the inbuilt keyboard speak-in function</string>
     <string name="create_button">CREATE</string>
-    <string name="autoRadDruhSwitch">auto-insert stuff  </string>
+    <string name="autoRadDruhSwitch">auto-insert classification</string>
     <string name="save_button">SAVE</string>
     <string name="wait_text">Please, wait for your teacher to start the test</string>
     <string name="pop_done">DONE</string>
@@ -50,4 +50,5 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="wiki_auto_import"><u><b>Wiki auto-import</b></u></string>
+    <string name="text_wiki_import_description">This will automatically import the scientific classification using data provided by Wikipedia in your language</string>
 </resources>
