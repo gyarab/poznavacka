@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -65,7 +66,6 @@ public class CreateListFragment extends Fragment {
     private ArrayList<String> representatives;
     private String title;
     private String dividingString;
-
     public static String testString;
 
     //RecyclerView
@@ -216,18 +216,21 @@ public class CreateListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            CreateListFragment fragment = fragmentWeakReference.get();
             //String searchText = representatives.get(...);  //get all of the representatives
             String searchText = "dendricoelum lacteum";
             searchText = searchText.replace(" ", "_");
 
-            Document google = null;
-            Document googleExample = null;
+            Document doc = null;
             try {
-                google = Jsoup.connect("https://en.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").timeout(5000).get();
-                Log.d(TAG, google.outerHtml());
+                doc = Jsoup.connect("https://en.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                Log.d(TAG, doc.outerHtml());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            Log.d(TAG, "searching");
+            Elements infoBox = doc.getElementsByTag("table").first().getAllElements();
+            Log.d(TAG, infoBox.outerHtml());
 
             return null;
         }
@@ -236,8 +239,8 @@ public class CreateListFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             CreateListFragment fragment = fragmentWeakReference.get();
-            fragment.progressBar.setVisibility(View.VISIBLE);
-            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));
+            /*fragment.progressBar.setVisibility(View.VISIBLE);
+            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));*/
         }
 
         @Override

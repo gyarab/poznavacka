@@ -97,7 +97,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/autoImportSwitch"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="30dp" />
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="5dp" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewZ"
