@@ -25,6 +25,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
@@ -32,8 +33,6 @@ import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -102,7 +101,7 @@ public class CreateListFragment extends Fragment {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = (int) ((float)displayMetrics.heightPixels * 0.7f);
+        int height = (int) ((float) displayMetrics.heightPixels * 0.7f);
 
         //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
@@ -171,7 +170,7 @@ public class CreateListFragment extends Fragment {
 
                 representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
 
-                for (int i = 0; i < representatives.size(); i++) {
+          /*      for (int i = 0; i < representatives.size(); i++) {
 
                     //uploading poznavacka
                     Map<String, Object> representativeInfo = new HashMap<>();
@@ -184,7 +183,7 @@ public class CreateListFragment extends Fragment {
 
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
 
-                }
+                }*/
             }
         });
 
@@ -217,20 +216,54 @@ public class CreateListFragment extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
             CreateListFragment fragment = fragmentWeakReference.get();
-            //String searchText = representatives.get(...);  //get all of the representatives
-            String searchText = "dendricoelum lacteum";
-            searchText = searchText.replace(" ", "_");
 
-            Document doc = null;
-            try {
-                doc = Jsoup.connect("https://en.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
-                Log.d(TAG, doc.outerHtml());
-            } catch (IOException e) {
-                e.printStackTrace();
+            //misto testInput -> representatives
+            ArrayList<String> testInput = new ArrayList<>();
+            testInput.add("Sýkora");
+            //testInput.add("Pes domácí");
+
+
+            for (String representative :
+                    testInput) {
+                String searchText = representative.replace(" ", "_");
+
+                Document doc = null;
+                try {
+                    doc = Jsoup.connect("https://cs.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                ArrayList<String> scientificClasses = new ArrayList<>();
+                String[] data;
+                boolean scientificClassificationDetected = false;
+                int trCount = 0;
+
+                if (doc != null) {
+                    Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    Elements trs = infoBox.select("tr");
+                    for (Element tr :
+                            trs) {
+                        if (!tr.getAllElements().hasAttr("colspan")) {
+                            data = tr.wholeText().split("\n");
+                            for (int i = 0; i < data.length; i++) {
+                                data[i] = data[i].trim();
+                                Log.d(TAG, data[i]);
+                            }
+
+                            //Log.d(TAG, tr.wholeText().split("\n"));
+                            //Log.d(TAG, tr.textNodes().get(1).getWholeText());
+                            scientificClassificationDetected = true;
+                        } else if (scientificClassificationDetected) {
+                            break;
+                        }
+
+                    }
+                } else {
+                    Toast.makeText(fragment.getActivity(), "Wiki for " + representative + " could not be loaded", Toast.LENGTH_SHORT).show();
+                }
             }
-            Log.d(TAG, "searching");
-            Elements infoBox = doc.getElementsByTag("table").first().getAllElements();
-            Log.d(TAG, infoBox.outerHtml());
+
 
             return null;
         }
