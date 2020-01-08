@@ -207,6 +207,7 @@ public class CreateListFragment extends Fragment {
     }
 
 
+    //ŠPATNÝ ZPŮSOB, AŽ BUDE ČAS, PŘEDĚLAT -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
     private static class WikiSearch extends AsyncTask<Void, Void, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
@@ -231,7 +232,7 @@ public class CreateListFragment extends Fragment {
 
                 Document doc = null;
                 try {
-                    doc = Jsoup.connect("https://cs.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                    doc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.d(TAG, "couldn't connect to the site");
@@ -239,9 +240,10 @@ public class CreateListFragment extends Fragment {
                 }
 
                 ArrayList<String> scientificClasses = new ArrayList<>();
-                String[] data = new String[18];
+                ArrayList<String[]> newData = new ArrayList<>();
+                String[] dataPair = new String[2];
+                int dataCounter = 0;
                 boolean scientificClassificationDetected = false;
-                int trCount = 0;
 
                 Element infoBox = null;
                 if (doc != null) {
@@ -251,32 +253,35 @@ public class CreateListFragment extends Fragment {
                     for (Element tr :
                             trs) {
                         if (!tr.getAllElements().hasAttr("colspan")) {
-                            data = tr.wholeText().split("\n");
-                            for (int i = 0; i < data.length; i++) {
-                                data[i] = data[i].trim();
-                                Log.d(TAG, data[i]);
+                            dataPair = tr.wholeText().split("\n", 2);
+                            for (int i = 0; i < 2; i++) {
+                                dataPair[i] = dataPair[i].trim();
+                                Log.d(TAG, dataPair[i]);
                             }
+                            newData.add(dataPair);
 
-                            //Log.d(TAG, tr.wholeText().split("\n"));
-                            //Log.d(TAG, tr.textNodes().get(1).getWholeText());
+
                             scientificClassificationDetected = true;
                         } else if (scientificClassificationDetected) {
                             break;
                         }
                     }
+                    //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
-                        fragment.mZastupceArr.add(new Zastupce(data[1], data[3], data[5]));
+                        fragment.mZastupceArr.add(new Zastupce(newData.get(0)[1], newData.get(1)[1], newData.get(2)[1]));
+
                     } else {
                         //loading classification
-                        fragment.mZastupceArr.add(new Zastupce(data[0], data[2], data[4]));
+                        //fragment.mZastupceArr.add(new Zastupce(data[0], data[2], data[4]));
+                        fragment.mZastupceArr.add(new Zastupce(newData.get(0)[0], newData.get(1)[0], newData.get(2)[0]));
+                        Log.d(TAG, newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
                 } else {
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
             }
-
 
 
             return null;

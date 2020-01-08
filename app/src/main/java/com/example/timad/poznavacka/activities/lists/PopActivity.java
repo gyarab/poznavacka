@@ -16,8 +16,12 @@ import com.example.timad.poznavacka.R;
 
 public class PopActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
+    private final String TAG = "PopActivity";
+
     Spinner languageSpinner;
     Button DONEButton;
+
+    static String languageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +60,70 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
         // An item was selected. You can retrieve the selected item using
         // parent.getItemAtPosition(pos)
         Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
+        String languageString = selectedLanguageSpinnerItem.toString();
+
+        switch (languageString) {
+            case "English":
+                languageURL = "en";
+                break;
+            case "Czech":
+                languageURL = "cs";
+                break;
+            case "French":
+                languageURL = "fr";
+                break;
+            case "German":
+                languageURL = "de";
+                break;
+            case "Spanish":
+                languageURL = "es";
+                break;
+            case "Japanese":
+                languageURL = "ja";
+                break;
+            case "Russian":
+                languageURL = "ru";
+                break;
+            case "Italian":
+                languageURL = "it";
+                break;
+            case "Chinese":
+                languageURL = "zh";
+                break;
+            case "Portuguese":
+                languageURL = "pt";
+                break;
+            case "Arabic":
+                languageURL = "ar";
+                break;
+            case "Persian":
+                languageURL = "fa";
+                break;
+            case "Polish":
+                languageURL = "pl";
+                break;
+            case "Dutch":
+                languageURL = "nl";
+                break;
+            case "Indonesian":
+                languageURL = "id";
+                break;
+            case "Ukrainian":
+                languageURL = "uk";
+                break;
+            case "Hebrew":
+                languageURL = "he";
+                break;
+            case "Swedish":
+                languageURL = "sv";
+                break;
+            case "Korean":
+                languageURL = "ko";
+                break;
+            case "Vietnamese":
+                languageURL = "vi";
+                break;
+        }
     }
 
     @Override
