@@ -55,9 +55,10 @@ public class CreateListFragment extends Fragment {
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
     private EditText userDividngString;
-
     private Switch autoImportSwitch;
+
     private boolean switchPressedOnce;
+    private boolean loadingRepresentative;
 
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing
@@ -65,7 +66,6 @@ public class CreateListFragment extends Fragment {
     private ArrayList<String> representatives;
     private String title;
     private String dividingString;
-    public static String testString;
 
     //RecyclerView
     private RecyclerView mRecyclerView;
@@ -109,7 +109,7 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
+        /*mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
@@ -126,14 +126,16 @@ public class CreateListFragment extends Fragment {
         mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
         mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));*/
 
         mLManager = new LinearLayoutManager(getContext());
         mAdapter = new ZastupceAdapter(mZastupceArr);
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
-        final WikiSearch wikiSearch = new WikiSearch(this);
+        //mRecyclerView.setVisibility(View.INVISIBLE);
+
+        //final WikiSearch wikiSearch = new WikiSearch(this);
 
 
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -154,7 +156,7 @@ public class CreateListFragment extends Fragment {
             public void onClick(View view) {
 
                 Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
-
+                final WikiSearch wikiSearch = new WikiSearch(CreateListFragment.this);
                 //testing
                 wikiSearch.execute();
             }
@@ -232,15 +234,19 @@ public class CreateListFragment extends Fragment {
                     doc = Jsoup.connect("https://cs.wikipedia.org/wiki/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
                     e.printStackTrace();
+                    Log.d(TAG, "couldn't connect to the site");
+                    fragment.mZastupceArr.add(new Zastupce("Error loading " + representative, "", ""));
                 }
 
                 ArrayList<String> scientificClasses = new ArrayList<>();
-                String[] data;
+                String[] data = new String[18];
                 boolean scientificClassificationDetected = false;
                 int trCount = 0;
 
+                Element infoBox = null;
                 if (doc != null) {
-                    Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    //Toast.makeText(fragment.getActivity(), "Wiki for " + representative + " could not be loaded", Toast.LENGTH_SHORT).show();
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
@@ -257,12 +263,20 @@ public class CreateListFragment extends Fragment {
                         } else if (scientificClassificationDetected) {
                             break;
                         }
-
+                    }
+                    if (fragment.loadingRepresentative) {
+                        //loading representative
+                        fragment.mZastupceArr.add(new Zastupce(data[1], data[3], data[5]));
+                    } else {
+                        //loading classification
+                        fragment.mZastupceArr.add(new Zastupce(data[0], data[2], data[4]));
+                        fragment.loadingRepresentative = true;
                     }
                 } else {
-                    Toast.makeText(fragment.getActivity(), "Wiki for " + representative + " could not be loaded", Toast.LENGTH_SHORT).show();
+                    Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
             }
+
 
 
             return null;
