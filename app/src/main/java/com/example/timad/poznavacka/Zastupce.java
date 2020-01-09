@@ -1,17 +1,19 @@
 package com.example.timad.poznavacka;
 
+import android.graphics.drawable.Drawable;
+
 /** Položka v poznávačce **/
 public class Zastupce {
     private String zastupce;
     private String druh;
     private String kmen;
-    // obrazek
+    private Drawable image; // obrazek
 
-    public Zastupce(String zastupce, String druh, String kmen) { //+img
+    public Zastupce(String zastupce, String druh, String kmen/*, Drawable image*/) { //+img
         this.zastupce = zastupce;
         this.druh = druh;
         this.kmen = kmen;
-        // obrazek
+        //this.image = image; // obrazek
     }
 
     public String getZastupce(){
@@ -39,4 +41,12 @@ public class Zastupce {
     }
 
     //obrazek
+    public Drawable getImage() {
+        return image;
+    }
+
+    public void setImage(Drawable image) {
+        this.image = image;
+    }
+
 }

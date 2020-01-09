@@ -6,10 +6,10 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.util.ArrayList;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
     private ArrayList<Zastupce> mZastupceList;
@@ -19,6 +19,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         public EditText editTZastupce;
         public EditText editTDruh;
         public EditText editTKmen;
+        //image  --   https://stackoverflow.com/a/41479670/10746262
 
         public ZastupceViewHolder(@NonNull View itemView) {
             super(itemView);

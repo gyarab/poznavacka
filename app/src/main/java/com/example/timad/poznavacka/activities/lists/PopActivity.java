@@ -14,6 +14,8 @@ import android.widget.Spinner;
 
 import com.example.timad.poznavacka.R;
 
+import java.util.ArrayList;
+
 public class PopActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
     private final String TAG = "PopActivity";
@@ -22,6 +24,7 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
     Button DONEButton;
 
     static String languageURL;
+    static ArrayList<String> userScientificClassification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,6 +32,9 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
         setContentView(R.layout.activity_pop);
         languageSpinner = findViewById(R.id.languageSpinner);
         DONEButton = findViewById(R.id.PopDONEButton);
+
+        userScientificClassification = new ArrayList<>();
+        languageURL = "cs";
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -57,8 +63,11 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
 
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        // An item was selected. You can retrieve the selected item using
-        // parent.getItemAtPosition(pos)
+        //getting the scientific classification selected by the user
+        userScientificClassification.add("Čeleď");
+        userScientificClassification.add("Kmen");
+
+        //getting the language of wiki
         Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
         String languageString = selectedLanguageSpinnerItem.toString();
 

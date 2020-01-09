@@ -33,6 +33,7 @@ import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -59,6 +60,7 @@ public class CreateListFragment extends Fragment {
 
     private boolean switchPressedOnce;
     private boolean loadingRepresentative;
+    private boolean autoImportIsChecked;
 
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing
@@ -73,12 +75,6 @@ public class CreateListFragment extends Fragment {
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
 
-    /*// Pattern for recognizing a URL, based off RFC 3986
-    private static final Pattern urlPattern = Pattern.compile(
-            "(?:^|[\\W])((ht|f)tp(s?):\\/\\/|www\\.)"
-                    + "(([\\w\\-]+\\.){1,}?([\\w\\-.~]+\\/?)*"
-                    + "[\\p{Alnum}.,%_=?&#\\-+()\\[\\]\\*$~@!:/{};']*)",
-            Pattern.CASE_INSENSITIVE | Pattern.MULTILINE | Pattern.DOTALL);*/
 
     @Nullable
     @Override
@@ -133,20 +129,18 @@ public class CreateListFragment extends Fragment {
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
-        //mRecyclerView.setVisibility(View.INVISIBLE);
-
-        //final WikiSearch wikiSearch = new WikiSearch(this);
 
 
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked && !switchPressedOnce) {
+                if (isChecked) {
                     switchPressedOnce = true;
+                    autoImportIsChecked = true;
                     Intent intent = new Intent(getContext(), PopActivity.class);
                     startActivity(intent);
                 } else {
-
+                    autoImportIsChecked = false;
                 }
             }
         });
@@ -158,7 +152,9 @@ public class CreateListFragment extends Fragment {
                 Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
                 final WikiSearch wikiSearch = new WikiSearch(CreateListFragment.this);
                 //testing
-                wikiSearch.execute();
+
+                wikiSearch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                //wikiSearch.execute();
             }
         });
 
@@ -207,7 +203,7 @@ public class CreateListFragment extends Fragment {
     }
 
 
-    //ŠPATNÝ ZPŮSOB, AŽ BUDE ČAS, PŘEDĚLAT -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
+    //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
     private static class WikiSearch extends AsyncTask<Void, Void, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
@@ -218,12 +214,12 @@ public class CreateListFragment extends Fragment {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            CreateListFragment fragment = fragmentWeakReference.get();
+            final CreateListFragment fragment = fragmentWeakReference.get();
 
             //misto testInput -> representatives
             ArrayList<String> testInput = new ArrayList<>();
             testInput.add("Sýkora");
-            //testInput.add("Pes domácí");
+            testInput.add("Pes domácí");
 
 
             for (String representative :
@@ -252,35 +248,59 @@ public class CreateListFragment extends Fragment {
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
-                        if (!tr.getAllElements().hasAttr("colspan")) {
+                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked) {
                             dataPair = tr.wholeText().split("\n", 2);
                             for (int i = 0; i < 2; i++) {
                                 dataPair[i] = dataPair[i].trim();
                                 Log.d(TAG, dataPair[i]);
                             }
-                            newData.add(dataPair);
+
+                            if (PopActivity.userScientificClassification.contains(dataPair[0])) {
+                                newData.add(dataPair);
+                            }
+
 
 
                             scientificClassificationDetected = true;
                         } else if (scientificClassificationDetected) {
                             break;
                         }
+
+                        //get the image
+                        else {
+                            if (tr.getAllElements().hasClass("image")) {
+                                String imageURLtoBeFetchedFrom = tr.select("img").first().absUrl("src");
+                                Log.d(TAG, "IMAGEURL  ===   " + imageURLtoBeFetchedFrom);
+                                //Document imgDoc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                            }
+                        }
                     }
+                    Collections.reverse(newData);
+
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
-                        fragment.mZastupceArr.add(new Zastupce(newData.get(0)[1], newData.get(1)[1], newData.get(2)[1]));
+                        fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1]));
 
                     } else {
                         //loading classification
-                        //fragment.mZastupceArr.add(new Zastupce(data[0], data[2], data[4]));
-                        fragment.mZastupceArr.add(new Zastupce(newData.get(0)[0], newData.get(1)[0], newData.get(2)[0]));
+                        fragment.mZastupceArr.add(new Zastupce("", PopActivity.userScientificClassification.get(0), PopActivity.userScientificClassification.get(1)));
                         Log.d(TAG, newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
                 } else {
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
+                new Thread(new Runnable() {
+
+                    @Override
+                    public void run() {
+
+                        // Stuff that updates the UI
+                        fragment.mAdapter.notifyDataSetChanged();
+                    }
+                });
+
             }
 
 
@@ -309,6 +329,15 @@ public class CreateListFragment extends Fragment {
             super.onCancelled();
         }
     }
+
+    private static class WikiImage extends AsyncTask<String, Void, Void> {
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            return null;
+        }
+    }
+
 }
 
 
