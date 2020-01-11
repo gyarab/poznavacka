@@ -7,38 +7,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="horizontal"
-        android:weightSum="4"
         android:layout_margin="4dp">
-
-        <EditText
-            android:id="@+id/editText1"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_height="match_parent"/>
-
-        <EditText
-            android:id="@+id/editText2"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_height="match_parent"/>
-
-        <EditText
-            android:id="@+id/editText3"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            android:layout_height="match_parent"/>
-
-        <ImageView
-            android:id="@+id/imageViewZ"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="match_parent"/>
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

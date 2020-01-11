@@ -1,43 +1,39 @@
 package com.example.timad.poznavacka;
 
 import android.graphics.drawable.Drawable;
+import android.media.Image;
+
+import java.util.ArrayList;
 
 /** Položka v poznávačce **/
 public class Zastupce {
-    private String zastupce;
-    private String druh;
-    private String kmen;
+    private ArrayList<String> infoArr;
+    private int parameters;
     private Drawable image; // obrazek
 
-    public Zastupce(String zastupce, String druh, String kmen/*, Drawable image*/) { //+img
-        this.zastupce = zastupce;
-        this.druh = druh;
-        this.kmen = kmen;
-        //this.image = image; // obrazek
+    public Zastupce(int parameters, Drawable image, String... args) {
+        infoArr = new ArrayList<>();
+        this.parameters = parameters;
+        for (int i = 0; i < parameters; i++) {
+            infoArr.add(args[i]);
+        }
+        this.image = image; // obrazek
     }
 
-    public String getZastupce(){
-        return zastupce;
+    public Zastupce(int parameters, String... args) {
+        infoArr = new ArrayList<>();
+        this.parameters = parameters;
+        for (int i = 0; i < parameters; i++) {
+            infoArr.add(args[i]);
+        }
     }
 
-    public void setZastupce(String zastupce) {
-        this.zastupce = zastupce;
+    public String getParameter(int pos) {
+        return infoArr.get(pos);
     }
 
-    public String getDruh(){
-        return druh;
-    }
-
-    public void setDruh(String druh) {
-        this.druh = druh;
-    }
-
-    public String getKmen(){
-        return kmen;
-    }
-
-    public void setKmen(String kmen) {
-        this.kmen = kmen;
+    public void setParameter(String info, int pos) {
+        infoArr.set(pos, info);
     }
 
     //obrazek

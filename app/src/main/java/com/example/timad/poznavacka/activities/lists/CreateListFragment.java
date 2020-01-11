@@ -105,27 +105,12 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
-        /*mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce("Plejtvak", "Ploutvoviti", "Ryba"));*/
+        /*mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce(3, "Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
 
         mLManager = new LinearLayoutManager(getContext());
-        mAdapter = new ZastupceAdapter(mZastupceArr);
+        mAdapter = new ZastupceAdapter(mZastupceArr, 3); // Melo by se nastavit podle poctu parametru poznavacky
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -232,7 +217,7 @@ public class CreateListFragment extends Fragment {
                 } catch (IOException e) {
                     e.printStackTrace();
                     Log.d(TAG, "couldn't connect to the site");
-                    fragment.mZastupceArr.add(new Zastupce("Error loading " + representative, "", ""));
+                    //fragment.mZastupceArr.add(new Zastupce("Error loading " + representative, "", ""));  // EDITED
                 }
 
                 ArrayList<String> scientificClasses = new ArrayList<>();
@@ -280,11 +265,11 @@ public class CreateListFragment extends Fragment {
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
-                        fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1]));
+                        //fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1])); // EDITED
 
                     } else {
                         //loading classification
-                        fragment.mZastupceArr.add(new Zastupce("", PopActivity.userScientificClassification.get(0), PopActivity.userScientificClassification.get(1)));
+                        //fragment.mZastupceArr.add(new Zastupce("", PopActivity.userScientificClassification.get(0), PopActivity.userScientificClassification.get(1))); // EDITED
                         Log.d(TAG, newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
