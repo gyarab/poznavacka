@@ -2,6 +2,7 @@ package com.example.timad.poznavacka;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.text.Editable;
 import android.text.Layout;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -25,7 +26,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.xmlpull.v1.XmlPullParser;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
-    private ArrayList<Zastupce> mZastupceList;
+    private static ArrayList<Zastupce> mZastupceList;
     private static int mParameters;
     private static int[] mIds;
 
@@ -40,8 +41,22 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         public ZastupceViewHolder(@NonNull View itemView) {
             super(itemView);
             editTArr = new ArrayList<EditText>();
-            for (int i = 0; i < mParameters; i++){
-                editTArr.add(i, (EditText) itemView.findViewById(mIds[i]));
+            for (int x = 0; x < mParameters; x++){
+                final int pos = x;
+                editTArr.add(x, (EditText) itemView.findViewById(mIds[x]));
+
+                editTArr.get(x).addTextChangedListener(new TextWatcher() {
+                    @Override
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {   }
+
+                    @Override
+                    public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                        mZastupceList.get(getAdapterPosition()).setParameter(editTArr.get(pos).getText().toString(), pos);
+                    }
+
+                    @Override
+                    public void afterTextChanged(Editable editable) {   }
+                });
             }
             zastupceImage = (ImageView) itemView.findViewById(mIds[mParameters]);
 

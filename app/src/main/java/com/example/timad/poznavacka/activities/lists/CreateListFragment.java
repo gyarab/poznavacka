@@ -110,7 +110,7 @@ public class CreateListFragment extends Fragment {
         mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
 
         mLManager = new LinearLayoutManager(getContext());
-        mAdapter = new ZastupceAdapter(mZastupceArr, 3); // Melo by se nastavit podle poctu parametru poznavacky
+        mAdapter = new ZastupceAdapter(mZastupceArr, 3); // POCET
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
