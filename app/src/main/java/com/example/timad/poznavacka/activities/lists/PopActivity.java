@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import com.example.timad.poznavacka.R;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class PopActivity extends Activity implements AdapterView.OnItemSelectedListener {
 
@@ -25,6 +26,8 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
 
     static String languageURL;
     static ArrayList<String> userScientificClassification;
+    static ArrayList<String> reversedUserScientificClassification;
+    static int userParametersCount = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +37,8 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
         DONEButton = findViewById(R.id.PopDONEButton);
 
         userScientificClassification = new ArrayList<>();
-        languageURL = "cs";
+        languageURL = "en";
+        userParametersCount = 3; //REPLACE with number of params selected by user
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -64,8 +68,12 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         //getting the scientific classification selected by the user
-        userScientificClassification.add("Čeleď");
-        userScientificClassification.add("Kmen");
+        //needs to be added from top to bottom
+        /*userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
+        userScientificClassification.add("Čeleď");*/
+
+        reversedUserScientificClassification = userScientificClassification;
+        Collections.reverse(reversedUserScientificClassification);
 
         //getting the language of wiki
         Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);

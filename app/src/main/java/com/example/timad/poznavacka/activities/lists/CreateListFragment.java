@@ -75,6 +75,8 @@ public class CreateListFragment extends Fragment {
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
 
+    private int parameters;
+
 
     @Nullable
     @Override
@@ -84,6 +86,7 @@ public class CreateListFragment extends Fragment {
         btnCREATE = view.findViewById(R.id.createButton);
         btnSAVE = view.findViewById(R.id.saveButton);
         progressBar = view.findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.INVISIBLE);
         userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
         userInputTitle = view.findViewById(R.id.userInputTitle);
         autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
@@ -110,10 +113,8 @@ public class CreateListFragment extends Fragment {
         mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
 
         mLManager = new LinearLayoutManager(getContext());
-        mAdapter = new ZastupceAdapter(mZastupceArr, 3); // POCET
+        //mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount); // Melo by se nastavit podle poctu parametru poznavacky --> PopActivity
 
-        mRecyclerView.setLayoutManager(mLManager);
-        mRecyclerView.setAdapter(mAdapter);
 
 
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -122,6 +123,7 @@ public class CreateListFragment extends Fragment {
                 if (isChecked) {
                     switchPressedOnce = true;
                     autoImportIsChecked = true;
+                    //mAdapter.setmParameters(PopActivity.userParametersCount);
                     Intent intent = new Intent(getContext(), PopActivity.class);
                     startActivity(intent);
                 } else {
@@ -136,7 +138,17 @@ public class CreateListFragment extends Fragment {
 
                 Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
                 final WikiSearch wikiSearch = new WikiSearch(CreateListFragment.this);
-                //testing
+
+                //recyclerView getting user parameters into account
+                if (autoImportIsChecked) {
+                    mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount);
+                    parameters = PopActivity.userParametersCount;
+                } else {
+                    mAdapter = new ZastupceAdapter(mZastupceArr, 1);
+                    parameters = 1;
+                }
+                mRecyclerView.setLayoutManager(mLManager);
+                mRecyclerView.setAdapter(mAdapter);
 
                 wikiSearch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 //wikiSearch.execute();
@@ -189,6 +201,7 @@ public class CreateListFragment extends Fragment {
 
 
     //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
+    //pridat if pokud je potreba jen obrazek
     private static class WikiSearch extends AsyncTask<Void, Void, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
@@ -213,6 +226,7 @@ public class CreateListFragment extends Fragment {
 
                 Document doc = null;
                 try {
+                    //doc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                     doc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -221,10 +235,13 @@ public class CreateListFragment extends Fragment {
                 }
 
                 ArrayList<String> scientificClasses = new ArrayList<>();
-                ArrayList<String[]> newData = new ArrayList<>();
+                ArrayList<String> newData = new ArrayList<>();
                 String[] dataPair = new String[2];
                 int dataCounter = 0;
                 boolean scientificClassificationDetected = false;
+                boolean imageDetected = false;
+                int classificationPointer = 0;
+                int trCounter = 0;
 
                 Element infoBox = null;
                 if (doc != null) {
@@ -233,17 +250,35 @@ public class CreateListFragment extends Fragment {
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
-                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked) {
+                        trCounter++;
+                        Log.d(TAG, "current tr = " + trCounter);
+                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(PopActivity.userScientificClassification.size() <= classificationPointer + 1)) {
                             dataPair = tr.wholeText().split("\n", 2);
                             for (int i = 0; i < 2; i++) {
                                 dataPair[i] = dataPair[i].trim();
-                                Log.d(TAG, dataPair[i]);
+                                Log.d(TAG, "found " + dataPair[i]);
                             }
 
-                            if (PopActivity.userScientificClassification.contains(dataPair[0])) {
-                                newData.add(dataPair);
-                            }
+                            if (PopActivity.userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
 
+                                newData.add(dataPair[1]); //adding the specific classification
+                                Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                                classificationPointer++;
+
+                            } else if (PopActivity.userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
+                                Log.d(TAG, "userScientificClassification contains " + dataPair[0]);
+                                int tempPointer = classificationPointer;
+                                classificationPointer = PopActivity.userScientificClassification.indexOf(dataPair[0]);
+                                for (; tempPointer < classificationPointer; tempPointer++) {
+                                    newData.add("placeholder");
+                                    Log.d(TAG, "adding new data to newData = placeholder");
+                                }
+
+
+                                classificationPointer++;
+                                newData.add(dataPair[1]);
+                                Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                            }
 
 
                             scientificClassificationDetected = true;
@@ -252,28 +287,52 @@ public class CreateListFragment extends Fragment {
                         }
 
                         //get the image
-                        else {
-                            if (tr.getAllElements().hasClass("image")) {
-                                String imageURLtoBeFetchedFrom = tr.select("img").first().absUrl("src");
-                                Log.d(TAG, "IMAGEURL  ===   " + imageURLtoBeFetchedFrom);
-                                //Document imgDoc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                        else if (!imageDetected) {
+                            Log.d(TAG, "ELSEimage");
+                            Log.d(TAG, tr.getAllElements().toString());
+                            if (tr.getAllElements().hasAttr("data-file-type")) {
+                                Log.d(TAG, "has data-file-type = " + tr.getElementsByAttribute("data-file-type").select("[data-file-type]")); //HERE LEFT OFF - get value of data-file-type attr
+                                if (tr.getElementsByAttribute("data-file-type").val().contentEquals("bitmap")) {
+                                    Log.d(TAG, "has class image");
+                                    String imageURLtoBeFetchedFrom = tr.selectFirst("img").absUrl("src");
+                                    Log.d(TAG, "IMAGEURL  ===   " + imageURLtoBeFetchedFrom);
+                                    //Document imgDoc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+
+
+                                    imageDetected = true;
+                                }
+
                             }
                         }
                     }
+                    Log.d(TAG, "stopped scraping");
+                    if (fragment.loadingRepresentative) {
+                        Log.d(TAG, "loading representative is true");
+                    } else {
+                        Log.d(TAG, "loading representative is false");
+                    }
+                    newData.add(representative);
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
                         //fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1])); // EDITED
+                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, newData));
+                        Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
                     } else {
                         //loading classification
                         //fragment.mZastupceArr.add(new Zastupce("", PopActivity.userScientificClassification.get(0), PopActivity.userScientificClassification.get(1))); // EDITED
-                        Log.d(TAG, newData.size() + "\n\n");
+                        PopActivity.reversedUserScientificClassification.add(0, "");
+                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, PopActivity.reversedUserScientificClassification));
+                        Log.d(TAG, "newData size for classification= " + newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
                 } else {
+                    //add an empty fragment only with representative
+
+                    fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, newData));
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
                 new Thread(new Runnable() {
@@ -296,8 +355,8 @@ public class CreateListFragment extends Fragment {
         protected void onPreExecute() {
             super.onPreExecute();
             CreateListFragment fragment = fragmentWeakReference.get();
-            /*fragment.progressBar.setVisibility(View.VISIBLE);
-            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));*/
+            fragment.progressBar.setVisibility(View.VISIBLE);
+            fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));
         }
 
         @Override

@@ -1,29 +1,19 @@
 package com.example.timad.poznavacka;
 
-import android.content.Context;
-import android.graphics.Color;
 import android.text.Editable;
-import android.text.Layout;
 import android.text.TextWatcher;
-import android.util.Log;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
-
-import org.xmlpull.v1.XmlPullParser;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
     private static ArrayList<Zastupce> mZastupceList;
@@ -58,7 +48,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     public void afterTextChanged(Editable editable) {   }
                 });
             }
-            zastupceImage = (ImageView) itemView.findViewById(mIds[mParameters]);
+            zastupceImage = itemView.findViewById(mIds[mParameters]);
 
             /*for (int i = 0; i < mParameters; i++){
                 // https://stackoverflow.com/questions/31844373/saving-edittext-content-in-recyclerview
@@ -76,6 +66,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
         for(int i = 0; i < mParameters; i++){
             EditText editT = new EditText(parent.getContext());
+            editT.setTextSize(15);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.MATCH_PARENT,
@@ -127,8 +118,18 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         //holder.zastupceImage. // IMG
     }
 
+    public int getmParameters() {
+        return mParameters;
+    }
+
+    public void setmParameters(int mParameters) {
+        ZastupceAdapter.mParameters = mParameters;
+    }
+
     @Override
     public int getItemCount() {
         return mZastupceList.size();
     }
 }
+
+
