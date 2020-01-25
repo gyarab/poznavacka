@@ -22,6 +22,8 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -30,6 +32,7 @@ import org.jsoup.select.Elements;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -108,9 +111,13 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
-        /*mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce(3, "Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
+        /*ArrayList<String> arrZ = new ArrayList<String>();
+        arrZ.add("Nazev");
+        arrZ.add("Druh");
+        arrZ.add("Kmen");
+        mZastupceArr.add(new Zastupce(3, arrZ));
+        mZastupceArr.add(new Zastupce(3, arrZ));
+        mZastupceArr.add(new Zastupce(3, arrZ));*/
 
         mLManager = new LinearLayoutManager(getContext());
         //mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount); // Melo by se nastavit podle poctu parametru poznavacky --> PopActivity
