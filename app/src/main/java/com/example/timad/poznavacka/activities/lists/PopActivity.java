@@ -69,8 +69,8 @@ public class PopActivity extends Activity implements AdapterView.OnItemSelectedL
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         //getting the scientific classification selected by the user
         //needs to be added from top to bottom
-        /*userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
-        userScientificClassification.add("Čeleď");*/
+        userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
+        userScientificClassification.add("Čeleď");
 
         reversedUserScientificClassification = userScientificClassification;
         Collections.reverse(reversedUserScientificClassification);

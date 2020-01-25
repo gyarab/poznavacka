@@ -55,6 +55,7 @@ dependencies {
     implementation 'com.makeramen:roundedimageview:2.3.0'
     implementation 'org.jsoup:jsoup:1.12.1'
     implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'com.artjimlop:altex-image-downloader:0.0.4'
 }
 
 apply plugin: 'com.google.gms.google-services'

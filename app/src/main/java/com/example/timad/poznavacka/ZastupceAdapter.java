@@ -16,6 +16,8 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
+    private static String TAG = "ZastupceAdapter";
+
     private static ArrayList<Zastupce> mZastupceList;
     private static int mParameters;
     private static int[] mIds;
@@ -115,7 +117,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
             holder.editTArr.get(i).setText(currentZastupce.getParameter(i));
         }
 
-        //holder.zastupceImage. // IMG
+        holder.zastupceImage.setImageDrawable(currentZastupce.getImage()); // IMG
     }
 
     public int getmParameters() {

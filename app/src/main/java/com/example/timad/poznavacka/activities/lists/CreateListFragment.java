@@ -1,6 +1,10 @@
 package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -22,8 +26,6 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -31,12 +33,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Objects;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -111,17 +116,12 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
-        /*ArrayList<String> arrZ = new ArrayList<String>();
-        arrZ.add("Nazev");
-        arrZ.add("Druh");
-        arrZ.add("Kmen");
-        mZastupceArr.add(new Zastupce(3, arrZ));
-        mZastupceArr.add(new Zastupce(3, arrZ));
-        mZastupceArr.add(new Zastupce(3, arrZ));*/
+        /*mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));
+        mZastupceArr.add(new Zastupce(3, "Plejtvak", "Ploutvoviti", "Ryba"));
+        mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
 
         mLManager = new LinearLayoutManager(getContext());
         //mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount); // Melo by se nastavit podle poctu parametru poznavacky --> PopActivity
-
 
 
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -244,6 +244,7 @@ public class CreateListFragment extends Fragment {
                 ArrayList<String> scientificClasses = new ArrayList<>();
                 ArrayList<String> newData = new ArrayList<>();
                 String[] dataPair = new String[2];
+                Drawable img = null;
                 int dataCounter = 0;
                 boolean scientificClassificationDetected = false;
                 boolean imageDetected = false;
@@ -296,16 +297,21 @@ public class CreateListFragment extends Fragment {
                         //get the image
                         else if (!imageDetected) {
                             Log.d(TAG, "ELSEimage");
-                            Log.d(TAG, tr.getAllElements().toString());
                             if (tr.getAllElements().hasAttr("data-file-type")) {
-                                Log.d(TAG, "has data-file-type = " + tr.getElementsByAttribute("data-file-type").select("[data-file-type]")); //HERE LEFT OFF - get value of data-file-type attr
-                                if (tr.getElementsByAttribute("data-file-type").val().contentEquals("bitmap")) {
+                                Elements imgElement = tr.getElementsByAttribute("data-file-type");
+                                Log.d(TAG, "has data-file-type src =  " + imgElement.attr("src"));
+                                Log.d(TAG, "has type = " + imgElement.attr("data-file-type"));
+                                if (imgElement.attr("data-file-type").equals("bitmap")) {
                                     Log.d(TAG, "has class image");
-                                    String imageURLtoBeFetchedFrom = tr.selectFirst("img").absUrl("src");
-                                    Log.d(TAG, "IMAGEURL  ===   " + imageURLtoBeFetchedFrom);
-                                    //Document imgDoc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                                    String imageURL = tr.selectFirst("img").absUrl("src");
+                                    Log.d(TAG, "IMAGEURL  ===   " + imageURL);
 
-
+                                    try {
+                                        img = drawable_from_url(imageURL);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                    Log.d(TAG, "image downloaded");
                                     imageDetected = true;
                                 }
 
@@ -325,7 +331,7 @@ public class CreateListFragment extends Fragment {
                     if (fragment.loadingRepresentative) {
                         //loading representative
                         //fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1])); // EDITED
-                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, newData));
+                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, img, newData));
                         Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
                     } else {
@@ -367,6 +373,11 @@ public class CreateListFragment extends Fragment {
         }
 
         @Override
+        protected void onProgressUpdate(Void... values) {
+            super.onProgressUpdate(values);
+        }
+
+        @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             CreateListFragment fragment = fragmentWeakReference.get();
@@ -379,15 +390,20 @@ public class CreateListFragment extends Fragment {
         protected void onCancelled() {
             super.onCancelled();
         }
-    }
 
-    private static class WikiImage extends AsyncTask<String, Void, Void> {
+        Drawable drawable_from_url(String url) throws java.io.IOException {
+            CreateListFragment fragment = fragmentWeakReference.get();
 
-        @Override
-        protected Void doInBackground(String... strings) {
-            return null;
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-agent", "Mozilla/4.0");
+
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
         }
     }
+
 
 }
 
