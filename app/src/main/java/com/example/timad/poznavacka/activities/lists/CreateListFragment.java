@@ -335,6 +335,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             //misto testInput -> representatives
             ArrayList<String> testInput = new ArrayList<>();
             testInput.add("Pes domácí");
+            testInput.add("Pes domácí");
             testInput.add("Koira");
             testInput.add("Tasemnice bezbranná");
             testInput.add("Lýtková kost");
@@ -377,7 +378,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Log.d(TAG, "current tr = " + trCounter);
                         if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer + 1)) {
                             dataPair = tr.wholeText().split("\n", 2);
-                            if (dataPair.length == 1) { //detected table that doesn't contain any useful info
+                            if (dataPair.length == 1) { //detected wrong table
                                 Log.d(TAG, "different table");
                                 for (int i = 0; i < userParametersCount - 1; i++) {
                                     newData.add(""); //LEFT OFF
@@ -446,6 +447,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
+                        if (classificationPointer == 0) { //detected wrong table that doesn't contain any useful info
+                            for (int i = 0; i < userParametersCount - 1; i++) {
+                                newData.add("");
+                            }
+                        }
                         if (img == null) {
                             //get only the image
                             try {
