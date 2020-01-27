@@ -390,6 +390,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 Log.d(TAG, "found " + dataPair[i]);
                             }
 
+                            Log.d(TAG, "classPointer = " + classificationPointer);
+                            Log.d(TAG, userScientificClassification.get(classificationPointer) + " equals = " + dataPair[0]);
+                            //HERE LEFT OFF, userScientificClassification.get(0) returns Čeleď, or "" when it should be Kmen
+
                             if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
                                 newData.add(dataPair[1]); //adding the specific classification
                                 Log.d(TAG, "adding new data to newData = " + dataPair[1]);
