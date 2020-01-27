@@ -41,10 +41,10 @@ public class PopActivity extends Activity {
         getWindow().setLayout((int) (width * 0.8), (int) (height * 0.8));
 
         //getting the scientific classification selected by the user
-        //needs to be added from top to bottom
+        //needs to be added from broad to specific
         userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
         userScientificClassification.add("Čeleď");
-        userParametersCount = 3; //REPLACE with number of params selected by user
+        userParametersCount = 3; //REPLACE with number of params selected by user + 1
 
         //DONEButton
         DONEButton.setOnClickListener(new View.OnClickListener() {

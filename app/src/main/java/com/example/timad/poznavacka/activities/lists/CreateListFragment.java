@@ -343,6 +343,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
             for (String representative :
                     testInput) {
+                Log.d(TAG, "------------------------------");
+                Log.d(TAG, "current representative = " + representative);
                 String searchText = representative.replace(" ", "_");
 
                 Document doc = null;
@@ -375,6 +377,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Log.d(TAG, "current tr = " + trCounter);
                         if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer + 1)) {
                             dataPair = tr.wholeText().split("\n", 2);
+                            if (dataPair.length == 1) { //detected table that doesn't contain any useful info
+                                Log.d(TAG, "different table");
+                                for (int i = 0; i < userParametersCount - 1; i++) {
+                                    newData.add(""); //LEFT OFF
+                                }
+                                break;
+                            }
                             for (int i = 0; i < 2; i++) {
                                 dataPair[i] = dataPair[i].trim();
                                 Log.d(TAG, "found " + dataPair[i]);
@@ -460,15 +469,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     } else {
                         //loading classification
-                        //fragment.mZastupceArr.add(new Zastupce("", userScientificClassification.get(0), userScientificClassification.get(1))); // EDITED
                         reversedUserScientificClassification.add(0, "");
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
                         Log.d(TAG, "newData size for classification= " + newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
-
                 } else {
-                    //add an empty fragment only with representative
+                    //add an empty only with representative
                     fragment.mZastupceArr.add(new Zastupce(userParametersCount, representative));
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
