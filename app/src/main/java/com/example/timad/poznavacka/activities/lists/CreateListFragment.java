@@ -129,7 +129,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         mZastupceArr = new ArrayList<>();
 
         mLManager = new LinearLayoutManager(getContext());
-        //mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount); // Melo by se nastavit podle poctu parametru poznavacky --> PopActivity
 
         //switch
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -149,7 +148,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
         //spinner
         languageURL = "en";
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getContext(), R.array.language_array, R.layout.spinner_item);
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
         languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
@@ -183,9 +182,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 if (autoImportIsChecked) {
                     mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
                     parameters = userParametersCount;
+                    loadingRepresentative = false;
                 } else {
                     mAdapter = new ZastupceAdapter(mZastupceArr, 1);
                     parameters = 1;
+                    loadingRepresentative = true;
                 }
                 mRecyclerView.setLayoutManager(mLManager);
                 mRecyclerView.setAdapter(mAdapter);
@@ -318,10 +319,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     }
 
 
-
-
     //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
-    private static class WikiSearch extends AsyncTask<Void, Integer, Void> {
+    private static class WikiSearch extends AsyncTask<Void, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
 
@@ -337,9 +336,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             ArrayList<String> testInput = new ArrayList<>();
             testInput.add("Pes domácí");
             testInput.add("Koira");
-
-
-            //LEFT OFF, CHECK FOR INTERNET CONNECTION, ABORT IF NONE IS DETECTED, IN LINE if (doc.head().hasText()) { ADD IF DOC!NUL, ADD EMPTY ZASTUPCE
+            testInput.add("Tasemnice bezbranná");
+            testInput.add("Lýtková kost");
+            testInput.add("Žula");
 
 
             for (String representative :
@@ -350,29 +349,28 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 try {
                     doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
+                    //not connected to internet
                     e.printStackTrace();
-                    Log.d(TAG, "couldn't connect to the site");
-                    publishProgress(0);
-                    break;
-                    //fragment.mZastupceArr.add(new Zastupce("Error loading " + representative, "", ""));  // EDITED
+                    Log.d(TAG, "no wiki");
+                    publishProgress(representative);
                 }
 
-                ArrayList<String> scientificClasses = new ArrayList<>();
                 ArrayList<String> newData = new ArrayList<>();
-                String[] dataPair = new String[2];
+                String[] dataPair;
                 Drawable img = null;
-                int dataCounter = 0;
                 boolean scientificClassificationDetected = false;
                 boolean imageDetected = false;
                 int classificationPointer = 0;
                 int trCounter = 0;
-
                 Element infoBox = null;
-                if (doc.head().hasText()) {
+
+                if (doc != null && doc.head().hasText()) {
+
                     infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
+
                         trCounter++;
                         Log.d(TAG, "current tr = " + trCounter);
                         if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer + 1)) {
@@ -383,7 +381,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             }
 
                             if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
-
                                 newData.add(dataPair[1]); //adding the specific classification
                                 Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                                 classificationPointer++;
@@ -393,8 +390,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 int tempPointer = classificationPointer;
                                 classificationPointer = userScientificClassification.indexOf(dataPair[0]);
                                 for (; tempPointer < classificationPointer; tempPointer++) {
-                                    newData.add("placeholder");
-                                    Log.d(TAG, "adding new data to newData = placeholder");
+                                    newData.add("");
+                                    Log.d(TAG, "adding new data to newData = empty (not detected)");
                                 }
 
 
@@ -411,16 +408,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                         //get the image
                         else if (!imageDetected) {
-                            Log.d(TAG, "ELSEimage");
                             if (tr.getAllElements().hasAttr("data-file-type")) {
                                 Elements imgElement = tr.getElementsByAttribute("data-file-type");
-                                Log.d(TAG, "has data-file-type src =  " + imgElement.attr("src"));
-                                Log.d(TAG, "has type = " + imgElement.attr("data-file-type"));
                                 if (imgElement.attr("data-file-type").equals("bitmap")) {
-                                    Log.d(TAG, "has class image");
                                     String imageURL = tr.selectFirst("img").absUrl("src");
                                     Log.d(TAG, "IMAGEURL  ===   " + imageURL);
-
                                     try {
                                         img = drawable_from_url(imageURL);
                                     } catch (IOException e) {
@@ -445,7 +437,24 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
-                        //fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1])); // EDITED
+                        if (img == null) {
+                            //get only the image
+                            try {
+                                Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
+                                if (imgElement != null) {
+                                    String imageURL = imgElement.absUrl("src");
+                                    Log.d(TAG, "getting only image - URL = " + imageURL);
+                                    try {
+                                        img = drawable_from_url(imageURL);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
+                                continue;
+                            }
+                        }
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, newData));
                         Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
@@ -457,26 +466,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Log.d(TAG, "newData size for classification= " + newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
+
                 } else {
                     //add an empty fragment only with representative
-
-                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, representative));
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
-/*                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        // Stuff that updates the UI
-                        fragment.mAdapter.notifyDataSetChanged();
-                    }
-                });*/
-                publishProgress(1);
-
+                publishProgress("");
             }
-
-
             return null;
         }
 
@@ -489,15 +486,16 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values) {
+        protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
             CreateListFragment fragment = fragmentWeakReference.get();
-            if (values[0] == 0) {
-                Toast.makeText(fragment.getActivity(), "Connection error", Toast.LENGTH_SHORT).show();
+            if (!values[0].equals("")) {
+                Toast.makeText(fragment.getActivity(), "No Wiki for " + values[0], Toast.LENGTH_SHORT).show();
             } else {
                 fragment.mAdapter.notifyDataSetChanged();
             }
         }
+
 
         @Override
         protected void onPostExecute(Void aVoid) {
@@ -513,7 +511,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             super.onCancelled();
         }
 
-        Drawable drawable_from_url(String url) throws java.io.IOException {
+        public Drawable drawable_from_url(String url) throws java.io.IOException {
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -524,6 +522,18 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             Bitmap bitmap = BitmapFactory.decodeStream(input);
             return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
         }
+
+
+/*        public boolean isInternetAvailable() {
+            try {
+                InetAddress ipAddr = InetAddress.getByName("google.com");
+                //You can replace it with your name
+                return !ipAddr.equals("");
+
+            } catch (Exception e) {
+                return false;
+            }
+        }*/
     }
 
 

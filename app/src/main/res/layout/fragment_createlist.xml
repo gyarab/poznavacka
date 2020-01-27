@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
     <ScrollView
@@ -61,29 +61,30 @@
                 android:textColor="@color/colorWhite"
                 android:textSize="15sp" />
 
+
             <Switch
                 android:id="@+id/autoImportSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/textUnderUserInput"
                 android:layout_alignParentStart="true"
-                android:layout_marginStart="10dp"
-                android:layout_marginTop="30dp"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="35dp"
+                android:foregroundGravity="center_vertical"
+                android:gravity="center_vertical"
                 android:switchPadding="5dp"
                 android:text="@string/autoRadDruhSwitch"
                 android:textColor="@color/colorWhite" />
-
 
             <Spinner
                 android:id="@+id/languageSpinner"
                 android:layout_width="150dp"
                 android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/autoImportSwitch"
+                android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_marginStart="25dp"
-                android:layout_marginTop="2dp"
-                android:layout_marginEnd="35dp"
-                android:layout_toEndOf="@+id/autoImportSwitch" />
+                android:layout_marginTop="54dp"
+                android:layout_marginEnd="17dp" />
 
             <Button
                 android:id="@+id/createButton"

@@ -31,8 +31,6 @@ public class PopActivity extends Activity {
         DONEButton = findViewById(R.id.PopDONEButton);
         userScientificClassification = new ArrayList<>();
 
-        userParametersCount = 3; //REPLACE with number of params selected by user
-
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
 
@@ -42,6 +40,12 @@ public class PopActivity extends Activity {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().setLayout((int) (width * 0.8), (int) (height * 0.8));
 
+        //getting the scientific classification selected by the user
+        //needs to be added from top to bottom
+        userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
+        userScientificClassification.add("Čeleď");
+        userParametersCount = 3; //REPLACE with number of params selected by user
+
         //DONEButton
         DONEButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -49,11 +53,6 @@ public class PopActivity extends Activity {
                 finish();
             }
         });
-
-        //getting the scientific classification selected by the user
-        //needs to be added from top to bottom
-        userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
-        userScientificClassification.add("Čeleď");
 
         reversedUserScientificClassification = userScientificClassification;
         Collections.reverse(reversedUserScientificClassification);
