@@ -376,12 +376,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                         trCounter++;
                         Log.d(TAG, "current tr = " + trCounter);
-                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer + 1)) {
+                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                             dataPair = tr.wholeText().split("\n", 2);
                             if (dataPair.length == 1) { //detected wrong table
                                 Log.d(TAG, "different table");
                                 for (int i = 0; i < userParametersCount - 1; i++) {
-                                    newData.add(""); //LEFT OFF
+                                    newData.add("");
                                 }
                                 break;
                             }
@@ -391,8 +391,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             }
 
                             Log.d(TAG, "classPointer = " + classificationPointer);
-                            Log.d(TAG, userScientificClassification.get(classificationPointer) + " equals = " + dataPair[0]);
-                            //HERE LEFT OFF, userScientificClassification.get(0) returns Čeleď, or "" when it should be Kmen
+                            Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
+                            Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
 
                             if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
                                 newData.add(dataPair[1]); //adding the specific classification

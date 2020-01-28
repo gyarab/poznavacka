@@ -30,6 +30,7 @@ public class PopActivity extends Activity {
         setContentView(R.layout.activity_pop);
         DONEButton = findViewById(R.id.PopDONEButton);
         userScientificClassification = new ArrayList<>();
+        reversedUserScientificClassification = new ArrayList<>();
 
         DisplayMetrics dm = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(dm);
@@ -43,6 +44,7 @@ public class PopActivity extends Activity {
         //getting the scientific classification selected by the user
         //needs to be added from broad to specific
         userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
+        userScientificClassification.add("Třída");
         userScientificClassification.add("Čeleď");
         userParametersCount = 3; //REPLACE with number of params selected by user + 1
 
@@ -54,7 +56,7 @@ public class PopActivity extends Activity {
             }
         });
 
-        reversedUserScientificClassification = userScientificClassification;
+        reversedUserScientificClassification.addAll(userScientificClassification);
         Collections.reverse(reversedUserScientificClassification);
 
     }
