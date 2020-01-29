@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka;
 
+import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -64,19 +65,43 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
     private View createCardView(ViewGroup parent){
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
         LinearLayout ll = (LinearLayout) cardView.getChildAt(0);
-        ll.setWeightSum(mParameters + 1);
+        Context context = parent.getContext();
 
-        for(int i = 0; i < mParameters; i++){
-            EditText editT = new EditText(parent.getContext());
-            editT.setTextSize(15);
-            editT.setLayoutParams(new LinearLayout.LayoutParams(
+        int length = 4; // Set number of edit text's in row CHANGE
+        if(mParameters < length + 1) {
+            ll.setWeightSum(mParameters + 1);
+            createEditTexts(context, ll, mParameters);
+        } else {
+            int count = mParameters / length + 1; // no of cols
+
+            LinearLayout vert = new LinearLayout(context);
+            vert.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    1f
+                    LinearLayout.LayoutParams.MATCH_PARENT
             ));
-            editT.setId(mIds[i]);
-            //Log.i("GenerateId", "ET" + i + ": " +Integer.toString(editT.getId()));
-            ll.addView(editT);
+            vert.setOrientation(LinearLayout.VERTICAL);
+            vert.setWeightSum(count);
+            ll.addView(vert);
+
+            for (int i = 0; i < count; i++){
+                LinearLayout horiz = new LinearLayout(context);
+                horiz.setLayoutParams(new LinearLayout.LayoutParams(
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        LinearLayout.LayoutParams.MATCH_PARENT
+                ));
+                horiz.setOrientation(LinearLayout.HORIZONTAL);
+                vert.addView(horiz);
+
+                int count2; // no of edit texts in 1 row
+                if((i + 1) * length > mParameters){
+                    count2 = (i * length) - mParameters;
+                } else {
+                    count2 = (i * length) - ((i + 1) * length);
+                }
+                horiz.setWeightSum(count2);
+
+                createEditTexts(context, horiz, count2);
+            }
         }
 
         ImageView imgV = new ImageView(parent.getContext());
@@ -90,6 +115,21 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         ll.addView(imgV);
 
         return cardView;
+    }
+
+    private void createEditTexts(Context context, LinearLayout ll, int count){
+        for(int i = 0; i < count; i++){
+            EditText editT = new EditText(context);
+            editT.setTextSize(15);
+            editT.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1f
+            ));
+            editT.setId(mIds[i]);
+            //Log.i("GenerateId", "ET" + i + ": " +Integer.toString(editT.getId()));
+            ll.addView(editT);
+        }
     }
 
     @NonNull

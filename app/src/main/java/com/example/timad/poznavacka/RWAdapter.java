@@ -22,6 +22,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onShareClick(int position);
         void onDeleteClick(int position);
     }
 
@@ -32,6 +33,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public static class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder{
         public TextView textView1;
         public TextView textView2;
+        public ImageView shareImg;
         public ImageView deleteImg;
         public CardView cView;
 
@@ -39,6 +41,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
             super(itemView);
             textView1 = itemView.findViewById(R.id.itemText1);
             textView2 = itemView.findViewById(R.id.itemText2);
+            shareImg = itemView.findViewById(R.id.img_share);
             deleteImg = itemView.findViewById(R.id.img_delete);
             cView = itemView.findViewById(R.id.cardView1);
 
@@ -49,6 +52,18 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
                             listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            shareImg.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onShareClick(position);
                         }
                     }
                 }
@@ -83,10 +98,10 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     @Override
     public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
-        holder.textView1.setText(currentPoznavackaInfo.getText1());
-        holder.textView2.setText(currentPoznavackaInfo.getText2());
+        holder.textView1.setText(currentPoznavackaInfo.getName());
+        holder.textView2.setText(currentPoznavackaInfo.getInfo());
 
-        if(MyListsFragment.mActivePoznavackaInfo==position){
+        if(MyListsFragment.mPositionOfActivePoznavackaInfo ==position){
             holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));
         }else{
             holder.cView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));

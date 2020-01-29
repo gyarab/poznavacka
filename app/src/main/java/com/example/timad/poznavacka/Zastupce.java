@@ -71,4 +71,11 @@ public class Zastupce {
         this.image = image;
     }
 
+    public String toString(){
+        String s = Integer.toString(parameters) + ": ";
+        for (int i = 0; i < parameters; i ++){
+            s += infoArr.get(i) + ", ";
+        }
+        return s;
+    }
 }

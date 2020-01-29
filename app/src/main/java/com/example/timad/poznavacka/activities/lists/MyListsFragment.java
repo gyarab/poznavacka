@@ -1,15 +1,20 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,7 +30,7 @@ public class MyListsFragment extends Fragment {
     private RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<PoznavackaInfo> mPoznavackaInfoArr;
-    public static int mActivePoznavackaInfo;
+    public static int mPositionOfActivePoznavackaInfo;
 
     @Nullable
     @Override
@@ -49,19 +54,73 @@ public class MyListsFragment extends Fragment {
                 /* udělej něco s tim
                 mAdaper.notify... */
 
-                mActivePoznavackaInfo = position;
+                mPositionOfActivePoznavackaInfo = position;
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onDeleteClick(int position) {
-                removeItem(position);
-                if(position <= mActivePoznavackaInfo){
-                    mActivePoznavackaInfo -= 1;
-                } else if(mActivePoznavackaInfo > mAdapter.getItemCount()){
-                    mActivePoznavackaInfo = 0;
-                }
-                mAdapter.notifyDataSetChanged();
+            public void onShareClick(final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.app_name);
+                builder.setIcon(R.drawable.ic_share_black_24dp);
+                builder.setMessage("Do you really want to share " + mPoznavackaInfoArr.get(position).getName() + "?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Sdilet poznavacku TODO
+                        Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
+                        toast.show();
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
+                layoutParams.weight = 20;
+                btnPositive.setLayoutParams(layoutParams);
+                btnNegative.setLayoutParams(layoutParams);
+            }
+
+            @Override
+            public void onDeleteClick(final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.app_name);
+                builder.setIcon(R.drawable.ic_delete);
+                builder.setMessage("Do you really want to delete " + mPoznavackaInfoArr.get(position).getName() + "?");
+                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        // Vymazani ze zarizeni TODO
+                        removeItem(position);
+                        if(position <= mPositionOfActivePoznavackaInfo){
+                            mPositionOfActivePoznavackaInfo -= 1;
+                        }
+                        mAdapter.notifyDataSetChanged();
+                        dialog.dismiss();
+                    }
+                });
+                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+                Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
+                Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
+                layoutParams.weight = 20;
+                btnPositive.setLayoutParams(layoutParams);
+                btnNegative.setLayoutParams(layoutParams);
             }
         });
 

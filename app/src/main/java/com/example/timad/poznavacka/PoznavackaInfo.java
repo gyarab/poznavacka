@@ -2,20 +2,20 @@ package com.example.timad.poznavacka;
 
 /** Polozka v seznamu poznavacek **/
 public class PoznavackaInfo {
-    private String text1;
-    private String text2;
+    private String name;
+    private String info;
 
-    public PoznavackaInfo(String text1, String text2){
-        this.text1 = text1;
-        this.text2 = text2;
+    public PoznavackaInfo(String name, String info){
+        this.name = name;
+        this.info = info;
     }
 
-    public String getText1(){
-        return text1;
+    public String getName(){
+        return name;
     }
 
-    public String getText2(){
-        return text2;
+    public String getInfo(){
+        return info;
     }
 
 }
