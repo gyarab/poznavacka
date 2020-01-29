@@ -77,8 +77,9 @@ public class PopActivity extends Activity {
         final PopActivity.WikiSearchClassification WikiSearchClassification = new PopActivity.WikiSearchClassification(PopActivity.this);
         WikiSearchClassification.execute();
 
+        //REPLACE with classific selected by user
         userScientificClassification.add("Říše");
-        userScientificClassification.add("Kmen");  //REPLACE with classific selected by user
+        userScientificClassification.add("Kmen");
         userScientificClassification.add("Třída");
         userScientificClassification.add("Řád");
         userScientificClassification.add("Čeleď");

@@ -14,13 +14,15 @@ public class Zastupce {
     private ArrayList<String> infoArr;
     private int parameters;
     private Drawable image; // obrazek
+    private String imageURL;
 
     //pridani azstupce
-    public Zastupce(int parameters, Drawable image, ArrayList<String> args) {
+    public Zastupce(int parameters, Drawable image, String imageURL, ArrayList<String> args) {
         infoArr = new ArrayList<>();
         this.parameters = parameters;
         infoArr.addAll(args);
         this.image = image; // obrazek
+        this.imageURL = imageURL;
     }
 
     //pridani classification
@@ -42,7 +44,7 @@ public class Zastupce {
     }
 
     //Pokud se pridava jen jmeno zastupce s obrazkem
-    public Zastupce(int parameters, Drawable image, String arg) { //parameters v konstruktoru nejsou potreba?
+    public Zastupce(int parameters, Drawable image, String imageURL, String arg) { //parameters v konstruktoru nejsou potreba?
         infoArr = new ArrayList<>();
         this.parameters = parameters;
         infoArr.add(arg);
@@ -51,6 +53,7 @@ public class Zastupce {
             infoArr.add("");
         }
         this.image = image;
+        this.imageURL = imageURL;
     }
 
     public String getParameter(int pos) {

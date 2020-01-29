@@ -378,6 +378,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 ArrayList<String> newData = new ArrayList<>();
                 String[] dataPair;
                 Drawable img = null;
+                String imageURL = "";
                 boolean scientificClassificationDetected = false;
                 boolean imageDetected = false;
                 int classificationPointer = 0;
@@ -446,7 +447,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             if (tr.getAllElements().hasAttr("data-file-type")) {
                                 Elements imgElement = tr.getElementsByAttribute("data-file-type");
                                 if (imgElement.attr("data-file-type").equals("bitmap")) {
-                                    String imageURL = tr.selectFirst("img").absUrl("src");
+                                    imageURL = tr.selectFirst("img").absUrl("src");
                                     Log.d(TAG, "IMAGEURL  ===   " + imageURL);
                                     try {
                                         img = drawable_from_url(imageURL);
@@ -482,7 +483,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             try {
                                 Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
                                 if (imgElement != null) {
-                                    String imageURL = imgElement.absUrl("src");
+                                    imageURL = imgElement.absUrl("src");
                                     Log.d(TAG, "getting only image - URL = " + imageURL);
                                     try {
                                         img = drawable_from_url(imageURL);
@@ -495,7 +496,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 continue;
                             }
                         }
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, newData));
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
                         Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
                     } else {

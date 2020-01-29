@@ -33,11 +33,10 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
         public ZastupceViewHolder(@NonNull View itemView) {
             super(itemView);
-            editTArr = new ArrayList<EditText>();
+            editTArr = new ArrayList<>();
             for (int x = 0; x < mParameters; x++){
                 final int pos = x;
                 editTArr.add(x, (EditText) itemView.findViewById(mIds[x]));
-
                 editTArr.get(x).addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {   }
