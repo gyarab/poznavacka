@@ -71,6 +71,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private ProgressBar progressBar;
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
+    static String exampleRepresentative;
     private EditText userDividngString;
     private Switch autoImportSwitch;
     private Spinner languageSpinner;
@@ -85,6 +86,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private FirebaseFirestore db; //for testing
 
     private ArrayList<String> representatives;
+    public ArrayList<String> exampleRepresentativeClassification;
     private String title;
     private String dividingString;
 
@@ -135,12 +137,24 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                String rawRepresentative = userInputRepresentatives.getText().toString();
                 if (isChecked) {
-                    switchPressedOnce = true;
-                    autoImportIsChecked = true;
-                    //mAdapter.setmParameters(userParametersCount);
-                    Intent intent = new Intent(getContext(), PopActivity.class);
-                    startActivity(intent);
+                    if (rawRepresentative.isEmpty()) {
+                        Toast.makeText(getContext(), "Please enter at least one representative..", Toast.LENGTH_LONG).show();
+                        autoImportSwitch.setChecked(false);
+                    } else {
+                        dividingString = userDividngString.getText().toString().trim();
+                        if (dividingString.isEmpty()) { //single
+                            exampleRepresentative = rawRepresentative.trim();
+                            exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
+                        } else { //multiple
+                            exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
+                        }
+                        switchPressedOnce = true;
+                        autoImportIsChecked = true;
+                        Intent intent = new Intent(getContext(), PopActivity.class);
+                        startActivity(intent);
+                    }
                 } else {
                     autoImportIsChecked = false;
                 }
@@ -177,7 +191,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
                 Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
-                final WikiSearch wikiSearch = new WikiSearch(CreateListFragment.this);
+                final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
 
                 //recyclerView getting user parameters into account
                 if (autoImportIsChecked) {
@@ -192,8 +206,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 mRecyclerView.setLayoutManager(mLManager);
                 mRecyclerView.setAdapter(mAdapter);
 
-                wikiSearch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                //wikiSearch.execute();
+                //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                WikiSearchRepresentatives.execute("");
                 /*} else {
                     Toast.makeText(getActivity(), "Enter all info", Toast.LENGTH_SHORT).show();
                 }*/
@@ -323,18 +337,21 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
     //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
-    private static class WikiSearch extends AsyncTask<Void, String, Void> {
+    private static class WikiSearchRepresentatives extends AsyncTask<String, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
 
-        WikiSearch(CreateListFragment context) {
+        WikiSearchRepresentatives(CreateListFragment context) {
             fragmentWeakReference = new WeakReference<>(context);
         }
 
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Void doInBackground(String... args) {
             final CreateListFragment fragment = fragmentWeakReference.get();
 
+            if (args[0].equals("classification")) {
+
+            }
             //misto testInput -> representatives
             ArrayList<String> testInput = new ArrayList<>();
             testInput.add("Pes domácí");
@@ -368,7 +385,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 boolean imageDetected = false;
                 int classificationPointer = 0;
                 int trCounter = 0;
-                Element infoBox = null;
+                Element infoBox;
 
                 if (doc != null && doc.head().hasText()) {
 
@@ -420,6 +437,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                             scientificClassificationDetected = true;
                         } else if (scientificClassificationDetected) {
+                            if (newData.size() < (userParametersCount - 1)) { //the last parameter was not detected
+
+                                newData.add("");
+                            }
                             break;
                         }
 
