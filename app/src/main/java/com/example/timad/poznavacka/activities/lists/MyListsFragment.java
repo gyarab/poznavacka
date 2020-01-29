@@ -26,6 +26,8 @@ import java.util.ArrayList;
 public class MyListsFragment extends Fragment {
     private static final String TAG = "ListsFragment";
 
+    public static PoznavackaInfo sActivePoznavacka = null;
+
     private RecyclerView mRecyclerView;
     private RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
@@ -55,6 +57,7 @@ public class MyListsFragment extends Fragment {
                 mAdaper.notify... */
 
                 mPositionOfActivePoznavackaInfo = position;
+                sActivePoznavacka = mPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
             }
 
@@ -101,6 +104,7 @@ public class MyListsFragment extends Fragment {
                         removeItem(position);
                         if(position <= mPositionOfActivePoznavackaInfo){
                             mPositionOfActivePoznavackaInfo -= 1;
+                            sActivePoznavacka = mPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
                         }
                         mAdapter.notifyDataSetChanged();
                         dialog.dismiss();
