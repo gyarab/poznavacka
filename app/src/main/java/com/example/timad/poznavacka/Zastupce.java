@@ -15,6 +15,7 @@ public class Zastupce {
     private int parameters;
     private Drawable image; // obrazek
 
+    //pridani azstupce
     public Zastupce(int parameters, Drawable image, ArrayList<String> args) {
         infoArr = new ArrayList<>();
         this.parameters = parameters;
@@ -22,23 +23,35 @@ public class Zastupce {
         this.image = image; // obrazek
     }
 
-    //pridani 1. nebo regulerniho zastupce
+    //pridani classification
     public Zastupce(int parameters, ArrayList<String> args) { //parameters v konstruktoru nejsou potreba?
         infoArr = new ArrayList<>();
         this.parameters = parameters;
         infoArr.addAll(args);
     }
 
-/*    //Pokud se pridava jen jmeno zastupce
+    //pokud se pridava jen jmeno zastupce
     public Zastupce(int parameters, String arg) { //parameters v konstruktoru nejsou potreba?
         infoArr = new ArrayList<>();
         this.parameters = parameters;
         infoArr.add(arg);
         //if needed to fill the infoArr with empty Strings
-        *//*for (int i = 1; i < parameters; i++) {
+        for (int i = 1; i < parameters; i++) {
             infoArr.add("");
-        }*//*
-    }*/
+        }
+    }
+
+    //Pokud se pridava jen jmeno zastupce s obrazkem
+    public Zastupce(int parameters, Drawable image, String arg) { //parameters v konstruktoru nejsou potreba?
+        infoArr = new ArrayList<>();
+        this.parameters = parameters;
+        infoArr.add(arg);
+        //if needed to fill the infoArr with empty Strings
+        for (int i = 1; i < parameters; i++) {
+            infoArr.add("");
+        }
+        this.image = image;
+    }
 
     public String getParameter(int pos) {
         Log.d(TAG, "v infoArr - " + infoArr.toString() + "  position wanted is - " + pos);

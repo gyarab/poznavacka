@@ -3,6 +3,7 @@ package com.example.timad.poznavacka.activities.lists;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -13,11 +14,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -39,7 +43,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.Objects;
 
@@ -48,8 +51,12 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import static com.example.timad.poznavacka.activities.lists.PopActivity.reversedUserScientificClassification;
+import static com.example.timad.poznavacka.activities.lists.PopActivity.userParametersCount;
+import static com.example.timad.poznavacka.activities.lists.PopActivity.userScientificClassification;
 
-public class CreateListFragment extends Fragment {
+
+public class CreateListFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String TAG = "CreateListFragment";
 
     private static final String KEY_TITLE = "title";
@@ -65,6 +72,9 @@ public class CreateListFragment extends Fragment {
     private EditText userInputRepresentatives;
     private EditText userDividngString;
     private Switch autoImportSwitch;
+    private Spinner languageSpinner;
+
+    static String languageURL;
 
     private boolean switchPressedOnce;
     private boolean loadingRepresentative;
@@ -99,6 +109,7 @@ public class CreateListFragment extends Fragment {
         userInputTitle = view.findViewById(R.id.userInputTitle);
         autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
         userDividngString = view.findViewById(R.id.dividingCharacter);
+        languageSpinner = view.findViewById(R.id.languageSpinner);
         db = FirebaseFirestore.getInstance(); //testing
         switchPressedOnce = false;
 
@@ -116,21 +127,17 @@ public class CreateListFragment extends Fragment {
         mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         mZastupceArr = new ArrayList<>();
-        /*mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));
-        mZastupceArr.add(new Zastupce(3, "Plejtvak", "Ploutvoviti", "Ryba"));
-        mZastupceArr.add(new Zastupce(3, "Nazev", "Druh", "Kmen"));*/
 
         mLManager = new LinearLayoutManager(getContext());
-        //mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount); // Melo by se nastavit podle poctu parametru poznavacky --> PopActivity
 
-
+        //switch
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     switchPressedOnce = true;
                     autoImportIsChecked = true;
-                    //mAdapter.setmParameters(PopActivity.userParametersCount);
+                    //mAdapter.setmParameters(userParametersCount);
                     Intent intent = new Intent(getContext(), PopActivity.class);
                     startActivity(intent);
                 } else {
@@ -139,26 +146,57 @@ public class CreateListFragment extends Fragment {
             }
         });
 
+        //spinner
+        languageURL = "en";
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languageSpinner.setAdapter(adapter);
+        languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
+        languageSpinner.setOnItemSelectedListener(this);
+
+        //create button
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                Toast.makeText(getActivity(), "CREATE BUTTON CLICKED", Toast.LENGTH_SHORT).show();
+
+               /* title = userInputTitle.getText().toString().trim();
+                dividingString = userDividngString.getText().toString().trim();
+                String rawRepresentatives = userInputRepresentatives.getText().toString();
+
+                if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty())) {
+                    representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
+                    //capitalizing the first letter
+                    if (!(languageURL.equals("ar") || languageURL.equals("zh") || languageURL.equals("kr"))) {
+                        for (int i = 0; i < representatives.size(); i++) {
+                            String withUpperLetter = representatives.get(i).substring(0,1).toUpperCase() + representatives.get(i).substring(1);
+                            representatives.add(i, withUpperLetter);
+                        }
+                    }*/
+
+
+                Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
                 final WikiSearch wikiSearch = new WikiSearch(CreateListFragment.this);
 
                 //recyclerView getting user parameters into account
                 if (autoImportIsChecked) {
-                    mAdapter = new ZastupceAdapter(mZastupceArr, PopActivity.userParametersCount);
-                    parameters = PopActivity.userParametersCount;
+                    mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
+                    parameters = userParametersCount;
+                    loadingRepresentative = false;
                 } else {
                     mAdapter = new ZastupceAdapter(mZastupceArr, 1);
                     parameters = 1;
+                    loadingRepresentative = true;
                 }
                 mRecyclerView.setLayoutManager(mLManager);
                 mRecyclerView.setAdapter(mAdapter);
 
                 wikiSearch.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 //wikiSearch.execute();
+                /*} else {
+                    Toast.makeText(getActivity(), "Enter all info", Toast.LENGTH_SHORT).show();
+                }*/
+
             }
         });
 
@@ -166,11 +204,6 @@ public class CreateListFragment extends Fragment {
         btnSAVE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                title = userInputTitle.getText().toString();
-                dividingString = userDividngString.getText().toString();
-                String rawRepresentatives = userInputRepresentatives.getText().toString();
-
-                representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
 
           /*      for (int i = 0; i < representatives.size(); i++) {
 
@@ -206,10 +239,88 @@ public class CreateListFragment extends Fragment {
         return view;
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+        //getting the language of wiki
+        Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
+        String languageString = selectedLanguageSpinnerItem.toString();
+
+        switch (languageString) {
+            case "English":
+                languageURL = "en";
+                break;
+            case "Czech":
+                languageURL = "cs";
+                break;
+            case "French":
+                languageURL = "fr";
+                break;
+            case "German":
+                languageURL = "de";
+                break;
+            case "Spanish":
+                languageURL = "es";
+                break;
+            case "Japanese":
+                languageURL = "ja";
+                break;
+            case "Russian":
+                languageURL = "ru";
+                break;
+            case "Italian":
+                languageURL = "it";
+                break;
+            case "Chinese":
+                languageURL = "zh";
+                break;
+            case "Portuguese":
+                languageURL = "pt";
+                break;
+            case "Arabic":
+                languageURL = "ar";
+                break;
+            case "Persian":
+                languageURL = "fa";
+                break;
+            case "Polish":
+                languageURL = "pl";
+                break;
+            case "Dutch":
+                languageURL = "nl";
+                break;
+            case "Indonesian":
+                languageURL = "id";
+                break;
+            case "Ukrainian":
+                languageURL = "uk";
+                break;
+            case "Hebrew":
+                languageURL = "he";
+                break;
+            case "Swedish":
+                languageURL = "sv";
+                break;
+            case "Korean":
+                languageURL = "ko";
+                break;
+            case "Vietnamese":
+                languageURL = "vi";
+                break;
+            case "Finnish":
+                languageURL = "fi";
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+    }
+
 
     //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
-    //pridat if pokud je potreba jen obrazek
-    private static class WikiSearch extends AsyncTask<Void, Void, Void> {
+    private static class WikiSearch extends AsyncTask<Void, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
 
@@ -223,63 +334,78 @@ public class CreateListFragment extends Fragment {
 
             //misto testInput -> representatives
             ArrayList<String> testInput = new ArrayList<>();
-            testInput.add("Sýkora");
             testInput.add("Pes domácí");
+            testInput.add("Pes domácí");
+            testInput.add("Koira");
+            testInput.add("Tasemnice bezbranná");
+            testInput.add("Lýtková kost");
+            testInput.add("Žula");
 
 
             for (String representative :
                     testInput) {
+                Log.d(TAG, "------------------------------");
+                Log.d(TAG, "current representative = " + representative);
                 String searchText = representative.replace(" ", "_");
 
                 Document doc = null;
                 try {
-                    //doc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
-                    doc = Jsoup.connect("https://" + PopActivity.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
+                    //not connected to internet
                     e.printStackTrace();
-                    Log.d(TAG, "couldn't connect to the site");
-                    //fragment.mZastupceArr.add(new Zastupce("Error loading " + representative, "", ""));  // EDITED
+                    Log.d(TAG, "no wiki");
+                    publishProgress(representative);
                 }
 
-                ArrayList<String> scientificClasses = new ArrayList<>();
                 ArrayList<String> newData = new ArrayList<>();
-                String[] dataPair = new String[2];
+                String[] dataPair;
                 Drawable img = null;
-                int dataCounter = 0;
                 boolean scientificClassificationDetected = false;
                 boolean imageDetected = false;
                 int classificationPointer = 0;
                 int trCounter = 0;
-
                 Element infoBox = null;
-                if (doc != null) {
+
+                if (doc != null && doc.head().hasText()) {
+
                     infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
-                    //Toast.makeText(fragment.getActivity(), "Wiki for " + representative + " could not be loaded", Toast.LENGTH_SHORT).show();
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
+
                         trCounter++;
                         Log.d(TAG, "current tr = " + trCounter);
-                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(PopActivity.userScientificClassification.size() <= classificationPointer + 1)) {
+                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                             dataPair = tr.wholeText().split("\n", 2);
+                            if (dataPair.length == 1) { //detected wrong table
+                                Log.d(TAG, "different table");
+                                for (int i = 0; i < userParametersCount - 1; i++) {
+                                    newData.add("");
+                                }
+                                break;
+                            }
                             for (int i = 0; i < 2; i++) {
                                 dataPair[i] = dataPair[i].trim();
                                 Log.d(TAG, "found " + dataPair[i]);
                             }
 
-                            if (PopActivity.userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
+                            Log.d(TAG, "classPointer = " + classificationPointer);
+                            Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
+                            Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
 
+                            if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
                                 newData.add(dataPair[1]); //adding the specific classification
                                 Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                                 classificationPointer++;
 
-                            } else if (PopActivity.userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
+                            } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
                                 Log.d(TAG, "userScientificClassification contains " + dataPair[0]);
                                 int tempPointer = classificationPointer;
-                                classificationPointer = PopActivity.userScientificClassification.indexOf(dataPair[0]);
+                                classificationPointer = userScientificClassification.indexOf(dataPair[0]);
                                 for (; tempPointer < classificationPointer; tempPointer++) {
-                                    newData.add("placeholder");
-                                    Log.d(TAG, "adding new data to newData = placeholder");
+                                    newData.add("");
+                                    Log.d(TAG, "adding new data to newData = empty (not detected)");
                                 }
 
 
@@ -296,16 +422,11 @@ public class CreateListFragment extends Fragment {
 
                         //get the image
                         else if (!imageDetected) {
-                            Log.d(TAG, "ELSEimage");
                             if (tr.getAllElements().hasAttr("data-file-type")) {
                                 Elements imgElement = tr.getElementsByAttribute("data-file-type");
-                                Log.d(TAG, "has data-file-type src =  " + imgElement.attr("src"));
-                                Log.d(TAG, "has type = " + imgElement.attr("data-file-type"));
                                 if (imgElement.attr("data-file-type").equals("bitmap")) {
-                                    Log.d(TAG, "has class image");
                                     String imageURL = tr.selectFirst("img").absUrl("src");
                                     Log.d(TAG, "IMAGEURL  ===   " + imageURL);
-
                                     try {
                                         img = drawable_from_url(imageURL);
                                     } catch (IOException e) {
@@ -330,37 +451,46 @@ public class CreateListFragment extends Fragment {
                     //loading into mZastupceArr
                     if (fragment.loadingRepresentative) {
                         //loading representative
-                        //fragment.mZastupceArr.add(new Zastupce(representative, newData.get(0)[1], newData.get(1)[1])); // EDITED
-                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, img, newData));
+                        if (classificationPointer == 0) { //detected wrong table that doesn't contain any useful info
+                            for (int i = 0; i < userParametersCount - 1; i++) {
+                                newData.add("");
+                            }
+                        }
+                        if (img == null) {
+                            //get only the image
+                            try {
+                                Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
+                                if (imgElement != null) {
+                                    String imageURL = imgElement.absUrl("src");
+                                    Log.d(TAG, "getting only image - URL = " + imageURL);
+                                    try {
+                                        img = drawable_from_url(imageURL);
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
+                                    }
+                                }
+                            } catch (Exception e) {
+                                fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
+                                continue;
+                            }
+                        }
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, newData));
                         Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
                     } else {
                         //loading classification
-                        //fragment.mZastupceArr.add(new Zastupce("", PopActivity.userScientificClassification.get(0), PopActivity.userScientificClassification.get(1))); // EDITED
-                        PopActivity.reversedUserScientificClassification.add(0, "");
-                        fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, PopActivity.reversedUserScientificClassification));
+                        reversedUserScientificClassification.add(0, "");
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
                         Log.d(TAG, "newData size for classification= " + newData.size() + "\n\n");
                         fragment.loadingRepresentative = true;
                     }
                 } else {
-                    //add an empty fragment only with representative
-
-                    fragment.mZastupceArr.add(new Zastupce(PopActivity.userParametersCount, newData));
+                    //add an empty only with representative
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, representative));
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
-                new Thread(new Runnable() {
-
-                    @Override
-                    public void run() {
-
-                        // Stuff that updates the UI
-                        fragment.mAdapter.notifyDataSetChanged();
-                    }
-                });
-
+                publishProgress("");
             }
-
-
             return null;
         }
 
@@ -373,9 +503,16 @@ public class CreateListFragment extends Fragment {
         }
 
         @Override
-        protected void onProgressUpdate(Void... values) {
+        protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
+            CreateListFragment fragment = fragmentWeakReference.get();
+            if (!values[0].equals("")) {
+                Toast.makeText(fragment.getActivity(), "No Wiki for " + values[0], Toast.LENGTH_SHORT).show();
+            } else {
+                fragment.mAdapter.notifyDataSetChanged();
+            }
         }
+
 
         @Override
         protected void onPostExecute(Void aVoid) {
@@ -391,7 +528,7 @@ public class CreateListFragment extends Fragment {
             super.onCancelled();
         }
 
-        Drawable drawable_from_url(String url) throws java.io.IOException {
+        public Drawable drawable_from_url(String url) throws java.io.IOException {
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -402,6 +539,18 @@ public class CreateListFragment extends Fragment {
             Bitmap bitmap = BitmapFactory.decodeStream(input);
             return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
         }
+
+
+/*        public boolean isInternetAvailable() {
+            try {
+                InetAddress ipAddr = InetAddress.getByName("google.com");
+                //You can replace it with your name
+                return !ipAddr.equals("");
+
+            } catch (Exception e) {
+                return false;
+            }
+        }*/
     }
 
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -16,7 +17,7 @@
 
             <EditText
                 android:id="@+id/userInputTitle"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:ems="10"
                 android:hint="Title"
@@ -33,6 +34,7 @@
                 android:ems="10"
                 android:hint="Enter a dividing word/character"
                 android:inputType="none"
+                android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
 
             <EditText
@@ -54,22 +56,35 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/userInputRepresentatives"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="20dp"
                 android:text="@string/create_fragment_text"
                 android:textColor="@color/colorWhite"
                 android:textSize="15sp" />
 
-        <Switch
-            android:id="@+id/autoImportSwitch"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/textUnderUserInput"
-            android:layout_marginTop="15dp"
-            android:layout_centerHorizontal="true"
-            android:text="@string/autoRadDruhSwitch"
-            android:switchPadding="5dp"
-            android:textColor="@color/colorWhite" />
 
+            <Switch
+                android:id="@+id/autoImportSwitch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/textUnderUserInput"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginTop="35dp"
+                android:foregroundGravity="center_vertical"
+                android:gravity="center_vertical"
+                android:switchPadding="5dp"
+                android:text="@string/autoRadDruhSwitch"
+                android:textColor="@color/colorWhite" />
+
+            <Spinner
+                android:id="@+id/languageSpinner"
+                android:layout_width="150dp"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="54dp"
+                android:layout_marginEnd="17dp" />
 
             <Button
                 android:id="@+id/createButton"

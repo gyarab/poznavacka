@@ -8,6 +8,7 @@
         <item>Spanish</item>
         <item>Japanese</item>
         <item>Russian</item>
+        <item>Italian</item>
         <item>Chinese</item>
         <item>Portuguese</item>
         <item>Arabic</item>
@@ -20,6 +21,6 @@
         <item>Swedish</item>
         <item>Korean</item>
         <item>Vietnamese</item>
-        <item>Finish</item>
+        <item>Finnish</item>
     </string-array>
 </resources>
