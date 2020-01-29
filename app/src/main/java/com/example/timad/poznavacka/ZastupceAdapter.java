@@ -3,6 +3,7 @@ package com.example.timad.poznavacka;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -68,39 +69,49 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         Context context = parent.getContext();
 
         int length = 4; // Set number of edit text's in row CHANGE
+        Log.d("WELP", "mParameters: " + mParameters + " ");
         if(mParameters < length + 1) {
             ll.setWeightSum(mParameters + 1);
-            createEditTexts(context, ll, mParameters);
+            createEditTexts(context, ll, 0, mParameters);
         } else {
-            int count = mParameters / length + 1; // no of cols
+            int count = mParameters / length; // no of cols
+            if(mParameters % length > 0){
+                count++;
+            }
+
+            ll.setWeightSum(mParameters + 1);
 
             LinearLayout vert = new LinearLayout(context);
             vert.setLayoutParams(new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    4f
+
             ));
             vert.setOrientation(LinearLayout.VERTICAL);
             vert.setWeightSum(count);
             ll.addView(vert);
 
             for (int i = 0; i < count; i++){
+                Log.d("WELP", "Count/Cols: " + count);
                 LinearLayout horiz = new LinearLayout(context);
                 horiz.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT
+                        LinearLayout.LayoutParams.MATCH_PARENT,
+                        1f
                 ));
                 horiz.setOrientation(LinearLayout.HORIZONTAL);
                 vert.addView(horiz);
 
-                int count2; // no of edit texts in 1 row
+                int end; // no of edit texts in 1 row
                 if((i + 1) * length > mParameters){
-                    count2 = (i * length) - mParameters;
+                    end = mParameters;
                 } else {
-                    count2 = (i * length) - ((i + 1) * length);
+                    end = ((i + 1) * length);
                 }
-                horiz.setWeightSum(count2);
+                horiz.setWeightSum(end - (i * length));
 
-                createEditTexts(context, horiz, count2);
+                createEditTexts(context, horiz, i * length, end);
             }
         }
 
@@ -111,14 +122,15 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                 1f
         ));
         imgV.setId(mIds[mParameters]);
-        //Log.i("GenerateId", "Img: " + Integer.toString(imgV.getId()));
+        //Log.i("GenerateId", "Img: " + imgV.getId());
         ll.addView(imgV);
 
         return cardView;
     }
 
-    private void createEditTexts(Context context, LinearLayout ll, int count){
-        for(int i = 0; i < count; i++){
+    private void createEditTexts(Context context, LinearLayout ll, int start, int end){
+        for(int i = start; i < end; i++){
+            Log.d("WELP", "Button" + i);
             EditText editT = new EditText(context);
             editT.setTextSize(15);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
@@ -127,7 +139,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     1f
             ));
             editT.setId(mIds[i]);
-            //Log.i("GenerateId", "ET" + i + ": " +Integer.toString(editT.getId()));
+            //Log.i("GenerateId", "ET" + i + ": " + editT.getId());
             ll.addView(editT);
         }
     }
