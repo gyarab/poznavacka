@@ -145,10 +145,15 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         dividingString = userDividngString.getText().toString().trim();
                         if (dividingString.isEmpty()) { //single
                             exampleRepresentative = rawRepresentative.trim();
-                            exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
                         } else { //multiple
-                            exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
+                            if (rawRepresentative.contains(dividingString)) {
+                                exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
+                            } else {  //single, but dividing string was entered
+                                exampleRepresentative = rawRepresentative.trim();
+                            }
+
                         }
+                        exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
                         switchPressedOnce = true;
                         autoImportIsChecked = true;
                         Intent intent = new Intent(getContext(), PopActivity.class);
