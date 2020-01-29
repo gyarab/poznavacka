@@ -50,5 +50,5 @@
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="wiki_auto_import"><u><b>Wiki auto-import</b></u></string>
-    <string name="text_wiki_import_description">This will automatically import the scientific classification using data provided by Wikipedia in your language</string>
+    <string name="text_wiki_import_description">Check classification to be generated</string>
 </resources>
