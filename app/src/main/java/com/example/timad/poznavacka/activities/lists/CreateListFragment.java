@@ -530,6 +530,17 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             CreateListFragment fragment = fragmentWeakReference.get();
             fragment.progressBar.setVisibility(View.VISIBLE);
             fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_in));
+
+            fragment.mZastupceArr = new ArrayList<>();
+            fragment.mLManager = new LinearLayoutManager(fragment.getContext());
+            if (fragment.autoImportIsChecked) {
+                fragment.mAdapter = new ZastupceAdapter(fragment.mZastupceArr, userParametersCount);
+            } else {
+                fragment.mAdapter = new ZastupceAdapter(fragment.mZastupceArr, 1);
+            }
+            fragment.mRecyclerView.setLayoutManager(fragment.mLManager);
+            fragment.mRecyclerView.setAdapter(fragment.mAdapter);
+
         }
 
         @Override
