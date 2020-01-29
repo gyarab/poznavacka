@@ -30,6 +30,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -223,6 +224,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         btnSAVE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                Gson g = new Gson();
+                String json = g.toJson(mZastupceArr);
 
           /*      for (int i = 0; i < representatives.size(); i++) {
 
