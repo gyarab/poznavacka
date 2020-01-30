@@ -100,11 +100,11 @@ public class PopActivity extends Activity {
 
                         CheckBox check = (CheckBox) nextChild;
                         if (check.isChecked()) {
+                            Log.d(TAG, "checbox text to be added = " + check.getText().toString());
                             userScientificClassification.add(check.getText().toString());
                             userParametersCount++;
                         }
                     }
-
                 }
             }
         });

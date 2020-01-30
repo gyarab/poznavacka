@@ -81,6 +81,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private boolean switchPressedOnce;
     private boolean loadingRepresentative;
     private boolean autoImportIsChecked;
+    private boolean listCreated;
 
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing
@@ -137,28 +138,31 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                String rawRepresentative = userInputRepresentatives.getText().toString();
                 if (isChecked) {
-                    if (rawRepresentative.isEmpty()) {
-                        Toast.makeText(getContext(), "Please enter at least one representative..", Toast.LENGTH_LONG).show();
-                        autoImportSwitch.setChecked(false);
-                    } else {
-                        dividingString = userDividngString.getText().toString().trim();
-                        if (dividingString.isEmpty()) { //single
-                            exampleRepresentative = rawRepresentative.trim();
-                        } else { //multiple
-                            if (rawRepresentative.contains(dividingString)) {
-                                exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
-                            } else {  //single, but dividing string was entered
+                    if (!languageURL.equals("Select Language")) {
+                        String rawRepresentative = userInputRepresentatives.getText().toString();
+                        if (rawRepresentative.isEmpty()) {
+                            Toast.makeText(getContext(), "Please enter at least one representative..", Toast.LENGTH_LONG).show();
+                            autoImportSwitch.setChecked(false);
+                        } else {
+                            dividingString = userDividngString.getText().toString().trim();
+                            if (dividingString.isEmpty()) { //single
                                 exampleRepresentative = rawRepresentative.trim();
+                            } else { //multiple
+                                if (rawRepresentative.contains(dividingString)) {
+                                    exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
+                                } else {  //single, but dividing string was entered
+                                    exampleRepresentative = rawRepresentative.trim();
+                                }
                             }
-
+                            exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
+                            switchPressedOnce = true;
+                            autoImportIsChecked = true;
+                            Intent intent = new Intent(getContext(), PopActivity.class);
+                            startActivity(intent);
                         }
-                        exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
-                        switchPressedOnce = true;
-                        autoImportIsChecked = true;
-                        Intent intent = new Intent(getContext(), PopActivity.class);
-                        startActivity(intent);
+                    } else {
+                        Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     autoImportIsChecked = false;
@@ -167,7 +171,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         });
 
         //spinner
-        languageURL = "en";
+        languageURL = "Select Language";
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         languageSpinner.setAdapter(adapter);
@@ -178,6 +182,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                if (!languageURL.equals("Select Language")) {
 
 
                /* title = userInputTitle.getText().toString().trim();
@@ -194,29 +199,33 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         }
                     }*/
 
+                    listCreated = false;
+                    Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
+                    final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
 
-                Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
-                final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
+                    //recyclerView getting user parameters into account
 
-                //recyclerView getting user parameters into account
-                if (autoImportIsChecked) {
-                    mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
-                    parameters = userParametersCount;
-                    loadingRepresentative = false;
-                } else {
-                    mAdapter = new ZastupceAdapter(mZastupceArr, 1);
-                    parameters = 1;
-                    loadingRepresentative = true;
-                }
-                mRecyclerView.setLayoutManager(mLManager);
-                mRecyclerView.setAdapter(mAdapter);
+                    if (autoImportIsChecked) {
+                        mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
+                        parameters = userParametersCount;
+                        loadingRepresentative = false;
+                    } else {
+                        mAdapter = new ZastupceAdapter(mZastupceArr, 1);
+                        parameters = 1;
+                        loadingRepresentative = true;
+                    }
+                    mRecyclerView.setLayoutManager(mLManager);
+                    mRecyclerView.setAdapter(mAdapter);
 
-                //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                WikiSearchRepresentatives.execute("");
+                    //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    WikiSearchRepresentatives.execute("");
                 /*} else {
                     Toast.makeText(getActivity(), "Enter all info", Toast.LENGTH_SHORT).show();
                 }*/
 
+                } else {
+                    Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -224,9 +233,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         btnSAVE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Gson g = new Gson();
-                String json = g.toJson(mZastupceArr);
-
+                if (listCreated) {
+                    Gson g = new Gson();
+                    String json = g.toJson(mZastupceArr);
           /*      for (int i = 0; i < representatives.size(); i++) {
 
                     //uploading poznavacka
@@ -241,6 +250,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
 
                 }*/
+                } else {
+                    Toast.makeText(getContext(), "Create list first", Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
@@ -269,6 +281,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         String languageString = selectedLanguageSpinnerItem.toString();
 
         switch (languageString) {
+            case "Select Language":
+                languageURL = "Select Language";
+                break;
             case "English":
                 languageURL = "en";
                 break;
@@ -333,11 +348,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 languageURL = "fi";
                 break;
         }
+
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> parent) {
         // Another interface callback
+        Toast.makeText(getContext(), "Select language", Toast.LENGTH_SHORT).show();
     }
 
 
@@ -562,6 +579,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             fragment.progressBar.setVisibility(View.GONE);
             fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_out));
             fragment.mAdapter.notifyDataSetChanged();
+            fragment.listCreated = true;
         }
 
         @Override

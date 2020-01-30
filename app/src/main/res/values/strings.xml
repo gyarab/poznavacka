@@ -34,6 +34,7 @@
     <string name="wait_text">Please, wait for your teacher to start the test</string>
     <string name="pop_done">DONE</string>
     <string name="title_activity_pop">Auto-insert</string>
+    <string name="language_spinner_prompt">Language</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -46,8 +47,7 @@
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails
-    </string>
+    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
     <string name="wiki_auto_import"><u><b>Wiki auto-import</b></u></string>
     <string name="text_wiki_import_description">Check classification to be generated</string>
