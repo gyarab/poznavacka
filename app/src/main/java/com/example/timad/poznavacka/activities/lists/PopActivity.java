@@ -76,7 +76,7 @@ public class PopActivity extends Activity {
 
         final PopActivity.WikiSearchClassification WikiSearchClassification = new PopActivity.WikiSearchClassification(PopActivity.this);
         WikiSearchClassification.execute();
-
+/*
         //REPLACE with classific selected by user
         userScientificClassification.add("Říše");
         userScientificClassification.add("Kmen");
@@ -86,12 +86,26 @@ public class PopActivity extends Activity {
         userScientificClassification.add("Rod");
         userScientificClassification.add("Druh");
         userParametersCount = 8; //REPLACE with number of params selected by user + 1
+ */
 
         //DONEButton
         DONEButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 finish();
+                for (int i = 0; i < layout1.getChildCount(); i++) {
+                    View nextChild = layout1.getChildAt(i);
+
+                    if (nextChild instanceof CheckBox) {
+
+                        CheckBox check = (CheckBox) nextChild;
+                        if (check.isChecked()) {
+                            userScientificClassification.add(check.getText().toString());
+                            userParametersCount++;
+                        }
+                    }
+
+                }
             }
         });
 
