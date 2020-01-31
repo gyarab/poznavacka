@@ -44,7 +44,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.Locale;
 import java.util.Objects;
 
 import androidx.annotation.Nullable;
@@ -155,7 +157,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                     exampleRepresentative = rawRepresentative.trim();
                                 }
                             }
-                            exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
+                            exampleRepresentative = capitalize(exampleRepresentative, languageURL);
+                            //exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
                             switchPressedOnce = true;
                             autoImportIsChecked = true;
                             Intent intent = new Intent(getContext(), PopActivity.class);
@@ -182,22 +185,19 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (!languageURL.equals("Select Language")) {
+                //if (!languageURL.equals("Select Language")) {
 
 
-               /* title = userInputTitle.getText().toString().trim();
+                title = userInputTitle.getText().toString().trim();
                 dividingString = userDividngString.getText().toString().trim();
-                String rawRepresentatives = userInputRepresentatives.getText().toString();
+                //String rawRepresentatives = userInputRepresentatives.getText().toString();
+                String rawRepresentatives = "pes domácí, koira, tasemnice bezbranná, lýtková kost, žula";
 
-                if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty())) {
+                if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
                     representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
                     //capitalizing the first letter
-                    if (!(languageURL.equals("ar") || languageURL.equals("zh") || languageURL.equals("kr"))) {
-                        for (int i = 0; i < representatives.size(); i++) {
-                            String withUpperLetter = representatives.get(i).substring(0,1).toUpperCase() + representatives.get(i).substring(1);
-                            representatives.add(i, withUpperLetter);
-                        }
-                    }*/
+                    representatives = capitalize(representatives, languageURL);
+
 
                     listCreated = false;
                     Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
@@ -218,13 +218,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     mRecyclerView.setAdapter(mAdapter);
 
                     //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    WikiSearchRepresentatives.execute("");
-                /*} else {
-                    Toast.makeText(getActivity(), "Enter all info", Toast.LENGTH_SHORT).show();
-                }*/
-
+                    WikiSearchRepresentatives.execute();
                 } else {
-                    Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Insert all info", Toast.LENGTH_SHORT).show();
                 }
             }
         });
@@ -308,9 +304,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             case "Italian":
                 languageURL = "it";
                 break;
-            case "Chinese":
-                languageURL = "zh";
-                break;
             case "Portuguese":
                 languageURL = "pt";
                 break;
@@ -359,7 +352,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
     //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
-    private static class WikiSearchRepresentatives extends AsyncTask<String, String, Void> {
+    private static class WikiSearchRepresentatives extends AsyncTask<Void, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
 
@@ -368,15 +361,19 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
 
         @Override
-        protected Void doInBackground(String... args) {
+        protected Void doInBackground(Void... args) {
             final CreateListFragment fragment = fragmentWeakReference.get();
 
-            if (args[0].equals("classification")) {
-
+            if (!fragment.loadingRepresentative) {
+                reversedUserScientificClassification.add(0, "");
+                fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
+                Log.d(TAG, "Classification added");
+                fragment.loadingRepresentative = true;
+                publishProgress("");
             }
+
             //misto testInput -> representatives
             ArrayList<String> testInput = new ArrayList<>();
-            testInput.add("Pes domácí");
             testInput.add("Pes domácí");
             testInput.add("Koira");
             testInput.add("Tasemnice bezbranná");
@@ -385,13 +382,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
             for (String representative :
-                    testInput) {
+                    fragment.representatives) {
                 Log.d(TAG, "------------------------------");
                 Log.d(TAG, "current representative = " + representative);
                 String searchText = representative.replace(" ", "_");
 
                 Document doc = null;
                 try {
+                    //LEFT OFF, automatic redirect from napr pes -> Pes domácí (https://www.mediawiki.org/wiki/API:Redirects)
                     doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
@@ -496,41 +494,35 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
-                    if (fragment.loadingRepresentative) {
-                        //loading representative
-                        if (classificationPointer == 0) { //detected wrong table that doesn't contain any useful info
-                            for (int i = 0; i < userParametersCount - 1; i++) {
-                                newData.add("");
-                            }
-                        }
-                        if (img == null) {
-                            //get only the image
-                            try {
-                                Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
-                                if (imgElement != null) {
-                                    imageURL = imgElement.absUrl("src");
-                                    Log.d(TAG, "getting only image - URL = " + imageURL);
-                                    try {
-                                        img = drawable_from_url(imageURL);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                            } catch (Exception e) {
-                                fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
-                                continue;
-                            }
-                        }
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
-                        Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
-                    } else {
-                        //loading classification
-                        reversedUserScientificClassification.add(0, "");
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-                        Log.d(TAG, "newData size for classification= " + newData.size() + "\n\n");
-                        fragment.loadingRepresentative = true;
+                    //loading representative
+                    if (classificationPointer == 0) { //detected wrong table that doesn't contain any useful info
+                        for (int i = 0; i < userParametersCount - 1; i++) {
+                            newData.add("");
+                        }
                     }
+                    if (img == null) {
+                        //get only the image
+                        try {
+                            Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
+                            if (imgElement != null) {
+                                imageURL = imgElement.absUrl("src");
+                                Log.d(TAG, "getting only image - URL = " + imageURL);
+                                try {
+                                    img = drawable_from_url(imageURL);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        } catch (Exception e) {
+                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
+                            continue;
+                        }
+                    }
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
+                    Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
+
+
                 } else {
                     //add an empty only with representative
                     fragment.mZastupceArr.add(new Zastupce(userParametersCount, representative));
@@ -599,7 +591,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
         }
 
-
 /*        public boolean isInternetAvailable() {
             try {
                 InetAddress ipAddr = InetAddress.getByName("google.com");
@@ -612,6 +603,59 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }*/
     }
 
+    public ArrayList<String> capitalize(ArrayList<String> representatives, String languageURL) {
+        if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
+            for (int i = 0; i < representatives.size(); i++) {
+                String withUpperLetter = representatives.get(i).substring(0, 1).toUpperCase() + representatives.get(i).substring(1).toLowerCase();
+                representatives.add(i, withUpperLetter);
+            }
+        } else {
+            Locale locale = Locale.getDefault();
+            switch (languageURL) {
+                case "ar":
+                    locale = new Locale("ar");
+                    break;
+                case "kr":
+                    locale = new Locale("kr");
+                    break;
+                case "ru":
+                    locale = new Locale("ru");
+                    break;
+                case "vi":
+                    locale = new Locale("vi");
+                    break;
+            }
+            for (int i = 0; i < representatives.size(); i++) {
+                String withUpperLetter = representatives.get(i).substring(0, 1).toUpperCase(locale) + representatives.get(i).substring(1).toLowerCase();
+                representatives.add(i, withUpperLetter);
+            }
+        }
+        return representatives;
+    }
+
+    public String capitalize(String representative, String languageURL) {
+        if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
+            representative = representative.substring(0, 1).toUpperCase() + representative.substring(1).toLowerCase();
+        } else {
+            Locale locale = Locale.getDefault();
+            switch (languageURL) {
+                case "ar":
+                    locale = new Locale("ar");
+                    break;
+                case "kr":
+                    locale = new Locale("kr");
+                    break;
+                case "ru":
+                    locale = new Locale("ru");
+                    break;
+                case "vi":
+                    locale = new Locale("vi");
+                    break;
+            }
+            representative = representative.substring(0, 1).toUpperCase(locale) + representative.substring(1).toLowerCase();
+        }
+        return representative;
+    }
 
 }
 

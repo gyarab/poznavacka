@@ -8,10 +8,10 @@
     <application
         android:allowBackup="false"
         android:hardwareAccelerated="false"
-        android:icon="@drawable/brinkos_ic_launcher"
+        android:icon="@drawable/poznavacka_logo"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:roundIcon="@drawable/brinkos_ic_launcher"
+        android:roundIcon="@drawable/poznavacka_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity

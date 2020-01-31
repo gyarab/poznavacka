@@ -106,12 +106,10 @@ public class PopActivity extends Activity {
                         }
                     }
                 }
+                reversedUserScientificClassification.addAll(userScientificClassification);
+                Collections.reverse(reversedUserScientificClassification);
             }
         });
-
-        reversedUserScientificClassification.addAll(userScientificClassification);
-        Collections.reverse(reversedUserScientificClassification);
-
     }
 
     private static class WikiSearchClassification extends AsyncTask<Void, String, Void> {
@@ -172,10 +170,11 @@ public class PopActivity extends Activity {
             Document doc = null;
             try {
                 doc = Jsoup.connect("https://" + CreateListFragment.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                Log.d(TAG, "Classification - connected to " + representative);
             } catch (IOException e) {
                 //not connected to internet
                 e.printStackTrace();
-                Log.d(TAG, "no wiki");
+                Log.d(TAG, "Classification - no wiki for " + representative);
                 return null;
             }
 
@@ -195,7 +194,7 @@ public class PopActivity extends Activity {
                         dataPair = tr.wholeText().split("\n", 2);
                         if (dataPair.length == 1) { //detected wrong table
                             Log.d(TAG, "different table");
-                            return null;
+                            break;
                         }
                         classData = dataPair[0].trim();
                         Log.d(TAG, "found " + dataPair[0]);
@@ -207,7 +206,28 @@ public class PopActivity extends Activity {
                         Log.d(TAG, "Scientific classification async task successful");
                         return null;
                     }
+
                 }
+
+                //for russian sites
+/*
+                for (Element tr : trs) {
+                    Log.d(TAG, "foring in russian style trs :))");
+                    if (tr.getElementsByAttribute("class").first().val().equals("")) { //detected tr for classification
+                        Log.d(TAG, "whole text = " + tr.wholeText());
+                        Elements elementsOfText = tr.child(1).children();
+                        for (Element textElement :
+                                elementsOfText) {
+                            String text = textElement.wholeText();
+                            Log.d(TAG, "russian text = " + text);
+                        }
+
+
+                        return null;
+                    }
+                }
+*/
+
             } else {
                 return null;
             }

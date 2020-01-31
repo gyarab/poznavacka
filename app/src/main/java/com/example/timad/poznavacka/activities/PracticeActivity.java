@@ -116,7 +116,7 @@ public class PracticeActivity extends AppCompatActivity {
                 } else {
                     //all learnt
                     imageView_classic.setVisibility(View.VISIBLE);
-                    imageView_classic.setImageResource(R.drawable.devilbrinke_deepfryed);
+                    imageView_classic.setImageResource(R.drawable.check);
                     imageView.setVisibility(View.INVISIBLE);
                     hideScene();
                     sceneView.setClickable(false);

@@ -4,13 +4,13 @@
         <item>Select Language</item>
         <item>English</item>
         <item>Czech</item>
+        <!--
         <item>French</item>
         <item>German</item>
         <item>Spanish</item>
         <item>Japanese</item>
         <item>Russian</item>
         <item>Italian</item>
-        <item>Chinese</item>
         <item>Portuguese</item>
         <item>Arabic</item>
         <item>Persian</item>
@@ -23,5 +23,6 @@
         <item>Korean</item>
         <item>Vietnamese</item>
         <item>Finnish</item>
+        -->
     </string-array>
 </resources>

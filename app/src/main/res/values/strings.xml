@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Poznávačka</string>
+    <string name="app_name">Cognitive</string>
     <string name="welcome_title">POZNÁVAČKA</string>
     <string name="all_learnt_message_0">\nMožná už to umíš!</string>
     <string name="all_learnt_message_1">\nAle spíš ne…</string>
