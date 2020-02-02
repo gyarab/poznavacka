@@ -33,6 +33,12 @@ import com.example.timad.poznavacka.FirestoreImpl;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
+import com.example.timad.poznavacka.activities.MainActivity;
+import com.example.timad.poznavacka.activities.test.PoznavackaObject;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -56,6 +62,7 @@ import java.util.Collections;
 import java.util.Objects;
 import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -92,7 +99,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private boolean autoImportIsChecked;
 
     private FirestoreImpl firestoreImpl;
-    private FirebaseFirestore db; //for testing
+    private FirebaseFirestore db; //for testing no longer
 
     private ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
@@ -106,6 +113,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private ArrayList<Zastupce> mZastupceArr;
 
     private int parameters;
+
 
 
     @Nullable
@@ -300,6 +308,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                 // Saving mZastupceArr
                 String json = g.toJson(mZastupceArr);
+                //add to file
+                PoznavackaObject item = new PoznavackaObject(title + "#" + uuid,json);
+                addToFireStore(item);
+
                 Log.d("Files", json);
                 File txtFile = new File(path + uuid + ".txt");
 
@@ -702,6 +714,24 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 return false;
             }
         }*/
+    }
+
+    private void addToFireStore(PoznavackaObject data){
+        db=FirebaseFirestore.getInstance();
+        CollectionReference dbPoznavacka = db.collection("Poznavacka");
+
+        dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
 
