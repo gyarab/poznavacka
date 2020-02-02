@@ -3,19 +3,19 @@ package com.example.timad.poznavacka;
 /** Polozka v seznamu poznavacek **/
 public class PoznavackaInfo {
     private String name;
-    private String info;
+    private String id;
 
-    public PoznavackaInfo(String name, String info){
+    public PoznavackaInfo(String name, String id){
         this.name = name;
-        this.info = info;
+        this.id = id;
     }
 
     public String getName(){
         return name;
     }
 
-    public String getInfo(){
-        return info;
+    public String getId(){
+        return id;
     }
 
 }

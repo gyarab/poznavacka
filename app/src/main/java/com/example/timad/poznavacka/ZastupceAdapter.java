@@ -68,7 +68,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         Context context = parent.getContext();
 
         int length = 4; // Set number of edit text's in row CHANGE
-        Log.d("WELP", "mParameters: " + mParameters + " ");
+        //Log.d("WELP", "mParameters: " + mParameters + " ");
         if(mParameters < length + 1) {
             ll.setWeightSum(mParameters + 1);
             createEditTexts(context, ll, 0, mParameters);
@@ -92,7 +92,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
             ll.addView(vert);
 
             for (int i = 0; i < count; i++){
-                Log.d("WELP", "Count/Cols: " + count);
+                //Log.d("WELP", "Count/Cols: " + count);
                 LinearLayout horiz = new LinearLayout(context);
                 horiz.setLayoutParams(new LinearLayout.LayoutParams(
                         LinearLayout.LayoutParams.MATCH_PARENT,
@@ -129,7 +129,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
     private void createEditTexts(Context context, LinearLayout ll, int start, int end){
         for(int i = start; i < end; i++){
-            Log.d("WELP", "Button" + i);
+            //Log.d("WELP", "Button" + i);
             EditText editT = new EditText(context);
             editT.setTextSize(15);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
