@@ -1,7 +1,5 @@
 package com.example.timad.poznavacka.activities.lists;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -33,8 +30,7 @@ import com.example.timad.poznavacka.FirestoreImpl;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
-import com.example.timad.poznavacka.activities.MainActivity;
-import com.example.timad.poznavacka.activities.test.PoznavackaObject;
+import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.CollectionReference;
@@ -52,7 +48,6 @@ import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStreamWriter;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -309,7 +304,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 // Saving mZastupceArr
                 String json = g.toJson(mZastupceArr);
                 //add to file
-                PoznavackaObject item = new PoznavackaObject(title + "#" + uuid,json);
+                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
                 addToFireStore(item);
 
                 Log.d("Files", json);
@@ -716,7 +711,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }*/
     }
 
-    private void addToFireStore(PoznavackaObject data){
+    private void addToFireStore(PoznavackaDbObject data){
         db=FirebaseFirestore.getInstance();
         CollectionReference dbPoznavacka = db.collection("Poznavacka");
 
