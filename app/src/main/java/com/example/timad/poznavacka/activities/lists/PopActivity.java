@@ -163,53 +163,56 @@ public class PopActivity extends Activity {
         @Override
         protected Void doInBackground(Void... voids) {
             PopActivity fragment = fragmentWeakReference.get();
-            String representative = CreateListFragment.exampleRepresentative;
-            String searchText = representative.replace(" ", "_");
+            ArrayList<String> representatives = CreateListFragment.representatives;
 
-            Log.d(TAG, "Connecting to site");
-            Document doc = null;
-            try {
-                doc = Jsoup.connect("https://" + CreateListFragment.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
-                Log.d(TAG, "Classification - connected to " + representative);
-            } catch (IOException e) {
-                //not connected to internet
-                e.printStackTrace();
-                Log.d(TAG, "Classification - no wiki for " + representative);
-                return null;
-            }
+            for (String representative :
+                    representatives) {
+                String searchText = representative.replace(" ", "_");
 
-            String[] dataPair;
-            String classData;
-            boolean scientificClassificationDetected = false;
-            Element infoBox;
-
-            if (doc != null && doc.head().hasText()) {
-                Log.d(TAG, "Connected successfully");
-                infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
-                Elements trs = infoBox.select("tr");
-                for (Element tr :
-                        trs) {
-                    Log.d(TAG, "foring in trs");
-                    if (!tr.getAllElements().hasAttr("colspan")) {
-                        dataPair = tr.wholeText().split("\n", 2);
-                        if (dataPair.length == 1) { //detected wrong table
-                            Log.d(TAG, "different table");
-                            break;
-                        }
-                        classData = dataPair[0].trim();
-                        Log.d(TAG, "found " + dataPair[0]);
-
-                        publishProgress(classData); //adding checkbox in progressUpdate
-
-                        scientificClassificationDetected = true;
-                    } else if (scientificClassificationDetected) {
-                        Log.d(TAG, "Scientific classification async task successful");
-                        return null;
-                    }
-
+                Log.d(TAG, "Connecting to site");
+                Document doc = null;
+                try {
+                    doc = Jsoup.connect("https://" + CreateListFragment.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirects=true").userAgent("Mozilla").get();
+                    Log.d(TAG, "Classification - connected to " + representative);
+                } catch (IOException e) {
+                    //not connected to internet
+                    e.printStackTrace();
+                    Log.d(TAG, "Classification - no wiki for " + representative);
+                    continue;
                 }
 
-                //for russian sites
+                String[] dataPair;
+                String classData;
+                boolean scientificClassificationDetected = false;
+                Element infoBox;
+
+                if (doc != null && doc.head().hasText()) {
+                    Log.d(TAG, "Connected successfully");
+                    infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    Elements trs = infoBox.select("tr");
+                    for (Element tr :
+                            trs) {
+                        Log.d(TAG, "foring in trs");
+                        if (!tr.getAllElements().hasAttr("colspan")) {
+                            dataPair = tr.wholeText().split("\n", 2);
+                            if (dataPair.length == 1) { //detected wrong table
+                                Log.d(TAG, "different table");
+                                continue;
+                            }
+                            classData = dataPair[0].trim();
+                            Log.d(TAG, "found " + dataPair[0]);
+
+                            publishProgress(classData); //adding checkbox in progressUpdate
+
+                            scientificClassificationDetected = true;
+                        } else if (scientificClassificationDetected) {
+                            Log.d(TAG, "Scientific classification async task successful");
+                            return null;
+                        }
+
+                    }
+
+                    //for russian sites
 /*
                 for (Element tr : trs) {
                     Log.d(TAG, "foring in russian style trs :))");
@@ -228,8 +231,7 @@ public class PopActivity extends Activity {
                 }
 */
 
-            } else {
-                return null;
+                }
             }
 
 

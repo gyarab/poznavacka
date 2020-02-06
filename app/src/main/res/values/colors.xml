@@ -5,9 +5,11 @@
     <color name="colorPrimaryDark">#00574B</color>
     <color name="colorPrimaryDarkDark">#053B06</color>
     <color name="colorAccent">#D81B60</color>
+    <color name="secondColorAccent">#BBD8B3</color>
 
     <color name="black">#66000000</color>
     <color name="blue">#00BFFF</color>
+    <color name="green">#06D6A0</color>
     <color name="colorGrey">#c3c3c3</color>
     <color name="colorWhite">#fff</color>
 </resources>

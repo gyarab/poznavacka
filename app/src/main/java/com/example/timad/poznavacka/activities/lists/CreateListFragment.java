@@ -73,7 +73,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private ProgressBar progressBar;
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
-    static String exampleRepresentative;
     private EditText userDividngString;
     private Switch autoImportSwitch;
     private Spinner languageSpinner;
@@ -88,7 +87,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing
 
-    private ArrayList<String> representatives;
+    public static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
     private String title;
     private String dividingString;
@@ -119,6 +118,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         db = FirebaseFirestore.getInstance(); //testing
         switchPressedOnce = false;
 
+        //LEFT OFF, get rid of the text -> put it in info https://github.com/sephiroth74/android-target-tooltip
+
 
         /* RecyclerView */
         mRecyclerView = view.findViewById(R.id.recyclerViewZ);
@@ -136,42 +137,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
         mLManager = new LinearLayoutManager(getContext());
 
-        //switch
-        autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    if (!languageURL.equals("Select Language")) {
-                        String rawRepresentative = userInputRepresentatives.getText().toString();
-                        if (rawRepresentative.isEmpty()) {
-                            Toast.makeText(getContext(), "Please enter at least one representative..", Toast.LENGTH_LONG).show();
-                            autoImportSwitch.setChecked(false);
-                        } else {
-                            dividingString = userDividngString.getText().toString().trim();
-                            if (dividingString.isEmpty()) { //single
-                                exampleRepresentative = rawRepresentative.trim();
-                            } else { //multiple
-                                if (rawRepresentative.contains(dividingString)) {
-                                    exampleRepresentative = rawRepresentative.substring(0, rawRepresentative.indexOf(dividingString)).trim();
-                                } else {  //single, but dividing string was entered
-                                    exampleRepresentative = rawRepresentative.trim();
-                                }
-                            }
-                            exampleRepresentative = capitalize(exampleRepresentative, languageURL);
-                            //exampleRepresentative = exampleRepresentative.substring(0, 1).toUpperCase() + exampleRepresentative.substring(1).toLowerCase();
-                            switchPressedOnce = true;
-                            autoImportIsChecked = true;
-                            Intent intent = new Intent(getContext(), PopActivity.class);
-                            startActivity(intent);
-                        }
-                    } else {
-                        Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    autoImportIsChecked = false;
-                }
-            }
-        });
 
         //spinner
         languageURL = "Select Language";
@@ -180,6 +145,45 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         languageSpinner.setAdapter(adapter);
         languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
         languageSpinner.setOnItemSelectedListener(this);
+
+        //switch
+        autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    String rawRepresentatives = userInputRepresentatives.getText().toString();
+                    dividingString = userDividngString.getText().toString().trim();
+                    title = userInputTitle.getText().toString().trim();
+                    if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
+
+                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
+                       /* if (dividingString.isEmpty()) { //single
+                            exampleRepresentative = rawRepresentatives.trim();
+                        } else { //multiple
+                            if (rawRepresentatives.contains(dividingString)) {
+                                exampleRepresentative = rawRepresentatives.substring(0, rawRepresentatives.indexOf(dividingString)).trim();
+                            } else {  //single, but dividing string was entered
+                                exampleRepresentative = rawRepresentatives.trim();
+                            }
+                        }*/
+
+                        //exampleRepresentative = capitalize(exampleRepresentative, languageURL);
+                        switchPressedOnce = true;
+                        autoImportIsChecked = true;
+                        Intent intent = new Intent(getContext(), PopActivity.class);
+                        startActivity(intent);
+
+                    } else {
+                        Toast.makeText(getContext(), "Fill all the info", Toast.LENGTH_SHORT).show();
+                        autoImportSwitch.setChecked(false);
+                        autoImportIsChecked = false;
+                    }
+                } else {
+                    autoImportIsChecked = false;
+                }
+            }
+        });
+
 
         //create button
         btnCREATE.setOnClickListener(new View.OnClickListener() {
@@ -190,13 +194,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                 title = userInputTitle.getText().toString().trim();
                 dividingString = userDividngString.getText().toString().trim();
-                //String rawRepresentatives = userInputRepresentatives.getText().toString();
-                String rawRepresentatives = "pes domácí, koira, tasemnice bezbranná, lýtková kost, žula";
+                String rawRepresentatives = userInputRepresentatives.getText().toString();
+                //String rawRepresentatives = "pes domácí, koira, tasemnice bezbranná, lýtková kost, žula";
 
                 if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
                     representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
                     //capitalizing the first letter
-                    representatives = capitalize(representatives, languageURL);
+                    //representatives = capitalize(representatives, languageURL); not needed anymore (redirects=true)
 
 
                     listCreated = false;
@@ -382,15 +386,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
             for (String representative :
-                    fragment.representatives) {
+                    representatives) {
                 Log.d(TAG, "------------------------------");
                 Log.d(TAG, "current representative = " + representative);
                 String searchText = representative.replace(" ", "_");
 
                 Document doc = null;
                 try {
-                    //LEFT OFF, automatic redirect from napr pes -> Pes domácí (https://www.mediawiki.org/wiki/API:Redirects)
-                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8")).userAgent("Mozilla").get();
+                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
                     e.printStackTrace();
@@ -490,7 +493,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     } else {
                         Log.d(TAG, "loading representative is false");
                     }
-                    newData.add(representative);
+                    newData.add(doc.title());
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
@@ -525,7 +528,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                 } else {
                     //add an empty only with representative
-                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, representative));
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                     Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
                 publishProgress("");
@@ -558,6 +561,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             CreateListFragment fragment = fragmentWeakReference.get();
             if (!values[0].equals("")) {
                 Toast.makeText(fragment.getActivity(), "No Wiki for " + values[0], Toast.LENGTH_SHORT).show();
+                fragment.mAdapter.notifyDataSetChanged();
             } else {
                 fragment.mAdapter.notifyDataSetChanged();
             }

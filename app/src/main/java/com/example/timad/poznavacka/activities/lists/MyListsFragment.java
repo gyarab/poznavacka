@@ -13,14 +13,14 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 
+import java.util.ArrayList;
+
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import java.util.ArrayList;
 
 
 public class MyListsFragment extends Fragment {

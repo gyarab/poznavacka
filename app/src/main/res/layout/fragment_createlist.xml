@@ -17,10 +17,10 @@
 
             <EditText
                 android:id="@+id/userInputTitle"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:ems="10"
-                android:hint="Title"
+                android:hint="@string/title_input"
                 android:inputType="none"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
@@ -32,7 +32,7 @@
                 android:layout_below="@id/userInputTitle"
                 android:layout_marginTop="35dp"
                 android:ems="10"
-                android:hint="Enter a dividing word/character"
+                android:hint="@string/dividing_word_character_input"
                 android:inputType="none"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
@@ -45,7 +45,7 @@
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="15dp"
                 android:ems="10"
-                android:hint="The representatives"
+                android:hint="@string/the_representatives_input"
                 android:inputType="textMultiLine"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
@@ -66,27 +66,24 @@
                 android:id="@+id/autoImportSwitch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/textUnderUserInput"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_marginTop="35dp"
-                android:foregroundGravity="center_vertical"
-                android:gravity="center_vertical"
-                android:switchPadding="5dp"
+                android:layout_below="@+id/languageSpinner"
+                android:layout_marginTop="20dp"
+                android:layout_centerHorizontal="true"
+                android:gravity="center_horizontal"
+                android:switchPadding="8dp"
                 android:text="@string/autoRadDruhSwitch"
-                android:textColor="@color/colorWhite" />
+                android:textColor="@color/colorWhite"
+                android:textSize="20sp" />
 
             <Spinner
                 android:id="@+id/languageSpinner"
-                android:layout_width="150dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="54dp"
-                android:layout_marginEnd="17dp"
-                android:spinnerMode="dropdown"
-                android:prompt="@string/language_spinner_prompt" />
+                android:layout_below="@+id/textUnderUserInput"
+                android:layout_marginTop="30dp"
+                android:layout_centerHorizontal="true"
+                android:prompt="@string/language_spinner_prompt"
+                android:spinnerMode="dropdown" />
 
             <Button
                 android:id="@+id/createButton"
@@ -106,6 +103,7 @@
                 android:layout_alignTop="@+id/createButton"
                 android:layout_alignParentEnd="true"
                 android:layout_marginEnd="30dp"
+                android:background="@drawable/save_button"
                 android:text="@string/save_button" />
 
             <ProgressBar
