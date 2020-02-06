@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "882289086797-qklc1nd5ee3phvkljlttbrrji2bq5t4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "2fb58dd53e1553a2b4a308ce879b926fd9a0677c"
+          }
+        },
+        {
           "client_id": "882289086797-hvh8jumi3se8c6m3n66dupe84hsnphgo.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {

@@ -99,7 +99,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
         holder.textView1.setText(currentPoznavackaInfo.getName());
-        holder.textView2.setText(currentPoznavackaInfo.getInfo());
+        holder.textView2.setText(currentPoznavackaInfo.getId());
 
         if(MyListsFragment.mPositionOfActivePoznavackaInfo ==position){
             holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));

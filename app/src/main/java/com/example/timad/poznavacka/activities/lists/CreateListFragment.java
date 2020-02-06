@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -29,6 +30,10 @@ import com.example.timad.poznavacka.FirestoreImpl;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -37,6 +42,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -48,7 +55,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -85,7 +94,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private boolean listCreated;
 
     private FirestoreImpl firestoreImpl;
-    private FirebaseFirestore db; //for testing
+    private FirebaseFirestore db; //for testing no longer
 
     public static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
@@ -234,11 +243,109 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             @Override
             public void onClick(View v) {
                 if (listCreated) {
-                    Gson g = new Gson();
-                    String json = g.toJson(mZastupceArr);
-          /*      for (int i = 0; i < representatives.size(); i++) {
 
-                    //uploading poznavacka
+                title = userInputTitle.getText().toString();
+
+                // Store images
+                Gson g = new Gson();
+                BitmapDrawable bitmapDraw;
+                Bitmap bitmap;
+                ContextWrapper c = new ContextWrapper(v.getContext());
+                String uuid = UUID.randomUUID().toString();
+                String path = c.getFilesDir().getPath() + "/" + uuid + "/";
+                File dir = new File(path);
+
+                // Create folder
+                try{
+                    dir.mkdir();
+                }catch(Exception e){
+                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    return;
+                }
+
+                // Deletes everything base in folder
+                /*File[] files = c.getFilesDir().listFiles();
+                Log.d("Files", "Size: "+ files.length);
+                for (int i = 0; i < files.length; i++)
+                {
+                    File[] files2 = files[i].listFiles();
+                    for (int x = 0; x < files2.length; x++) {
+                        files2[x].delete();
+                    }
+                }
+                Log.d("Files", "Deleted "+ files.length + " files");*/
+
+                // Saves images locally
+                FileOutputStream fos = null;
+
+                for (Zastupce z: mZastupceArr){
+                    if(z.getImage() != null) {
+                        bitmapDraw = (BitmapDrawable) z.getImage();
+                        bitmap = bitmapDraw.getBitmap();
+                        try {
+                            fos = new FileOutputStream(path + z.getParameter(0) + ".png");
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                        } catch (Exception e) {
+                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                            deletePoznavacka(dir);
+                            return;
+                        } finally {
+                            try {
+                                fos.close();
+                            } catch (IOException e) {
+                                Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                deletePoznavacka(dir);
+                                return;
+                            }
+                        }
+                    } else {
+                        /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
+                        deletePoznavacka(dir);
+                        return;*/
+                    }
+                    z.setImage(null);
+                }
+
+                // Saving mZastupceArr
+                String json = g.toJson(mZastupceArr);
+                //add to file
+                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
+                addToFireStore(item);
+
+                Log.d("Files", json);
+                File txtFile = new File(path + uuid + ".txt");
+
+                try {
+                    FileWriter writer = new FileWriter(txtFile);
+                    writer.append(json);
+                    writer.flush();
+                    writer.close();
+                } catch (IOException e){
+                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    deletePoznavacka(dir);
+                    return;
+                } finally {
+                    try {
+                        fos.close();
+                    } catch (IOException e) {
+                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        txtFile.delete();
+                        deletePoznavacka(dir);
+                        return;
+                    }
+                }
+
+                Log.d("Files", "Saved successfully");
+                Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+
+                /*for (int i = 0; i < representatives.size(); i++) {
+
+                    // Uploading poznavacka
                     Map<String, Object> representativeInfo = new HashMap<>();
                     representativeInfo.put(KEY_ZASTUPCE, representatives.get(i));
                     representativeInfo.put(KEY_IMGREF, "imageRef - cislo/hash?");
@@ -271,6 +378,15 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         //firestoreImpl.uploadRepresentative(zkouska1, "poznavackaExample");
         //firestoreImpl.readData("poznavackaExample");
         return view;
+    }
+
+    public void deletePoznavacka(File f){
+        File[] files = f.listFiles();
+        for (int x = 0; x < files.length; x++) {
+            files[x].delete();
+        }
+        f.delete();
+        Log.d("Files", "Deleted "+ (files.length + 1) + " files");
     }
 
     @Override
@@ -345,7 +461,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 languageURL = "fi";
                 break;
         }
-
     }
 
     @Override
@@ -660,6 +775,24 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
         return representative;
     }
+    private void addToFireStore(PoznavackaDbObject data){
+        db=FirebaseFirestore.getInstance();
+        CollectionReference dbPoznavacka = db.collection("Poznavacka");
+
+        dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+            @Override
+            public void onSuccess(DocumentReference documentReference) {
+                Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
+            }
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
+            }
+        });
+
+    }
+
 
 }
 
