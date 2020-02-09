@@ -22,4 +22,11 @@
         android:id="@+id/textTab2"
         android:layout_below="@+id/btnTEST" />
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/downloadView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/textTab2"
+        />
+
 </RelativeLayout>

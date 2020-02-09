@@ -11,6 +11,9 @@ public class PoznavackaDbObject {
         this.content = content;
     }
 
+    public PoznavackaDbObject() {
+    }
+
     public String getName() {
         return name;
     }
