@@ -9,6 +9,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -20,10 +21,12 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.FirestoreImpl;
@@ -64,6 +67,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import it.sephiroth.android.library.xtooltip.ClosePolicy;
+import it.sephiroth.android.library.xtooltip.Tooltip;
 
 import static com.example.timad.poznavacka.activities.lists.PopActivity.reversedUserScientificClassification;
 import static com.example.timad.poznavacka.activities.lists.PopActivity.userParametersCount;
@@ -87,6 +92,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private EditText userDividngString;
     private Switch autoImportSwitch;
     private Spinner languageSpinner;
+    private ImageView infoTip;
+    private TextView infoTextHolder;
 
     static String languageURL;
 
@@ -115,7 +122,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_createlist, container, false);
+        final View view = inflater.inflate(R.layout.fragment_createlist, container, false);
         firestoreImpl = new FirestoreImpl();
         btnCREATE = view.findViewById(R.id.createButton);
         btnSAVE = view.findViewById(R.id.saveButton);
@@ -126,11 +133,28 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
         userDividngString = view.findViewById(R.id.dividingCharacter);
         languageSpinner = view.findViewById(R.id.languageSpinner);
+        infoTip = view.findViewById(R.id.infoTip);
+        infoTextHolder = view.findViewById(R.id.infoTextHolder);
         db = FirebaseFirestore.getInstance(); //testing
         switchPressedOnce = false;
 
-        //LEFT OFF, get rid of the text -> put it in info https://github.com/sephiroth74/android-target-tooltip
 
+        //info
+        infoTip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SpannableString tooltipText = SpannableString.valueOf(getResources().getString(R.string.create_fragment_text));
+                //tooltipText.setSpan(new UnderlineSpan(), 0, 15, 0);
+                final Tooltip tooltip = new Tooltip.Builder(getContext())
+                        .anchor(infoTextHolder, 0, 0, false)
+                        .closePolicy(ClosePolicy.Companion.getTOUCH_ANYWHERE_CONSUME())
+                        .showDuration(0)
+                        .text(tooltipText)
+                        .arrow(false)
+                        .create();
+                tooltip.show(infoTextHolder, Tooltip.Gravity.CENTER, false);
+            }
+        });
 
         /* RecyclerView */
         mRecyclerView = view.findViewById(R.id.recyclerViewZ);
@@ -163,11 +187,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
                     String rawRepresentatives = userInputRepresentatives.getText().toString();
-                    dividingString = userDividngString.getText().toString().trim();
+                    dividingString = userDividngString.getText().toString().trim().toLowerCase();
                     title = userInputTitle.getText().toString().trim();
                     if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
 
-                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
+                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (dividingString) + "\\s*")));
                        /* if (dividingString.isEmpty()) { //single
                             exampleRepresentative = rawRepresentatives.trim();
                         } else { //multiple
@@ -204,7 +228,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
                 title = userInputTitle.getText().toString().trim();
-                dividingString = userDividngString.getText().toString().trim();
+                dividingString = userDividngString.getText().toString().trim().toLowerCase();
                 String rawRepresentatives = userInputRepresentatives.getText().toString();
                 //String rawRepresentatives = "pes domácí, koira, tasemnice bezbranná, lýtková kost, žula";
 
@@ -246,27 +270,27 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             public void onClick(View v) {
                 if (listCreated) {
 
-                title = userInputTitle.getText().toString();
+                    title = userInputTitle.getText().toString();
 
-                // Store images
-                Gson g = new Gson();
-                BitmapDrawable bitmapDraw;
-                Bitmap bitmap;
-                ContextWrapper c = new ContextWrapper(v.getContext());
-                String uuid = UUID.randomUUID().toString();
-                String path = c.getFilesDir().getPath() + "/" + uuid + "/";
-                File dir = new File(path);
+                    // Store images
+                    Gson g = new Gson();
+                    BitmapDrawable bitmapDraw;
+                    Bitmap bitmap;
+                    ContextWrapper c = new ContextWrapper(v.getContext());
+                    String uuid = UUID.randomUUID().toString();
+                    String path = c.getFilesDir().getPath() + "/" + uuid + "/";
+                    File dir = new File(path);
 
-                // Create folder
-                try{
-                    dir.mkdir();
-                }catch(Exception e){
-                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                    return;
-                }
+                    // Create folder
+                    try {
+                        dir.mkdir();
+                    } catch (Exception e) {
+                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        return;
+                    }
 
-                // Deletes everything base in folder
+                    // Deletes everything base in folder
                 /*File[] files = c.getFilesDir().listFiles();
                 Log.d("Files", "Size: "+ files.length);
                 for (int i = 0; i < files.length; i++)
@@ -278,72 +302,72 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 }
                 Log.d("Files", "Deleted "+ files.length + " files");*/
 
-                // Saves images locally
-                FileOutputStream fos = null;
+                    // Saves images locally
+                    FileOutputStream fos = null;
 
-                for (Zastupce z: mZastupceArr){
-                    if(z.getImage() != null) {
-                        bitmapDraw = (BitmapDrawable) z.getImage();
-                        bitmap = bitmapDraw.getBitmap();
-                        try {
-                            fos = new FileOutputStream(path + z.getParameter(0) + ".png");
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                        } catch (Exception e) {
-                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                            deletePoznavacka(dir);
-                            return;
-                        } finally {
+                    for (Zastupce z : mZastupceArr) {
+                        if (z.getImage() != null) {
+                            bitmapDraw = (BitmapDrawable) z.getImage();
+                            bitmap = bitmapDraw.getBitmap();
                             try {
-                                fos.close();
-                            } catch (IOException e) {
+                                fos = new FileOutputStream(path + z.getParameter(0) + ".png");
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                            } catch (Exception e) {
                                 Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
                                 e.printStackTrace();
                                 deletePoznavacka(dir);
                                 return;
+                            } finally {
+                                try {
+                                    fos.close();
+                                } catch (IOException e) {
+                                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                                    e.printStackTrace();
+                                    deletePoznavacka(dir);
+                                    return;
+                                }
                             }
-                        }
-                    } else {
+                        } else {
                         /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                         deletePoznavacka(dir);
                         return;*/
+                        }
+                        z.setImage(null);
                     }
-                    z.setImage(null);
-                }
 
-                // Saving mZastupceArr
-                String json = g.toJson(mZastupceArr);
-                //add to file
-                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
-                addToFireStore(item);
+                    // Saving mZastupceArr
+                    String json = g.toJson(mZastupceArr);
+                    //add to file
+                    PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json);
+                    addToFireStore(item);
 
-                Log.d("Files", json);
-                File txtFile = new File(path + uuid + ".txt");
+                    Log.d("Files", json);
+                    File txtFile = new File(path + uuid + ".txt");
 
-                try {
-                    FileWriter writer = new FileWriter(txtFile);
-                    writer.append(json);
-                    writer.flush();
-                    writer.close();
-                } catch (IOException e){
-                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                    deletePoznavacka(dir);
-                    return;
-                } finally {
                     try {
-                        fos.close();
+                        FileWriter writer = new FileWriter(txtFile);
+                        writer.append(json);
+                        writer.flush();
+                        writer.close();
                     } catch (IOException e) {
                         Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
                         e.printStackTrace();
-                        txtFile.delete();
                         deletePoznavacka(dir);
                         return;
+                    } finally {
+                        try {
+                            fos.close();
+                        } catch (IOException e) {
+                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                            txtFile.delete();
+                            deletePoznavacka(dir);
+                            return;
+                        }
                     }
-                }
 
-                Log.d("Files", "Saved successfully");
-                Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+                    Log.d("Files", "Saved successfully");
+                    Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
 
                 /*for (int i = 0; i < representatives.size(); i++) {
 
@@ -382,13 +406,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return view;
     }
 
-    public void deletePoznavacka(File f){
+    public void deletePoznavacka(File f) {
         File[] files = f.listFiles();
         for (int x = 0; x < files.length; x++) {
             files[x].delete();
         }
         f.delete();
-        Log.d("Files", "Deleted "+ (files.length + 1) + " files");
+        Log.d("Files", "Deleted " + (files.length + 1) + " files");
     }
 
     @Override
@@ -526,11 +550,18 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 boolean imageDetected = false;
                 int classificationPointer = 0;
                 int trCounter = 0;
-                Element infoBox;
+                Element infoBox = null;
 
                 if (doc != null && doc.head().hasText()) {
 
-                    infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    try {
+                        infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                    } catch (NullPointerException e) {
+                        e.printStackTrace();
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        continue;
+                    }
+
                     Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
@@ -777,19 +808,20 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
         return representative;
     }
-    private void addToFireStore(PoznavackaDbObject data){
-        db=FirebaseFirestore.getInstance();
+
+    private void addToFireStore(PoznavackaDbObject data) {
+        db = FirebaseFirestore.getInstance();
         CollectionReference dbPoznavacka = db.collection("Poznavacka");
 
         dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override
             public void onSuccess(DocumentReference documentReference) {
-                Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), "added!", Toast.LENGTH_SHORT).show();
             }
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
+                Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
             }
         });
 

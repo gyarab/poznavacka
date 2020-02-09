@@ -27,7 +27,7 @@
     <string name="test">Test</string>
     <string name="enter_pin_button">ENTER</string>
     <string name="account">Account</string>
-    <string name="create_fragment_text"><u>Split the representatives using the entered word/character</u>\nYou have the option to speak in the text using the inbuilt keyboard speak-in function</string>
+    <string name="create_fragment_text"><u> • Split the representatives using the entered word or character, e.g. \",\" -> \"dog, otter, ...\" </u>\n • You have the option to speak in the text using the keyboard inbuilt speak-in function</string>
     <string name="create_button">CREATE</string>
     <string name="autoRadDruhSwitch">Auto-insert classification</string>
     <string name="save_button">SAVE</string>

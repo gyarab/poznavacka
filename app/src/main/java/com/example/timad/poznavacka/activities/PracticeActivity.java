@@ -3,7 +3,6 @@ package com.example.timad.poznavacka.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +36,7 @@ public class PracticeActivity extends AppCompatActivity {
     FloatingActionButton fab_restart;
     View sceneView;
 
-    //load this from firebase database
+    //load this from local storage
     List<String> zastupci = Arrays.asList("Mlok skvrnitý", "Velemlok čínský", "Čolek obecný", "Čolek velký", "Červor", "Ropucha obecná", "Rosnička obecná", "Kuňka obecná", "Skokan hnědý", "Skokan zelený", "Kožatka velká", "Kareta obecná", "Želva sloní", "Želva nádherná", "Želva bahenní", "Hatérie novozélandská", "Gekon zední", "Leguán zelený", "Ještěrka obecná", "Ještěrka zelená", "Slepýš křehký", "Anakonda velká", "Kobra indická", "Taipan velký", "Užovka obojková", "Užovka podplamatá", "Zmije obecná", "Krokodýl nilský", "Aligátor severoamerický", "Gaviál indický", "Pštros dvouprstý", "Nandu pampový", "Kasuár přilbový", "Emu hnědý", "Kachna divoká", "Polák chocholačka", "Morčák velký");
     List<String> rady = Arrays.asList("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Hatérie", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Krokodýli", "Krokodýli", "Krokodýli", "Pštrosi", "Nanduové", "Kasuárové", "Kasuárové", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí");
     List<String> tridy = Arrays.asList("Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci");
@@ -48,7 +47,7 @@ public class PracticeActivity extends AppCompatActivity {
     int pocetVsechZastupcu;
     int currentZastupce;
 
-    protected Resources res; //instead load from firebase storage
+    protected Resources res;
 
 
     @Override
@@ -123,7 +122,7 @@ public class PracticeActivity extends AppCompatActivity {
                     textView.setVisibility(View.VISIBLE);
                     textView.setText(null);
 
-                    final Handler handler = new Handler();
+                    /*final Handler handler = new Handler();
                     handler.postDelayed(new Runnable() {
                         @Override
                         public void run() {
@@ -136,7 +135,7 @@ public class PracticeActivity extends AppCompatActivity {
                             textView.setText(R.string.all_learnt_message_1);
                             fab_restart.show();
                         }
-                    }, 4000);
+                    }, 4000);*/
                 }
             }
         });

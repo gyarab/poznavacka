@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
@@ -34,6 +35,7 @@
                 android:ems="10"
                 android:hint="@string/dividing_word_character_input"
                 android:inputType="none"
+                android:textAllCaps="false"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
 
@@ -43,24 +45,12 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/dividingCharacter"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="30dp"
                 android:ems="10"
                 android:hint="@string/the_representatives_input"
                 android:inputType="textMultiLine"
                 android:textColor="@color/colorWhite"
                 android:textColorHint="@color/colorGrey" />
-
-            <TextView
-                android:id="@+id/textUnderUserInput"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/userInputRepresentatives"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:text="@string/create_fragment_text"
-                android:textColor="@color/colorWhite"
-                android:textSize="15sp" />
-
 
             <Switch
                 android:id="@+id/autoImportSwitch"
@@ -79,7 +69,7 @@
                 android:id="@+id/languageSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/textUnderUserInput"
+                android:layout_below="@+id/userInputRepresentatives"
                 android:layout_marginTop="30dp"
                 android:layout_centerHorizontal="true"
                 android:prompt="@string/language_spinner_prompt"
@@ -125,6 +115,30 @@
                 android:layout_marginTop="10dp">
 
             </androidx.recyclerview.widget.RecyclerView>
+
+            <ImageButton
+                android:id="@+id/infoTip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/userInputRepresentatives"
+                android:layout_below="@+id/userInputTitle"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="66dp"
+                android:translationY="28dp"
+                android:layout_toEndOf="@+id/dividingCharacter"
+                android:background="@color/colorPrimary"
+                app:srcCompat="@drawable/ic_info_black_24dp"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:id="@+id/infoTextHolder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/dividingCharacter"
+                android:layout_alignParentEnd="true"
+                android:layout_marginTop="23dp"
+                android:layout_marginEnd="97dp"
+                android:text="" />
 
 
         </RelativeLayout>
