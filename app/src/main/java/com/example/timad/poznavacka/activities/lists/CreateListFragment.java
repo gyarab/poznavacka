@@ -105,7 +105,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing no longer
 
-    public static ArrayList<String> representatives;
+    static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
     private String title;
     private String dividingString;
@@ -115,6 +115,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
+
 
     private int parameters;
 
@@ -272,14 +273,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     title = userInputTitle.getText().toString();
 
-                    // Store images
-                    Gson g = new Gson();
-                    BitmapDrawable bitmapDraw;
-                    Bitmap bitmap;
-                    ContextWrapper c = new ContextWrapper(v.getContext());
-                    String uuid = UUID.randomUUID().toString();
-                    String path = c.getFilesDir().getPath() + "/" + uuid + "/";
-                    File dir = new File(path);
+                // Store images
+                Gson gson = new Gson();
+                BitmapDrawable bitmapDraw;
+                Bitmap bitmap;
+                ContextWrapper c = new ContextWrapper(v.getContext());
+                String uuid = UUID.randomUUID().toString();
+                String path = c.getFilesDir().getPath() + "/" + uuid + "/";
+                File dir = new File(path);
 
                     // Create folder
                     try {
@@ -290,44 +291,26 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         return;
                     }
 
-                    // Deletes everything base in folder
-                /*File[] files = c.getFilesDir().listFiles();
-                Log.d("Files", "Size: "+ files.length);
-                for (int i = 0; i < files.length; i++)
-                {
-                    File[] files2 = files[i].listFiles();
-                    for (int x = 0; x < files2.length; x++) {
-                        files2[x].delete();
-                    }
-                }
-                Log.d("Files", "Deleted "+ files.length + " files");*/
+                // Saves images locally
+                FileOutputStream fos;
 
-                    // Saves images locally
-                    FileOutputStream fos = null;
+                for (Zastupce z: mZastupceArr){
+                    if(z.getImage() != null) {
+                        bitmapDraw = (BitmapDrawable) z.getImage();
+                        bitmap = bitmapDraw.getBitmap();
+                        try {
+                            fos = new FileOutputStream(path + z.getParameter(0) + ".png");
+                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                            fos.close();
+                        } catch (IOException e) {
+                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                            deletePoznavacka(dir);
+                            return;
+                        }
+                    } else {
+                        // TODO exceotion for first thing
 
-                    for (Zastupce z : mZastupceArr) {
-                        if (z.getImage() != null) {
-                            bitmapDraw = (BitmapDrawable) z.getImage();
-                            bitmap = bitmapDraw.getBitmap();
-                            try {
-                                fos = new FileOutputStream(path + z.getParameter(0) + ".png");
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                            } catch (Exception e) {
-                                Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                                deletePoznavacka(dir);
-                                return;
-                            } finally {
-                                try {
-                                    fos.close();
-                                } catch (IOException e) {
-                                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                                    e.printStackTrace();
-                                    deletePoznavacka(dir);
-                                    return;
-                                }
-                            }
-                        } else {
                         /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                         deletePoznavacka(dir);
                         return;*/
@@ -335,39 +318,56 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         z.setImage(null);
                     }
 
-                    // Saving mZastupceArr
-                    String json = g.toJson(mZastupceArr);
-                    //add to file
-                    PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json);
-                    addToFireStore(item);
+                // Saving mZastupceArr
+                String json = gson.toJson(mZastupceArr);
+                //add to file
+                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
+                SharedListsFragment.addToFireStore("Poznavacka",item,db);
 
-                    Log.d("Files", json);
-                    File txtFile = new File(path + uuid + ".txt");
 
-                    try {
-                        FileWriter writer = new FileWriter(txtFile);
-                        writer.append(json);
-                        writer.flush();
-                        writer.close();
-                    } catch (IOException e) {
-                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                        deletePoznavacka(dir);
-                        return;
-                    } finally {
-                        try {
-                            fos.close();
-                        } catch (IOException e) {
-                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                            txtFile.delete();
-                            deletePoznavacka(dir);
-                            return;
-                        }
-                    }
+
+
+                Log.d("Files", json);
+                File txtFile = new File(path + uuid + ".txt");
+                FileWriter fw;
+
+                try {
+                    fw = new FileWriter(txtFile);
+                    fw.write(json);
+                    fw.flush();
+                    fw.close();
+                } catch (IOException e){
+                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    txtFile.delete();
+                    e.printStackTrace();
+                    deletePoznavacka(dir);
+                    return;
+                }
+
+                String pathPoznavacka = c.getFilesDir().getPath() + "/poznavacka.txt";
+                if(MyListsFragment.sPoznavackaInfoArr == null){
+                    MyListsFragment.readFile(pathPoznavacka, true);
+                }
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid));
+                updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
                     Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+
+                    // Deletes everything base in folder
+                /*File[] files = c.getFilesDir().listFiles();
+                for (int i = 0; i < files.length; i++)
+                {
+                    if(files[i].isDirectory()){
+                        Log.d("Files", files[i].getPath() + " : " + files[i].getName());
+                        File[] files2 = files[i].listFiles();
+                        for (int x = 0; x < files2.length; x++) {
+                            //files2[x].delete();
+                        }
+                    }
+                    //files[i].delete();
+                }
+                Log.d("Files", "Deleted "+ files.length + " files");*/
 
                 /*for (int i = 0; i < representatives.size(); i++) {
 
@@ -406,13 +406,39 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return view;
     }
 
-    public void deletePoznavacka(File f) {
-        File[] files = f.listFiles();
-        for (int x = 0; x < files.length; x++) {
-            files[x].delete();
+     static void deletePoznavacka(File f){
+        try {
+            File[] files = f.listFiles();
+            for (int x = 0; x < files.length; x++) {
+                files[x].delete();
+            }
+            f.delete();
+            Log.d("Files", "Deleted " + (files.length + 1) + " files");
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        f.delete();
-        Log.d("Files", "Deleted " + (files.length + 1) + " files");
+    }
+
+     static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr){
+        Gson gson = new Gson();
+        File file = new File(path);
+        FileWriter fw;
+        String s;
+
+        if(arr.size() <= 0){
+            s = "";
+        } else {
+            s = gson.toJson(arr);
+        }
+
+        try {
+            fw = new FileWriter(file);
+            fw.write(s);
+            fw.flush();
+            fw.close();
+        } catch (IOException e){
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -731,7 +757,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             super.onCancelled();
         }
 
-        public Drawable drawable_from_url(String url) throws java.io.IOException {
+         Drawable drawable_from_url(String url) throws java.io.IOException {
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -785,7 +811,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return representatives;
     }
 
-    public String capitalize(String representative, String languageURL) {
+    private String capitalize(String representative, String languageURL) {
         if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
             representative = representative.substring(0, 1).toUpperCase() + representative.substring(1).toLowerCase();
         } else {
@@ -807,24 +833,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             representative = representative.substring(0, 1).toUpperCase(locale) + representative.substring(1).toLowerCase();
         }
         return representative;
-    }
-
-    private void addToFireStore(PoznavackaDbObject data) {
-        db = FirebaseFirestore.getInstance();
-        CollectionReference dbPoznavacka = db.collection("Poznavacka");
-
-        dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Toast.makeText(getActivity(), "added!", Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
 
