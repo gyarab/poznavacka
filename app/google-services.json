@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "882289086797-h7l330v7fdocvr2h0i77bfoo2o6jmfnm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "d19d353d1121088d9f008aee2184b27cc2c9bac1"
+          }
+        },
+        {
           "client_id": "882289086797-qklc1nd5ee3phvkljlttbrrji2bq5t4d.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -36,14 +44,6 @@
           "android_info": {
             "package_name": "com.example.timad.poznavacka",
             "certificate_hash": "68e5184f9b6638ade60baa48eb163c98864defde"
-          }
-        },
-        {
-          "client_id": "882289086797-7e4kbu4ps4flccgpjircuvd05u0i99rk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.timad.poznavacka",
-            "certificate_hash": "8d415aa26d0ac5534262aa89e1457f04fb807372"
           }
         },
         {
