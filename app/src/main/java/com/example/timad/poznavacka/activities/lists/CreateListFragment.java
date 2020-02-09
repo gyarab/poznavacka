@@ -99,7 +99,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing no longer
 
-    public static ArrayList<String> representatives;
+    static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
     private String title;
     private String dividingString;
@@ -109,6 +109,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private RecyclerView.Adapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
+
 
     private int parameters;
 
@@ -298,7 +299,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 String json = gson.toJson(mZastupceArr);
                 //add to file
                 PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
-                addToFireStore(item);
+                SharedListsFragment.addToFireStore("Poznavacka",item,db);
+
+
+
 
                 Log.d("Files", json);
                 File txtFile = new File(path + uuid + ".txt");
@@ -379,7 +383,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return view;
     }
 
-    public static void deletePoznavacka(File f){
+     static void deletePoznavacka(File f){
         try {
             File[] files = f.listFiles();
             for (int x = 0; x < files.length; x++) {
@@ -392,7 +396,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
     }
 
-    public static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr){
+     static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr){
         Gson gson = new Gson();
         File file = new File(path);
         FileWriter fw;
@@ -723,7 +727,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             super.onCancelled();
         }
 
-        public Drawable drawable_from_url(String url) throws java.io.IOException {
+         Drawable drawable_from_url(String url) throws java.io.IOException {
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
@@ -777,7 +781,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return representatives;
     }
 
-    public String capitalize(String representative, String languageURL) {
+    private String capitalize(String representative, String languageURL) {
         if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
             representative = representative.substring(0, 1).toUpperCase() + representative.substring(1).toLowerCase();
         } else {
@@ -799,23 +803,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             representative = representative.substring(0, 1).toUpperCase(locale) + representative.substring(1).toLowerCase();
         }
         return representative;
-    }
-    private void addToFireStore(PoznavackaDbObject data){
-        db=FirebaseFirestore.getInstance();
-        CollectionReference dbPoznavacka = db.collection("Poznavacka");
-
-        dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-            @Override
-            public void onSuccess(DocumentReference documentReference) {
-                Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
-            }
-        });
-
     }
 
 
