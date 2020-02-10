@@ -3,16 +3,19 @@ package com.example.timad.poznavacka;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
-
-public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> {
-    private ArrayList<PrewiewPoznavacka> arr;
+public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> implements Filterable {
+    private ArrayList<PreviewPoznavacka> arr;
+    private ArrayList<PreviewPoznavacka> arrFull;
     public OnItemClickListener listener;
 
     public interface  OnItemClickListener{
@@ -50,8 +53,10 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
             });
         }
     }
-    public SharedListAdapter(ArrayList<PrewiewPoznavacka> arr) {
+
+    public SharedListAdapter(ArrayList<PreviewPoznavacka> arr) {
         this.arr = arr;
+        arrFull = new ArrayList<>(arr);
     }
 
 
@@ -66,7 +71,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
 
     @Override
     public void onBindViewHolder(@NonNull SharedListAdapter.downloadViewHolder holder, int position) {
-        PrewiewPoznavacka item = arr.get(position);
+        PreviewPoznavacka item = arr.get(position);
 
         holder.mImageView.setImageResource(item.getImageRecource());
         holder.mTextView1.setText(item.getId());
@@ -78,4 +83,41 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
     public int getItemCount() {
         return arr.size();
     }
+
+    @Override
+    public Filter getFilter() {
+        return previewPoznavackaFilter;
+    }
+
+    private Filter previewPoznavackaFilter = new Filter() {
+        @Override
+        protected FilterResults performFiltering(CharSequence constraint) {
+            ArrayList<PreviewPoznavacka> filteredList = new ArrayList<>();
+
+            if (constraint == null || constraint.length() == 0) {
+                filteredList.addAll(arrFull);
+            } else {
+                String filterPattern = constraint.toString().toLowerCase().trim();
+
+                for (PreviewPoznavacka item :
+                        arrFull) {
+                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                        filteredList.add(item);
+                    }
+                }
+            }
+
+            FilterResults results = new FilterResults();
+            results.values = filteredList;
+
+            return results;
+        }
+
+        @Override
+        protected void publishResults(CharSequence constraint, FilterResults results) {
+            arr.clear();
+            arr.addAll((ArrayList) results.values);
+            notifyDataSetChanged();
+        }
+    };
 }

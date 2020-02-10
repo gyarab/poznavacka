@@ -1,17 +1,17 @@
 package com.example.timad.poznavacka;
 
-public class PrewiewPoznavacka {
+public class PreviewPoznavacka {
     private int imageRecource;
     private String name;
     private String id;
 
-    public PrewiewPoznavacka(int imageRecource, String name, String id) {
+    public PreviewPoznavacka(int imageRecource, String name, String id) {
         this.imageRecource = imageRecource;
         this.name = name;
         this.id = id;
     }
 
-    public PrewiewPoznavacka() {
+    public PreviewPoznavacka() {
     }
 
     public Integer getImageRecource() {

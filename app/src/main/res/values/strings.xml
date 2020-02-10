@@ -54,4 +54,5 @@
     <string name="title_input">Title</string>
     <string name="dividing_word_character_input">Dividing sequence</string>
     <string name="the_representatives_input">The representatives</string>
+    <string name="search_lists">Search lists</string>
 </resources>
