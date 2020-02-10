@@ -14,7 +14,7 @@ public class PrewiewPoznavacka {
     public PrewiewPoznavacka() {
     }
 
-    public Integer getImageRecource() {
+    int getImageRecource() {
         return imageRecource;
     }
 

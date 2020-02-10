@@ -1,13 +1,13 @@
-package com.example.timad.poznavacka.activities.test;
+package com.example.timad.poznavacka;
 
 public class PoznavackaDbObject {
-    String name;
-    String id;
-    String content;
+    private String name;
+    private String userName;
+    private String content;
 
-    public PoznavackaDbObject(String name, String id, String content) {
+    public PoznavackaDbObject(String name, String userName, String content) {
         this.name = name;
-        this.id = id;
+        this.userName = userName;
         this.content = content;
     }
 
@@ -22,12 +22,12 @@ public class PoznavackaDbObject {
         this.name = name;
     }
 
-    public String getId() {
-        return id;
+    public String getUserName() {
+        return userName;
     }
 
-    public void setId(String id) {
-        this.id = id;
+    public void setUserName(String userName) {
+        this.userName = userName;
     }
 
     public String getContent() {

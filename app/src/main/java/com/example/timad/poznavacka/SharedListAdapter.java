@@ -13,21 +13,25 @@ import java.util.ArrayList;
 
 public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> {
     private ArrayList<PrewiewPoznavacka> arr;
-    public OnItemClickListener listener;
+    OnItemClickListener listener;
 
     public interface  OnItemClickListener{
         void onDownloadClick(int position);
+        void onShareClick(int position);
+        void onDeleteClick(int Position);
     }
     public void setOnItemClickListener(OnItemClickListener listener){
         this.listener=listener;
     }
 
     // downloadViewHolder
-    public static class downloadViewHolder extends RecyclerView.ViewHolder {
-        public ImageView mImageView;
-        public TextView mTextView1;
-        public TextView mTextView2;
-        public ImageView mImageView2;
+     static class downloadViewHolder extends RecyclerView.ViewHolder {
+         ImageView mImageView;
+         TextView mTextView1;
+         TextView mTextView2;
+         ImageView mImageView2;
+         ImageView mImageView3;
+         ImageView mImageView4;
 
         public downloadViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
@@ -35,6 +39,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
             mTextView1 = itemView.findViewById(R.id.textView);
             mTextView2 = itemView.findViewById(R.id.textView2);
             mImageView2 = itemView.findViewById(R.id.imgView2);
+            mImageView3 = itemView.findViewById(R.id.imgView3);
+            mImageView4 = itemView.findViewById(R.id.imgView4);
 
 
             mImageView2.setOnClickListener(new View.OnClickListener() {
@@ -43,6 +49,28 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
                     int position = getAdapterPosition();
                     if(position!=RecyclerView.NO_POSITION){
                         listener.onDownloadClick(position);
+
+                    }
+
+                }
+            });
+            mImageView3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION){
+                        listener.onDeleteClick(position);
+
+                    }
+
+                }
+            });
+            mImageView4.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION){
+                        listener.onShareClick(position);
 
                     }
 
@@ -72,6 +100,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         holder.mTextView1.setText(item.getId());
         holder.mTextView2.setText(item.getName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
+        holder.mImageView3.setImageResource(R.drawable.ic_delete);
+        holder.mImageView4.setImageResource(R.drawable.ic_share);
     }
 
     @Override

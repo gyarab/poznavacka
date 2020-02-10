@@ -12,9 +12,9 @@
 
         <ImageView
             android:id="@+id/imgView"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="34dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginBottom="0dp"
             android:padding="2dp" />
 
@@ -30,12 +30,28 @@
 
         <ImageView
             android:id="@+id/imgView2"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginEnd="34dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
             android:layout_marginBottom="0dp"
             android:padding="2dp"
             android:layout_alignParentEnd="true"/>
+        <ImageView
+            android:id="@+id/imgView3"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="0dp"
+            android:padding="2dp"
+            android:layout_toLeftOf="@id/imgView2"/>
+        <ImageView
+            android:id="@+id/imgView4"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginEnd="10dp"
+            android:layout_marginBottom="0dp"
+            android:padding="2dp"
+            android:layout_toLeftOf="@id/imgView3"/>
 
         <TextView
             android:id="@+id/textView2"

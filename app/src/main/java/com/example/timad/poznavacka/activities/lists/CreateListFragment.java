@@ -31,11 +31,7 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
-import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.example.timad.poznavacka.PoznavackaDbObject;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -60,7 +56,6 @@ import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -298,7 +293,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 // Saving mZastupceArr
                 String json = gson.toJson(mZastupceArr);
                 //add to file
-                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
+                PoznavackaDbObject item = new PoznavackaDbObject(title,"userName",json);
                 SharedListsFragment.addToFireStore("Poznavacka",item,db);
 
 
