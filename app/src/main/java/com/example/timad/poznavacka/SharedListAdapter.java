@@ -20,6 +20,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
 
     public interface  OnItemClickListener{
         void onDownloadClick(int position);
+        void onDeleteClick(int position);
     }
     public void setOnItemClickListener(OnItemClickListener listener){
         this.listener=listener;
@@ -31,6 +32,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         public TextView mTextView1;
         public TextView mTextView2;
         public ImageView mImageView2;
+        public ImageView mImageView3;
 
         public downloadViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
@@ -38,6 +40,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
             mTextView1 = itemView.findViewById(R.id.textView);
             mTextView2 = itemView.findViewById(R.id.textView2);
             mImageView2 = itemView.findViewById(R.id.imgView2);
+            mImageView3 = itemView.findViewById(R.id.imgView3);
+
 
 
             mImageView2.setOnClickListener(new View.OnClickListener() {
@@ -46,6 +50,17 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
                     int position = getAdapterPosition();
                     if(position!=RecyclerView.NO_POSITION){
                         listener.onDownloadClick(position);
+
+                    }
+
+                }
+            });
+            mImageView3.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int position = getAdapterPosition();
+                    if(position!=RecyclerView.NO_POSITION){
+                        listener.onDeleteClick(position);
 
                     }
 
@@ -74,9 +89,10 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         PreviewPoznavacka item = arr.get(position);
 
         holder.mImageView.setImageResource(item.getImageRecource());
-        holder.mTextView1.setText(item.getId());
+        holder.mTextView1.setText(item.getAuthorsName());
         holder.mTextView2.setText(item.getName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
+        holder.mImageView3.setImageResource(R.drawable.ic_delete);
     }
 
     @Override

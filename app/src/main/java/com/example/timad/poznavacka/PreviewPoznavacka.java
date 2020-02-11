@@ -4,17 +4,19 @@ public class PreviewPoznavacka {
     private int imageRecource;
     private String name;
     private String id;
-
-    public PreviewPoznavacka(int imageRecource, String name, String id) {
-        this.imageRecource = imageRecource;
-        this.name = name;
-        this.id = id;
-    }
+    private String authorsName;
 
     public PreviewPoznavacka() {
     }
 
-    public Integer getImageRecource() {
+    public PreviewPoznavacka(int imageRecource, String name, String id, String authorsName) {
+        this.imageRecource = imageRecource;
+        this.name = name;
+        this.id = id;
+        this.authorsName = authorsName;
+    }
+
+    public int getImageRecource() {
         return imageRecource;
     }
 
@@ -36,5 +38,13 @@ public class PreviewPoznavacka {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public String getAuthorsName() {
+        return authorsName;
+    }
+
+    public void setAuthorsName(String authorsName) {
+        this.authorsName = authorsName;
     }
 }

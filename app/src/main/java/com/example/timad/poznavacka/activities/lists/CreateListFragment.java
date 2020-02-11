@@ -317,7 +317,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 // Saving mZastupceArr
                 String json = gson.toJson(mZastupceArr);
                 //add to file
-                PoznavackaDbObject item = new PoznavackaDbObject(title,uuid,json);
+                    String userName = "user";
+                    //TODO
+                PoznavackaDbObject item = new PoznavackaDbObject(title,userName,json);
                 SharedListsFragment.addToFireStore("Poznavacka",item,db);
 
 
@@ -344,7 +346,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 if(MyListsFragment.sPoznavackaInfoArr == null){
                     MyListsFragment.readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid));
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, "userName"));
                 updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");

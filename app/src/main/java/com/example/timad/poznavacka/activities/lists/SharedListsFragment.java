@@ -87,12 +87,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                try {
-                    Toast.makeText(getActivity(), documentSnapshot.get("name").toString(), Toast.LENGTH_LONG).show();
-
-                } catch (Exception e) {
-                    Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
-                }
+                //TODO
             }
         });
 
@@ -114,6 +109,16 @@ public class SharedListsFragment extends Fragment {
                 pickDocument(id, collectionName);
 
             }
+
+            @Override
+            public void onDeleteClick(int position) {
+                String id = arrayList.get(position).getId();
+                String authorsName = "author";
+                //TODO
+
+                removePoznavacka(id,collectionName,authorsName,position);
+
+            }
         });
     }
 
@@ -126,7 +131,7 @@ public class SharedListsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId()));
+                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("id")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -162,22 +167,36 @@ public class SharedListsFragment extends Fragment {
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
     // nedodelane
-    public void removePoznavacka(String documentName, String collectionName, String authorsName) {
-        db.collection(collectionName).document(documentName)
-                .delete()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully deleted!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error deleting document", e);
-                    }
-                });
-        mSharedListAdapter.notifyDataSetChanged();
+    public void removePoznavacka(final String documentName, final String collectionName, final String authorsName,final int position) {
+        DocumentReference docRef = db.collection(collectionName).document(documentName);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                if(item.getId().equals(authorsName)) {
+
+                    db.collection(collectionName).document(documentName)
+                            .delete()
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                    arrayList.remove(position);
+                                    mSharedListAdapter.notifyDataSetChanged();
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+
+                                }
+                            });
+
+                }else{
+                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getId()+","+authorsName, Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+
 
     }
 
@@ -188,7 +207,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef));
+                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getId()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }
