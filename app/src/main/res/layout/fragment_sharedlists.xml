@@ -1,16 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical">
 
     <EditText
         android:id="@+id/search_view"
-        android:layout_width="match_parent"
+        android:layout_width="200dp"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
         android:hint="@string/search_lists"
         android:importantForAutofill="no"
-        android:inputType="text" />
+        android:inputType="text"
+        android:textColor="@color/text_color" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -18,5 +21,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/search_view" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_alignEnd="@+id/search_view"
+        android:layout_alignBottom="@+id/search_view"
+        android:layout_marginEnd="0dp"
+        android:layout_marginBottom="5dp"
+        app:srcCompat="@drawable/ic_search" />
 
 </RelativeLayout>
