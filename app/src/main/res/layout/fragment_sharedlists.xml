@@ -13,7 +13,8 @@
         android:hint="@string/search_lists"
         android:importantForAutofill="no"
         android:inputType="text"
-        android:textColor="@color/text_color" />
+        android:textColor="@color/text_color"
+        android:textColorHint="@color/hint_color" />
 
 
     <androidx.recyclerview.widget.RecyclerView
@@ -23,13 +24,13 @@
         android:layout_below="@+id/search_view" />
 
     <ImageView
-        android:id="@+id/imageView2"
+        android:id="@+id/search_icon_shared_lists"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_alignEnd="@+id/search_view"
         android:layout_alignBottom="@+id/search_view"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="5dp"
-        app:srcCompat="@drawable/ic_search" />
+        app:srcCompat="@drawable/ic_search_grey_24dp" />
 
 </RelativeLayout>

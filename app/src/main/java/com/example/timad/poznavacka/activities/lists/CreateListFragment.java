@@ -611,6 +611,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
 
                             if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
+                                if (dataPair[1].contains("(")) {
+                                    dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
+                                }
                                 newData.add(dataPair[1]); //adding the specific classification
                                 Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                                 classificationPointer++;
@@ -626,6 +629,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
                                 classificationPointer++;
+                                if (dataPair[1].contains("(")) {
+                                    dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
+                                }
                                 newData.add(dataPair[1]);
                                 Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                             }

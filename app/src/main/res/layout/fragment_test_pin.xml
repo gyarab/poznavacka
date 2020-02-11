@@ -28,6 +28,6 @@
         android:text="@string/enter_pin_button"
         android:textAlignment="center"
         android:background="@color/black"
-        android:textColor="@color/colorWhite" />
+        android:textColor="@color/text_color" />
 
 </RelativeLayout>
