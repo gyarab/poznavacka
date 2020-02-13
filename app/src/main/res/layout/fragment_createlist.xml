@@ -146,17 +146,25 @@
 
             </RelativeLayout>
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerViewZ"
+            <HorizontalScrollView
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/createButton"
-                android:layout_marginTop="10dp">
+                android:layout_height="match_parent"
+                android:layout_below="@+id/createButton">
 
-            </androidx.recyclerview.widget.RecyclerView>
 
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerViewZ"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:scrollbars="horizontal|vertical">
+
+                </androidx.recyclerview.widget.RecyclerView>
+
+            </HorizontalScrollView>
 
         </RelativeLayout>
     </ScrollView>
+
+
 
 </RelativeLayout>
