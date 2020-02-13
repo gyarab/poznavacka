@@ -269,14 +269,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     title = userInputTitle.getText().toString();
 
-                // Store images
-                Gson gson = new Gson();
-                BitmapDrawable bitmapDraw;
-                Bitmap bitmap;
-                ContextWrapper c = new ContextWrapper(v.getContext());
-                String uuid = UUID.randomUUID().toString();
-                String path = c.getFilesDir().getPath() + "/" + uuid + "/";
-                File dir = new File(path);
+                    // Store images
+                    Gson gson = new Gson();
+                    BitmapDrawable bitmapDraw;
+                    Bitmap bitmap;
+                    ContextWrapper c = new ContextWrapper(v.getContext());
+                    String uuid = UUID.randomUUID().toString();
+                    String path = c.getFilesDir().getPath() + "/" + uuid + "/";
+                    File dir = new File(path);
 
                     // Create folder
                     try {
@@ -287,25 +287,25 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         return;
                     }
 
-                // Saves images locally
-                FileOutputStream fos;
+                    // Saves images locally
+                    FileOutputStream fos;
 
-                for (Zastupce z: mZastupceArr){
-                    if(z.getImage() != null) {
-                        bitmapDraw = (BitmapDrawable) z.getImage();
-                        bitmap = bitmapDraw.getBitmap();
-                        try {
-                            fos = new FileOutputStream(path + z.getParameter(0) + ".png");
-                            bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                            fos.close();
-                        } catch (IOException e) {
-                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                            e.printStackTrace();
-                            deletePoznavacka(dir);
-                            return;
-                        }
-                    } else {
-                        // TODO exceotion for first thing
+                    for (Zastupce z : mZastupceArr) {
+                        if (z.getImage() != null) {
+                            bitmapDraw = (BitmapDrawable) z.getImage();
+                            bitmap = bitmapDraw.getBitmap();
+                            try {
+                                fos = new FileOutputStream(path + z.getParameter(0) + ".png");
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
+                                fos.close();
+                            } catch (IOException e) {
+                                Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                deletePoznavacka(dir);
+                                return;
+                            }
+                        } else {
+                            // TODO exceotion for first thing
 
                         /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                         deletePoznavacka(dir);
@@ -314,40 +314,38 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         z.setImage(null);
                     }
 
-                // Saving mZastupceArr
-                String json = gson.toJson(mZastupceArr);
-                //add to file
+                    // Saving mZastupceArr
+                    String json = gson.toJson(mZastupceArr);
+                    //add to file
                     String userName = "user";
                     //TODO
-                PoznavackaDbObject item = new PoznavackaDbObject(title,userName,json);
-                SharedListsFragment.addToFireStore("Poznavacka",item,db);
+                    PoznavackaDbObject item = new PoznavackaDbObject(title, userName, json);
+                    SharedListsFragment.addToFireStore("Poznavacka", item, db);
 
 
+                    Log.d("Files", json);
+                    File txtFile = new File(path + uuid + ".txt");
+                    FileWriter fw;
 
+                    try {
+                        fw = new FileWriter(txtFile);
+                        fw.write(json);
+                        fw.flush();
+                        fw.close();
+                    } catch (IOException e) {
+                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                        txtFile.delete();
+                        e.printStackTrace();
+                        deletePoznavacka(dir);
+                        return;
+                    }
 
-                Log.d("Files", json);
-                File txtFile = new File(path + uuid + ".txt");
-                FileWriter fw;
-
-                try {
-                    fw = new FileWriter(txtFile);
-                    fw.write(json);
-                    fw.flush();
-                    fw.close();
-                } catch (IOException e){
-                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                    txtFile.delete();
-                    e.printStackTrace();
-                    deletePoznavacka(dir);
-                    return;
-                }
-
-                String pathPoznavacka = c.getFilesDir().getPath() + "/poznavacka.txt";
-                if(MyListsFragment.sPoznavackaInfoArr == null){
-                    MyListsFragment.readFile(pathPoznavacka, true);
-                }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, "userName"));
-                updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+                    String pathPoznavacka = c.getFilesDir().getPath() + "/poznavacka.txt";
+                    if (MyListsFragment.sPoznavackaInfoArr == null) {
+                        MyListsFragment.readFile(pathPoznavacka, true);
+                    }
+                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, "userName"));
+                    updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
                     Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
@@ -404,7 +402,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return view;
     }
 
-     static void deletePoznavacka(File f){
+    static void deletePoznavacka(File f) {
         try {
             File[] files = f.listFiles();
             for (int x = 0; x < files.length; x++) {
@@ -417,13 +415,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
     }
 
-     static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr){
+    static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr) {
         Gson gson = new Gson();
         File file = new File(path);
         FileWriter fw;
         String s;
 
-        if(arr.size() <= 0){
+        if (arr.size() <= 0) {
             s = "";
         } else {
             s = gson.toJson(arr);
@@ -434,7 +432,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             fw.write(s);
             fw.flush();
             fw.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
@@ -567,13 +565,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 }
 
                 ArrayList<String> newData = new ArrayList<>();
-                String[] dataPair;
+                int classificationPointer = 0;
                 Drawable img = null;
                 String imageURL = "";
-                boolean scientificClassificationDetected = false;
-                boolean imageDetected = false;
-                int classificationPointer = 0;
-                int trCounter = 0;
+
                 Element infoBox = null;
 
                 if (doc != null && doc.head().hasText()) {
@@ -581,12 +576,19 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     try {
                         infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
                     } catch (NullPointerException e) {
+                        //ROZCESTNÍK
                         e.printStackTrace();
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                         continue;
                     }
 
-                    Elements trs = infoBox.select("tr");
+                    ArrayList harvestedInfoBox = harvestInfoBox(infoBox);
+                    newData = (ArrayList<String>) harvestedInfoBox.get(0);
+                    classificationPointer = (int) harvestedInfoBox.get(1);
+                    img = (Drawable) harvestedInfoBox.get(2);
+                    imageURL = (String) harvestedInfoBox.get(3);
+
+/*                    Elements trs = infoBox.select("tr");
                     for (Element tr :
                             trs) {
 
@@ -647,62 +649,36 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         }
 
                         //get the image
-                        else if (!imageDetected) {
-                            if (tr.getAllElements().hasAttr("data-file-type")) {
-                                Elements imgElement = tr.getElementsByAttribute("data-file-type");
-                                if (imgElement.attr("data-file-type").equals("bitmap")) {
-                                    imageURL = tr.selectFirst("img").absUrl("src");
-                                    Log.d(TAG, "IMAGEURL  ===   " + imageURL);
-                                    try {
-                                        img = drawable_from_url(imageURL);
-                                    } catch (IOException e) {
-                                        e.printStackTrace();
-                                    }
-                                    Log.d(TAG, "image downloaded");
-                                    imageDetected = true;
-                                }
-
-                            }
+                        else if (img == null) {
+                            ArrayList imgAndUrl = getImageFromTr(tr);
+                            img = (Drawable) imgAndUrl.get(0);
+                            imageURL = (String) imgAndUrl.get(1);
                         }
-                    }
-                    Log.d(TAG, "stopped scraping");
-                    if (fragment.loadingRepresentative) {
-                        Log.d(TAG, "loading representative is true");
-                    } else {
-                        Log.d(TAG, "loading representative is false");
-                    }
+                    }*/
                     newData.add(doc.title());
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
 
                     //loading representative
-                    if (classificationPointer == 0) { //detected wrong table that doesn't contain any useful info
+                    if (detectedWrongTable(classificationPointer)) {
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
                     }
                     if (img == null) {
                         //get only the image
-                        try {
-                            Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
-                            if (imgElement != null) {
-                                imageURL = imgElement.absUrl("src");
-                                Log.d(TAG, "getting only image - URL = " + imageURL);
-                                try {
-                                    img = drawable_from_url(imageURL);
-                                } catch (IOException e) {
-                                    e.printStackTrace();
-                                }
-                            }
-                        } catch (Exception e) {
-                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
-                            continue;
-                        }
+                        ArrayList imgAndUrl = getImageFromSite(doc);
+                        img = (Drawable) imgAndUrl.get(0);
+                        imageURL = (String) imgAndUrl.get(1);
                     }
-                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
-                    Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
+                    if (img == null) {
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
+                    } else {
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
+                    }
+                    Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
 
                 } else {
                     //add an empty only with representative
@@ -712,6 +688,150 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 publishProgress("");
             }
             return null;
+        }
+
+        private ArrayList<String> harvestInfoBox(Element infoBox) {
+
+            ArrayList returnList = new ArrayList();
+
+            ArrayList<String> newData = new ArrayList<>();
+            Drawable img = null;
+            String imageURL = "";
+            int classificationPointer = 0;
+
+            String[] dataPair;
+            boolean scientificClassificationDetected = false;
+            boolean imageDetected = false;
+            int trCounter = 0;
+            CreateListFragment fragment = fragmentWeakReference.get();
+
+
+            Elements trs = infoBox.select("tr");
+            for (Element tr :
+                    trs) {
+
+                trCounter++;
+                Log.d(TAG, "current tr = " + trCounter);
+                if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
+                    dataPair = tr.wholeText().split("\n", 2);
+                    if (dataPair.length == 1) { //detected wrong table
+                        Log.d(TAG, "different table");
+                        for (int i = 0; i < userParametersCount - 1; i++) {
+                            newData.add("");
+                        }
+                        break;
+                    }
+                    for (int i = 0; i < 2; i++) {
+                        dataPair[i] = dataPair[i].trim();
+                        Log.d(TAG, "found " + dataPair[i]);
+                    }
+
+                    Log.d(TAG, "classPointer = " + classificationPointer);
+                    Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
+                    Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
+
+                    if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
+                        if (dataPair[1].contains("(")) {
+                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
+                        }
+                        newData.add(dataPair[1]); //adding the specific classification
+                        Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                        classificationPointer++;
+
+                    } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
+                        Log.d(TAG, "userScientificClassification contains " + dataPair[0]);
+                        int tempPointer = classificationPointer;
+                        classificationPointer = userScientificClassification.indexOf(dataPair[0]);
+                        for (; tempPointer < classificationPointer; tempPointer++) {
+                            newData.add("");
+                            Log.d(TAG, "adding new data to newData = empty (not detected)");
+                        }
+
+
+                        classificationPointer++;
+                        if (dataPair[1].contains("(")) {
+                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
+                        }
+                        newData.add(dataPair[1]);
+                        Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                    }
+
+
+                    scientificClassificationDetected = true;
+                } else if (scientificClassificationDetected) {
+                    if (newData.size() < (userParametersCount - 1)) { //the last parameter was not detected
+
+                        newData.add("");
+                    }
+                    break;
+                }
+
+                //get the image
+                else if (img == null) {
+                    ArrayList imgAndUrl = getImageFromTr(tr);
+                    img = (Drawable) imgAndUrl.get(0);
+                    imageURL = (String) imgAndUrl.get(1);
+                }
+            }
+            returnList.add(newData);
+            returnList.add(classificationPointer);
+            returnList.add(img);
+            returnList.add(imageURL);
+            return returnList;
+        }
+
+        private ArrayList getImageFromSite(Document doc) {
+            ArrayList imgAndURL = new ArrayList();
+            Drawable img = null;
+            String imageURL = null;
+            try {
+                Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
+                if (imgElement != null) {
+                    imageURL = imgElement.absUrl("src");
+                    Log.d(TAG, "getting only image - URL = " + imageURL);
+                    try {
+                        img = drawable_from_url(imageURL);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            imgAndURL.add(img);
+            imgAndURL.add(imageURL);
+            return imgAndURL;
+        }
+
+        //checks for indicators of wrong table
+        private boolean detectedWrongTable(int classificationPointer) {
+            if (classificationPointer == 0) {
+                return true;
+            }
+            return false;
+        }
+
+        private ArrayList getImageFromTr(Element tr) {
+            ArrayList imgAndUrl = new ArrayList();
+            Drawable img = null;
+            String imageURL = null;
+            if (tr.getAllElements().hasAttr("data-file-type")) {
+                Elements imgElement = tr.getElementsByAttribute("data-file-type");
+                if (imgElement.attr("data-file-type").equals("bitmap")) {
+                    imageURL = tr.selectFirst("img").absUrl("src");
+                    Log.d(TAG, "IMAGEURL  ===   " + imageURL);
+                    try {
+                        img = drawable_from_url(imageURL);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Log.d(TAG, "image downloaded");
+                    //imageDetected = true;
+                }
+            }
+            imgAndUrl.add(img);
+            imgAndUrl.add(imageURL);
+            return imgAndUrl;
         }
 
         @Override
@@ -761,7 +881,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             super.onCancelled();
         }
 
-         Drawable drawable_from_url(String url) throws java.io.IOException {
+        Drawable drawable_from_url(String url) throws java.io.IOException {
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
