@@ -57,6 +57,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.6'
     implementation 'com.artjimlop:altex-image-downloader:0.0.4'
     implementation 'com.github.sephiroth74:android-target-tooltip:v2.0.4'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
 }
 
 apply plugin: 'com.google.gms.google-services'

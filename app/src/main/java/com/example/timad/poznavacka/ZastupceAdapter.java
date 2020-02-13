@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 
 import java.util.ArrayList;
 
@@ -19,6 +21,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
     private static String TAG = "ZastupceAdapter";
+    private static final int EDITTEXT_WIDTH = 250;
 
     private static ArrayList<Zastupce> mZastupceList;
     private static int mParameters;
@@ -38,6 +41,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
             for (int x = 0; x < mParameters; x++){
                 final int pos = x;
                 editTArr.add(x, (EditText) itemView.findViewById(mIds[x]));
+                //Log.d("WELP", "Scroll: " + mIds[x]);
                 editTArr.get(x).addTextChangedListener(new TextWatcher() {
                     @Override
                     public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {   }
@@ -67,7 +71,35 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         LinearLayout ll = (LinearLayout) cardView.getChildAt(0);
         Context context = parent.getContext();
 
-        int length = 4; // Set number of edit text's in row CHANGE
+        //ll.setWeightSum(mParameters + 1);
+        createEditTexts(context, ll, 0, mParameters);
+
+        // Scrollview DELETE
+        /*HorizontalScrollView scroll = new HorizontalScrollView(context);
+        scroll.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                4f
+        ));
+        ll.addView(scroll);
+
+        if(scroll == null){
+            Log.d("WELP", "No scrollview");
+        }
+
+        LinearLayout horiz = new LinearLayout(context);
+        horiz.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1f
+        ));
+        horiz.setWeightSum(mParameters);
+        horiz.setOrientation(LinearLayout.HORIZONTAL);
+        scroll.addView(horiz);*/
+
+        //createEditTexts(context, ll, 0, mParameters);
+
+        /*int length = 4; // Set number of edit text's in row CHANGE
         //Log.d("WELP", "mParameters: " + mParameters + " ");
         if(mParameters < length + 1) {
             ll.setWeightSum(mParameters + 1);
@@ -112,14 +144,16 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
                 createEditTexts(context, horiz, i * length, end);
             }
-        }
+        }*/
 
         ImageView imgV = new ImageView(parent.getContext());
         imgV.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 1f
         ));
+        imgV.setMinimumWidth(400);
+        imgV.setMaxWidth(400);
         imgV.setId(mIds[mParameters]);
         //Log.i("GenerateId", "Img: " + imgV.getId());
         ll.addView(imgV);
@@ -129,14 +163,16 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
     private void createEditTexts(Context context, LinearLayout ll, int start, int end){
         for(int i = start; i < end; i++){
-            //Log.d("WELP", "Button" + i);
+            //Log.d("WELP", "Button: " + i);
             EditText editT = new EditText(context);
-            editT.setTextSize(15);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     1f
             ));
+            editT.setTextSize(14);
+            editT.setMaxLines(2);
+            editT.setWidth(EDITTEXT_WIDTH);
             editT.setId(mIds[i]);
             //Log.i("GenerateId", "ET" + i + ": " + editT.getId());
             ll.addView(editT);

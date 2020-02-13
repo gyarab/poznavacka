@@ -21,9 +21,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -60,6 +62,7 @@ import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
+import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -155,20 +158,25 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
         /* RecyclerView */
         mRecyclerView = view.findViewById(R.id.recyclerViewZ);
+       HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = (int) ((float) displayMetrics.heightPixels * 0.7f);
+        //int width = (int) ((float) displayMetrics.widthPixels * 2f);
 
         //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) mRecyclerView.getLayoutParams();
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollV.getLayoutParams();
         params.height = height;
-        mRecyclerView.setLayoutParams(new RelativeLayout.LayoutParams(params));
+        scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
+
+        /*NestedScrollView.LayoutParams params2 = (NestedScrollView.LayoutParams) scrollV.getChildAt(0).getLayoutParams();
+        params2.width = width;
+        scrollV.getChildAt(0).setLayoutParams(new NestedScrollView.LayoutParams(params2));*/
 
         mZastupceArr = new ArrayList<>();
 
         mLManager = new LinearLayoutManager(getContext());
-
 
         //spinner
         languageURL = "Select Language";
