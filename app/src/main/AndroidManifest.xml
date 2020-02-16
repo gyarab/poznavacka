@@ -30,6 +30,16 @@
             android:name=".activities.lists.ListsActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
+
+        </activity>
+        <activity android:name=".activities.PracticeActivity" />
+        <activity android:name=".activities.test.TestActivity" />
+        <activity android:name=".FirestoreImpl" />
+        <activity android:name=".activities.AccountActivity" />
+        <activity
+            android:name=".activities.AuthenticationActivity"
+            android:screenOrientation="portrait" />
+        <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <action android:name="android.intent.action.VIEW" />
@@ -37,10 +47,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.PracticeActivity" />
-        <activity android:name=".activities.test.TestActivity" />
-        <activity android:name=".FirestoreImpl" />
-        <activity android:name=".activities.AccountActivity" />
+
     </application>
 
 </manifest>
