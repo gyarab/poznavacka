@@ -30,6 +30,8 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 
+import static com.example.timad.poznavacka.activities.lists.CreateListFragment.languageURL;
+
 public class PopActivity extends Activity {
 
     private static final String TAG = "PopActivity";
@@ -93,6 +95,7 @@ public class PopActivity extends Activity {
             @Override
             public void onClick(View v) {
                 finish();
+                userParametersCount = 1;
                 for (int i = 0; i < layout1.getChildCount(); i++) {
                     View nextChild = layout1.getChildAt(i);
 
@@ -152,19 +155,39 @@ public class PopActivity extends Activity {
             super.onProgressUpdate(values);
             PopActivity fragment = fragmentWeakReference.get();
             checkboxAdded = true;
-            CheckBox ch = new CheckBox(fragment.getApplicationContext());
-            ch.setText(values[0]);
-            ch.setTextColor(Color.WHITE);
-            fragment.layout1.addView(ch);
 
-            Log.d(TAG, "Checkbox " + values[0] + " added");
+            //trimming the array
+            int count = 0;
+            for (String value :
+                    values) {
+                if (value != null) {
+                    count++;
+                }
+            }
+            String[] trimmedValues = new String[count];
+            int index = 0;
+            for (String value :
+                    values) {
+                if (value != null) {
+                    trimmedValues[index++] = value;
+                }
+            }
+
+            for (String value :
+                    trimmedValues) {
+                CheckBox ch = new CheckBox(fragment.getApplicationContext());
+                ch.setText(value);
+                ch.setTextColor(Color.WHITE);
+                fragment.layout1.addView(ch);
+
+                Log.d(TAG, "Checkbox " + values[0] + " added");
+            }
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             PopActivity fragment = fragmentWeakReference.get();
             ArrayList<String> representatives = CreateListFragment.representatives;
-
             for (String representative :
                     representatives) {
                 String searchText = representative.replace(" ", "_");
@@ -172,7 +195,7 @@ public class PopActivity extends Activity {
                 Log.d(TAG, "Connecting to site");
                 Document doc = null;
                 try {
-                    doc = Jsoup.connect("https://" + CreateListFragment.languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirects=true").userAgent("Mozilla").get();
+                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirects=true").userAgent("Mozilla").get();
                     Log.d(TAG, "Classification - connected to " + representative);
                 } catch (IOException e) {
                     //not connected to internet
@@ -181,38 +204,76 @@ public class PopActivity extends Activity {
                     continue;
                 }
 
-                String[] dataPair;
-                String classData;
-                boolean scientificClassificationDetected = false;
-                Element infoBox;
+                Element infoBox = null;
 
                 if (doc != null && doc.head().hasText()) {
-                    Log.d(TAG, "Connected successfully");
-                    infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
-                    Elements trs = infoBox.select("tr");
-                    for (Element tr :
-                            trs) {
-                        Log.d(TAG, "foring in trs");
-                        if (!tr.getAllElements().hasAttr("colspan")) {
-                            dataPair = tr.wholeText().split("\n", 2);
-                            if (dataPair.length == 1) { //detected wrong table
-                                Log.d(TAG, "different table");
-                                continue;
+                    boolean redirects = false;
+                    try {
+                        Elements rawTables = doc.getElementsByTag("table");
+                        redirects = true;
+                        for (Element table :
+                                rawTables) {
+                            if (languageURL.equals("en") || languageURL.equals("cs")) {
+                                if (table.id().toLowerCase().contains("info")) {
+                                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").toLowerCase().contains("info")) {
+                                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                }
+
+                            } else if (languageURL.equals("de")) {
+
+                                if (table.id().toLowerCase().contains("taxo")) {
+                                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").toLowerCase().contains("taxo")) {
+                                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                }
                             }
-                            classData = dataPair[0].trim();
-                            Log.d(TAG, "found " + dataPair[0]);
 
-                            publishProgress(classData); //adding checkbox in progressUpdate
-
-                            scientificClassificationDetected = true;
-                        } else if (scientificClassificationDetected) {
-                            Log.d(TAG, "Scientific classification async task successful");
-                            return null;
                         }
 
+                    } catch (NullPointerException e) {
+                        //rozcestník
+                        redirects = true;
+                        e.printStackTrace();
                     }
 
-                    //for russian sites
+                    if (redirects) {
+                        //if it is a redirecting site
+                        ArrayList redirectedSiteAndTable = redirect_getTable(doc);
+                        if (redirectedSiteAndTable.get(2).equals(false)) { //if new site is not found
+                            continue;
+                        } else {
+                            infoBox = (Element) redirectedSiteAndTable.get(1);
+                        }
+                    }
+
+                    String[] newData;
+                    int classificationPointer;
+                    //harvesting the infoBox
+                    if (infoBox != null) {
+                        ArrayList harvestedInfoBox = harvestClassification(infoBox);
+                        newData = (String[]) harvestedInfoBox.get(0);
+                        classificationPointer = (int) harvestedInfoBox.get(1);
+                    } else {
+                        continue;
+                    }
+                    publishProgress(newData);
+                    break;
+                }
+
+                //for russian sites
 /*
                 for (Element tr : trs) {
                     Log.d(TAG, "foring in russian style trs :))");
@@ -231,11 +292,123 @@ public class PopActivity extends Activity {
                 }
 */
 
-                }
             }
 
 
             return null;
+        }
+
+        private ArrayList redirect_getTable(Document doc) {
+            ArrayList returnDocAndInfobox = new ArrayList();
+            Element infoBox = null;
+
+            Log.d(TAG, "ROZCESTNÍK");
+            Elements linkElements = doc.getElementsByAttributeValue("rel", "mw:WikiLink");
+            boolean newSiteFound = false;
+            for (Element linkElement :
+                    linkElements) {
+                if (!linkElement.hasClass("new")) {
+                    newSiteFound = true;
+                    //found element with the link
+                    String newWikipediaURLsuffix = linkElement.attr("href");
+                    String newSearchText = newWikipediaURLsuffix.substring(2);
+                    try {
+                        Log.d(TAG, "redirected and connecting to new wikipedia for " + newSearchText);
+                        doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(newSearchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
+
+                        try {
+                            Elements rawTables = doc.getElementsByTag("table");
+                            for (Element table :
+                                    rawTables) {
+                                //cz and en infoTable
+                                if (languageURL.equals("en") || languageURL.equals("cs")) {
+                                    if (table.id().contains("info")) {
+                                        Log.d(TAG, "doesn't contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").contains("info")) {
+                                        Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    }
+                                    //de infoTable
+                                } else if (languageURL.equals("de")) {
+
+                                    if (table.id().contains("taxo") || table.id().contains("Taxo")) {
+                                        Log.d(TAG, "doesn't contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").contains("taxo")) {
+                                        Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                        } catch (NullPointerException e) {
+                            //rozcestník
+                            e.printStackTrace();
+                            Log.d(TAG, "no wiki (redirect)");
+                        }
+
+                    } catch (IOException er) {
+                        //this probably won't happen
+                        er.printStackTrace();
+                        Log.d(TAG, "no wiki (redirect)");
+                        newSiteFound = false;
+                    }
+                    break;
+                }
+            }
+            returnDocAndInfobox.add(doc);
+            returnDocAndInfobox.add(infoBox);
+            returnDocAndInfobox.add(newSiteFound);
+            return returnDocAndInfobox;
+        }
+
+        private ArrayList<String> harvestClassification(Element infoBox) {
+
+            ArrayList returnList = new ArrayList();
+
+            String[] newData = new String[50];
+            int classificationPointer = 0;
+
+            String[] dataPair;
+            int trCounter = 0;
+
+
+            //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+            Elements trs = infoBox.select("tr");
+            for (Element tr :
+                    trs) {
+
+                trCounter++;
+                Log.d(TAG, "current tr = " + trCounter);
+                if (!tr.getAllElements().hasAttr("colspan")) {
+                    dataPair = tr.wholeText().split("\n", 2);
+                    if (dataPair.length == 1) { //detected wrong table
+                        Log.d(TAG, "different table");
+                        break;
+                    }
+                    for (int i = 0; i < 2; i++) {
+                        dataPair[i] = dataPair[i].trim();
+                        Log.d(TAG, "found " + dataPair[i]);
+                    }
+
+                    Log.d(TAG, "classPointer = " + classificationPointer);
+
+                    newData[classificationPointer] = dataPair[0];
+                    classificationPointer++;
+                    //newData.add(dataPair[0]);
+                    Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                }
+            }
+
+            returnList.add(newData);
+            returnList.add(classificationPointer);
+            return returnList;
         }
     }
 

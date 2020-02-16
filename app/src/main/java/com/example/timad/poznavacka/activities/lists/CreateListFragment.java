@@ -25,7 +25,6 @@ import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.TextView;
@@ -62,7 +61,6 @@ import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.Nullable;
-import androidx.core.widget.NestedScrollView;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -158,7 +156,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
         /* RecyclerView */
         mRecyclerView = view.findViewById(R.id.recyclerViewZ);
-       HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
+        HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -393,20 +391,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             }
         });
 
-
-        //test
-
-        // Create a new poznavackaInfo with a reference to an image
-        /*Map<String, Object> zkouska1 = new HashMap<>();
-        zkouska1.put(KEY_TITLE, "zkouskaTitle");
-        zkouska1.put("poznavackaInfo", "zkouskaZástupce1");
-        zkouska1.put("druh", "zkouskaDruh1");
-        zkouska1.put("rad", "zkouskaŘád1");
-        zkouska1.put("imgRef", 265);*/
-
-
-        //firestoreImpl.uploadRepresentative(zkouska1, "poznavackaExample");
-        //firestoreImpl.readData("poznavackaExample");
         return view;
     }
 
@@ -526,7 +510,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     }
 
 
-    //možná pomalý způsob, kdyztak -> https://stackoverflow.com/questions/33862336/how-to-extract-information-from-a-wikipedia-infobox
     private static class WikiSearchRepresentatives extends AsyncTask<Void, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
@@ -547,14 +530,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 publishProgress("");
             }
 
-            //misto testInput -> representatives
-            ArrayList<String> testInput = new ArrayList<>();
-            testInput.add("Pes domácí");
-            testInput.add("Koira");
-            testInput.add("Tasemnice bezbranná");
-            testInput.add("Lýtková kost");
-            testInput.add("Žula");
-
 
             for (String representative :
                     representatives) {
@@ -572,6 +547,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     publishProgress(representative);
                 }
 
+
+                //checking for the right table
                 ArrayList<String> newData = new ArrayList<>();
                 int classificationPointer = 0;
                 Drawable img = null;
@@ -580,96 +557,79 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 Element infoBox = null;
 
                 if (doc != null && doc.head().hasText()) {
-
+                    boolean redirects = false;
                     try {
-                        infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
+                        Elements rawTables = doc.getElementsByTag("table");
+                        redirects = true;
+                        for (Element table :
+                                rawTables) {
+                            if (languageURL.equals("en") || languageURL.equals("cs")) {
+                                if (table.id().contains("info")) {
+                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").contains("info")) {
+                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                }
+
+                            } else if (languageURL.equals("de")) {
+
+                                if (table.id().contains("taxo") || table.id().contains("Taxo")) {
+                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").contains("taxo")) {
+                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                }
+                            }
+
+                        }
+
                     } catch (NullPointerException e) {
-                        //ROZCESTNÍK
+                        //rozcestník
+                        redirects = true;
                         e.printStackTrace();
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
-                        continue;
                     }
 
-                    ArrayList harvestedInfoBox = harvestInfoBox(infoBox);
-                    newData = (ArrayList<String>) harvestedInfoBox.get(0);
-                    classificationPointer = (int) harvestedInfoBox.get(1);
-                    img = (Drawable) harvestedInfoBox.get(2);
-                    imageURL = (String) harvestedInfoBox.get(3);
 
-/*                    Elements trs = infoBox.select("tr");
-                    for (Element tr :
-                            trs) {
-
-                        trCounter++;
-                        Log.d(TAG, "current tr = " + trCounter);
-                        if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
-                            dataPair = tr.wholeText().split("\n", 2);
-                            if (dataPair.length == 1) { //detected wrong table
-                                Log.d(TAG, "different table");
-                                for (int i = 0; i < userParametersCount - 1; i++) {
-                                    newData.add("");
-                                }
-                                break;
-                            }
-                            for (int i = 0; i < 2; i++) {
-                                dataPair[i] = dataPair[i].trim();
-                                Log.d(TAG, "found " + dataPair[i]);
-                            }
-
-                            Log.d(TAG, "classPointer = " + classificationPointer);
-                            Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
-                            Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
-
-                            if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
-                                if (dataPair[1].contains("(")) {
-                                    dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
-                                }
-                                newData.add(dataPair[1]); //adding the specific classification
-                                Log.d(TAG, "adding new data to newData = " + dataPair[1]);
-                                classificationPointer++;
-
-                            } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
-                                Log.d(TAG, "userScientificClassification contains " + dataPair[0]);
-                                int tempPointer = classificationPointer;
-                                classificationPointer = userScientificClassification.indexOf(dataPair[0]);
-                                for (; tempPointer < classificationPointer; tempPointer++) {
-                                    newData.add("");
-                                    Log.d(TAG, "adding new data to newData = empty (not detected)");
-                                }
-
-
-                                classificationPointer++;
-                                if (dataPair[1].contains("(")) {
-                                    dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
-                                }
-                                newData.add(dataPair[1]);
-                                Log.d(TAG, "adding new data to newData = " + dataPair[1]);
-                            }
-
-
-                            scientificClassificationDetected = true;
-                        } else if (scientificClassificationDetected) {
-                            if (newData.size() < (userParametersCount - 1)) { //the last parameter was not detected
-
-                                newData.add("");
-                            }
-                            break;
+                    //if it is a redirecting site
+                    if (redirects) {
+                        ArrayList redirectedSiteAndTable = redirect_getTable(doc);
+                        if (redirectedSiteAndTable.get(2).equals(false)) { //if new site is not found
+                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                            publishProgress(representative);
+                            continue;
+                        } else {
+                            doc = (Document) redirectedSiteAndTable.get(0);
+                            infoBox = (Element) redirectedSiteAndTable.get(1);
                         }
+                    }
 
-                        //get the image
-                        else if (img == null) {
-                            ArrayList imgAndUrl = getImageFromTr(tr);
-                            img = (Drawable) imgAndUrl.get(0);
-                            imageURL = (String) imgAndUrl.get(1);
-                        }
-                    }*/
+                    //harvesting the infoBox
+                    if (infoBox != null) {
+                        ArrayList harvestedInfoBox = harvestInfo(infoBox);
+                        newData = (ArrayList<String>) harvestedInfoBox.get(0);
+                        classificationPointer = (int) harvestedInfoBox.get(1);
+                        img = (Drawable) harvestedInfoBox.get(2);
+                        imageURL = (String) harvestedInfoBox.get(3);
+                    }
+
+
                     newData.add(doc.title());
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
 
                     //loading representative
-                    if (detectedWrongTable(classificationPointer)) {
+                    if (detectedWrongTable(classificationPointer)) { //if detected wrong table but on the correct site
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
@@ -698,7 +658,78 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             return null;
         }
 
-        private ArrayList<String> harvestInfoBox(Element infoBox) {
+        private ArrayList redirect_getTable(Document doc) {
+            ArrayList returnDocAndInfobox = new ArrayList();
+            Element infoBox = null;
+            CreateListFragment fragment = fragmentWeakReference.get();
+
+            Log.d(TAG, "ROZCESTNÍK");
+            Elements linkElements = doc.getElementsByAttributeValue("rel", "mw:WikiLink");
+            boolean newSiteFound = false;
+            for (Element linkElement :
+                    linkElements) {
+                if (!linkElement.hasClass("new")) {
+                    newSiteFound = true;
+                    //found element with the link
+                    String newWikipediaURLsuffix = linkElement.attr("href");
+                    String newSearchText = newWikipediaURLsuffix.substring(2);
+                    try {
+                        Log.d(TAG, "redirected and connecting to new wikipedia for " + newSearchText);
+                        doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(newSearchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
+
+                        try {
+                            Elements rawTables = doc.getElementsByTag("table");
+                            for (Element table :
+                                    rawTables) {
+                                //cz and en infoTable
+                                if (languageURL.equals("en") || languageURL.equals("cs")) {
+                                    if (table.id().contains("info")) {
+                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").contains("info")) {
+                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    }
+                                    //de infoTable
+                                } else if (languageURL.equals("de")) {
+
+                                    if (table.id().contains("taxo") || table.id().contains("Taxo")) {
+                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").contains("taxo")) {
+                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                        } catch (NullPointerException e) {
+                            //rozcestník
+                            e.printStackTrace();
+                            Log.d(TAG, "no wiki (redirect)");
+                        }
+
+                    } catch (IOException er) {
+                        //this probably won't happen
+                        er.printStackTrace();
+                        Log.d(TAG, "no wiki (redirect)");
+                        newSiteFound = false;
+                    }
+                    break;
+                }
+            }
+            returnDocAndInfobox.add(doc);
+            returnDocAndInfobox.add(infoBox);
+            returnDocAndInfobox.add(newSiteFound);
+            return returnDocAndInfobox;
+        }
+
+        private ArrayList<String> harvestInfo(Element infoBox) {
 
             ArrayList returnList = new ArrayList();
 
@@ -714,6 +745,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             CreateListFragment fragment = fragmentWeakReference.get();
 
 
+            //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
             Elements trs = infoBox.select("tr");
             for (Element tr :
                     trs) {
@@ -893,7 +925,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             CreateListFragment fragment = fragmentWeakReference.get();
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setRequestProperty("User-agent", "Mozilla/4.0");
+            connection.setRequestProperty("User-agent", "Mozilla");
 
             connection.connect();
             InputStream input = connection.getInputStream();
