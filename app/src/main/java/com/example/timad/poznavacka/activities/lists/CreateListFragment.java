@@ -223,27 +223,22 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         });
 
 
+        final WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(CreateListFragment.this)};
         //create button
         btnCREATE.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //if (!languageURL.equals("Select Language")) {
-
 
                 title = userInputTitle.getText().toString().trim();
                 dividingString = userDividngString.getText().toString().trim().toLowerCase();
                 String rawRepresentatives = userInputRepresentatives.getText().toString();
-                //String rawRepresentatives = "pes domácí, koira, tasemnice bezbranná, lýtková kost, žula";
 
                 if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
                     representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
-                    //capitalizing the first letter
-                    //representatives = capitalize(representatives, languageURL); not needed anymore (redirects=true)
-
-
                     listCreated = false;
+                    WikiSearchRepresentatives[0].cancel(true);
                     Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
-                    final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
+                    //final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
 
                     //recyclerView getting user parameters into account
 
@@ -260,7 +255,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     mRecyclerView.setAdapter(mAdapter);
 
                     //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    WikiSearchRepresentatives.execute();
+                    WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(CreateListFragment.this);
+
+                    WikiSearchRepresentatives[0].execute();
                 } else {
                     Toast.makeText(getContext(), "Insert all info", Toast.LENGTH_SHORT).show();
                 }
@@ -523,7 +520,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             final CreateListFragment fragment = fragmentWeakReference.get();
 
             if (!fragment.loadingRepresentative) {
-                reversedUserScientificClassification.add(0, "");
                 fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
                 Log.d(TAG, "Classification added");
                 fragment.loadingRepresentative = true;
@@ -739,7 +735,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             int classificationPointer = 0;
 
             String[] dataPair;
-            boolean scientificClassificationDetected = false;
             boolean imageDetected = false;
             int trCounter = 0;
             CreateListFragment fragment = fragmentWeakReference.get();
@@ -747,12 +742,19 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
             //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
             Elements trs = infoBox.select("tr");
+            int trsWihtoutColspan = 0;
+            int currentTrsWihtoutColspan = 0;
+            for (Element tr :
+                    trs) {
+                if (!tr.getAllElements().hasAttr("colspan")) trsWihtoutColspan++;
+            }
             for (Element tr :
                     trs) {
 
                 trCounter++;
                 Log.d(TAG, "current tr = " + trCounter);
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
+                    trsWihtoutColspan++;
                     dataPair = tr.wholeText().split("\n", 2);
                     if (dataPair.length == 1) { //detected wrong table
                         Log.d(TAG, "different table");
@@ -765,6 +767,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         dataPair[i] = dataPair[i].trim();
                         Log.d(TAG, "found " + dataPair[i]);
                     }
+
+                    //LEFT OFF, u Marsu naor, class, colspan=2, class.. prestane prirazovat klasifikaci
 
                     Log.d(TAG, "classPointer = " + classificationPointer);
                     Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
@@ -796,15 +800,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                     }
 
-
-                    scientificClassificationDetected = true;
-                } else if (scientificClassificationDetected) {
-                    if (newData.size() < (userParametersCount - 1)) { //the last parameter was not detected
-
+                } else if (currentTrsWihtoutColspan == trsWihtoutColspan) { //current tr is the last one with information
+                    if (newData.size() == (userParametersCount - 2)) { //the last parameter was not detected
+                        Log.d(TAG, "last parameter not detected");
                         newData.add("");
+                        break;
                     }
-                    break;
                 }
+
 
                 //get the image
                 else if (img == null) {
@@ -919,6 +922,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         @Override
         protected void onCancelled() {
             super.onCancelled();
+            CreateListFragment fragment = fragmentWeakReference.get();
+            fragment.mZastupceArr.clear();
         }
 
         Drawable drawable_from_url(String url) throws java.io.IOException {

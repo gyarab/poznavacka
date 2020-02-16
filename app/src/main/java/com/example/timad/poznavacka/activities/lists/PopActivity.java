@@ -111,6 +111,7 @@ public class PopActivity extends Activity {
                 }
                 reversedUserScientificClassification.addAll(userScientificClassification);
                 Collections.reverse(reversedUserScientificClassification);
+                reversedUserScientificClassification.add(0, "");
             }
         });
     }
