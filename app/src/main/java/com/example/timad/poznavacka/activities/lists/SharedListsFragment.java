@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -7,9 +8,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
@@ -24,8 +27,13 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.gson.Gson;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +58,7 @@ public class SharedListsFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
         db = FirebaseFirestore.getInstance();
-        //vyt vori array prida do arraye vytvori recykelr view
+        //vyt vori array prida do arraye vytvori recykler view
         createArr();
         displayFirestore("Poznavacka", view);
 
@@ -87,7 +95,35 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                //TODO
+
+                // Store images
+                Context context = getContext();
+                String path = item.getId() + "/";
+                File dir = new File(context.getFilesDir().getPath() + "/" + path);
+
+                // Create folder
+                try {
+                    dir.mkdir();
+                } catch (Exception e) {
+                    Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                    return;
+                }
+
+                if(! MyListsFragment.getSMC(getContext()).createAndWriteToFile(path, item.getId(), item.getContent())){
+                    Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                String pathPoznavacka = "poznavacka.txt";
+                if (MyListsFragment.sPoznavackaInfoArr == null) {
+                    MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
+                }
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId()));
+                MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+
+                Log.d("Files", "Saved successfully");
+                Toast.makeText(getActivity(), "Successfully saved " + item.getName(), Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -131,7 +167,7 @@ public class SharedListsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("id")));
+                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("authorsName")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -173,7 +209,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if(item.getId().equals(authorsName)) {
+                if(item.getAuthorsName().equals(authorsName)) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -192,7 +228,7 @@ public class SharedListsFragment extends Fragment {
                             });
 
                 }else{
-                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getId()+","+authorsName, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getAuthorsName()+","+authorsName, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -207,7 +243,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getId()));
+                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getAuthorsName()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }

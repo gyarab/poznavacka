@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka.activities.lists;
 
+import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -274,12 +275,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     // Store images
                     Gson gson = new Gson();
-                    BitmapDrawable bitmapDraw;
-                    Bitmap bitmap;
-                    ContextWrapper c = new ContextWrapper(v.getContext());
+                    Context context = getContext();
                     String uuid = UUID.randomUUID().toString();
-                    String path = c.getFilesDir().getPath() + "/" + uuid + "/";
-                    File dir = new File(path);
+                    String path = uuid + "/";
+                    File dir = new File(context.getFilesDir().getPath() + "/" + path);
 
                     // Create folder
                     try {
@@ -291,28 +290,18 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     }
 
                     // Saves images locally
-                    FileOutputStream fos;
-
                     for (Zastupce z : mZastupceArr) {
                         if (z.getImage() != null) {
-                            bitmapDraw = (BitmapDrawable) z.getImage();
-                            bitmap = bitmapDraw.getBitmap();
-                            try {
-                                fos = new FileOutputStream(path + z.getParameter(0) + ".png");
-                                bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
-                                fos.close();
-                            } catch (IOException e) {
+                            if (! MyListsFragment.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
                                 Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                                e.printStackTrace();
-                                deletePoznavacka(dir);
                                 return;
                             }
                         } else {
-                            // TODO exceotion for first thing
+                            // TODO exception for first thing
 
-                        /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
-                        deletePoznavacka(dir);
-                        return;*/
+                            /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
+                            deletePoznavacka(dir);
+                            return;*/
                         }
                         z.setImage(null);
                     }
@@ -321,34 +310,22 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     String json = gson.toJson(mZastupceArr);
                     //add to file
                     String userName = "user";
-                    //TODO
-                    PoznavackaDbObject item = new PoznavackaDbObject(title, userName, json);
+                    // Add to database
+                    PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
                     SharedListsFragment.addToFireStore("Poznavacka", item, db);
 
-
-                    Log.d("Files", json);
-                    File txtFile = new File(path + uuid + ".txt");
-                    FileWriter fw;
-
-                    try {
-                        fw = new FileWriter(txtFile);
-                        fw.write(json);
-                        fw.flush();
-                        fw.close();
-                    } catch (IOException e) {
+                    //Log.d("Files", json);
+                    if(! MyListsFragment.getSMC(context).createAndWriteToFile(path, uuid, json)){
                         Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                        txtFile.delete();
-                        e.printStackTrace();
-                        deletePoznavacka(dir);
                         return;
                     }
 
-                    String pathPoznavacka = c.getFilesDir().getPath() + "/poznavacka.txt";
+                    String pathPoznavacka = "poznavacka.txt";
                     if (MyListsFragment.sPoznavackaInfoArr == null) {
-                        MyListsFragment.readFile(pathPoznavacka, true);
+                        MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
                     }
-                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, "userName"));
-                    updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid));
+                    MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
                     Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
@@ -389,41 +366,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         });
 
         return view;
-    }
-
-    static void deletePoznavacka(File f) {
-        try {
-            File[] files = f.listFiles();
-            for (int x = 0; x < files.length; x++) {
-                files[x].delete();
-            }
-            f.delete();
-            Log.d("Files", "Deleted " + (files.length + 1) + " files");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    static void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr) {
-        Gson gson = new Gson();
-        File file = new File(path);
-        FileWriter fw;
-        String s;
-
-        if (arr.size() <= 0) {
-            s = "";
-        } else {
-            s = gson.toJson(arr);
-        }
-
-        try {
-            fw = new FileWriter(file);
-            fw.write(s);
-            fw.flush();
-            fw.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override
