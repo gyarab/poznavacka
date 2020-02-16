@@ -4,11 +4,13 @@ public class PoznavackaDbObject {
     String name;
     String id;
     String content;
+    String authorsName;
 
-    public PoznavackaDbObject(String name, String id, String content) {
+    public PoznavackaDbObject(String name, String id, String content, String authorsName) {
         this.name = name;
         this.id = id;
         this.content = content;
+        this.authorsName = authorsName;
     }
 
     public PoznavackaDbObject() {
@@ -36,5 +38,13 @@ public class PoznavackaDbObject {
 
     public void setContent(String content) {
         this.content = content;
+    }
+
+    public String getAuthorsName() {
+        return authorsName;
+    }
+
+    public void setAuthorsName(String authorsName) {
+        this.authorsName = authorsName;
     }
 }

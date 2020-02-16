@@ -311,7 +311,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     //add to file
                     String userName = "user";
                     // Add to database
-                    PoznavackaDbObject item = new PoznavackaDbObject(title, userName, json);
+                    PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
                     SharedListsFragment.addToFireStore("Poznavacka", item, db);
 
                     //Log.d("Files", json);

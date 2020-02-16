@@ -167,7 +167,7 @@ public class SharedListsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("id")));
+                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("authorsName")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -209,7 +209,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if(item.getId().equals(authorsName)) {
+                if(item.getAuthorsName().equals(authorsName)) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -228,7 +228,7 @@ public class SharedListsFragment extends Fragment {
                             });
 
                 }else{
-                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getId()+","+authorsName, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getAuthorsName()+","+authorsName, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -243,7 +243,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getId()));
+                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getAuthorsName()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }
