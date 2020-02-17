@@ -1,6 +1,11 @@
 package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,6 +21,7 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
+import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -28,11 +34,18 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
+import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -113,13 +126,23 @@ public class SharedListsFragment extends Fragment {
                 if(! MyListsFragment.getSMC(getContext()).createAndWriteToFile(path, item.getId(), item.getContent())){
                     Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                     return;
+                } else {
+                    Gson gson = new Gson();
+                    Type cType = new TypeToken<ArrayList<Zastupce>>(){}.getType();
+                    ArrayList<Zastupce> zastupceArr = gson.fromJson(item.getContent(), cType);
+                    for(Zastupce z: zastupceArr) {
+                        if(!(z.getImageURL() == null || z.getImageURL().isEmpty()))
+                            // TODO finish
+                            //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
+                            Log.d("Saving", "Image saved: " + z.getImageURL());
+                    }
                 }
 
                 String pathPoznavacka = "poznavacka.txt";
                 if (MyListsFragment.sPoznavackaInfoArr == null) {
                     MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId()));
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName()));
                 MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                 Log.d("Files", "Saved successfully");
@@ -157,6 +180,30 @@ public class SharedListsFragment extends Fragment {
             }
         });
     }
+
+    /* TODO finish
+    private static class WikiSearchRepresentativesCopy extends AsyncTask<Void, String, Void> {
+
+        private WeakReference<SharedListsFragment> fragmentWeakReference;
+
+        Drawable drawableFromUrl(String url) {
+            SharedListsFragment fragment = fragmentWeakReference.get();
+            try {
+
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setRequestProperty("User-agent", "Mozilla");
+
+                connection.connect();
+                InputStream input = connection.getInputStream();
+                Bitmap bitmap = BitmapFactory.decodeStream(input);
+                return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
+            } catch (IOException e){
+                Toast.makeText(fragment.getActivity(), "Something went wrong while downloading Poznavacka", Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+            }
+            return null;
+        }
+    }*/
 
     private void displayFirestore(final String collectionName, final View view) {
         db.collection(collectionName)
@@ -253,8 +300,6 @@ public class SharedListsFragment extends Fragment {
                 //Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
             }
         });
-
-
     }
 
 /*    //search

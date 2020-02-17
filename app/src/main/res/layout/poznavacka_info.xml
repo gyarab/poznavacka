@@ -32,6 +32,16 @@
             android:layout_marginStart="8dp" />
 
         <ImageView
+            android:id="@+id/img_practice"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="2dp"
+            android:layout_marginEnd="2dp"
+            android:layout_toStartOf="@+id/img_share"
+            app:srcCompat="@drawable/ic_school_black_24dp" />
+
+        <ImageView
             android:id="@+id/img_share"
             android:layout_width="45dp"
             android:layout_height="45dp"

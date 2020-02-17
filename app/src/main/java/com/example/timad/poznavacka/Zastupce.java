@@ -74,6 +74,14 @@ public class Zastupce {
         this.image = image;
     }
 
+    public String getImageURL() {
+        return imageURL;
+    }
+
+    public void setImageURL(Drawable image) {
+        this.image = image;
+    }
+
     public String toString(){
         String s = Integer.toString(parameters) + ": ";
         for (int i = 0; i < parameters; i ++){

@@ -2,7 +2,9 @@ package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +16,7 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
+import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -85,6 +88,18 @@ public class MyListsFragment extends Fragment {
                 mPositionOfActivePoznavackaInfo = position;
                 sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onPracticeClick(final int position) {
+                mPositionOfActivePoznavackaInfo = position;
+                sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
+                mAdapter.notifyDataSetChanged();
+
+                // TODO switch to PracticeActivity
+                Context context = getContext();
+                Intent myIntent = new Intent(context, PracticeActivity.class);
+                context.startActivity(myIntent);
             }
 
             @Override
@@ -174,25 +189,6 @@ public class MyListsFragment extends Fragment {
         }
 
         return sSMC;
-    }
-
-    /** Načte názvy poznávaček
-     * Potřeba předělat na načítání názvů poznávaček ze souborů */
-    public void createArr(){
-        sPoznavackaInfoArr = new ArrayList<>();
-        sPoznavackaInfoArr.add(new PoznavackaInfo("Line 1", "Line 2"));
-        sPoznavackaInfoArr.add(new PoznavackaInfo("Line 3", "Line 4"));
-    }
-
-    /** Nvm */
-    public void buildRW(){
-
-    }
-
-    /* Asi nebude potřeba */
-    public void addItem(){
-        sPoznavackaInfoArr.add(new PoznavackaInfo("novy poznavackaInfo", "..."));
-        mAdapter.notifyDataSetChanged();
     }
 
     /* Ještě je potřeba implementovat smazání souboru */

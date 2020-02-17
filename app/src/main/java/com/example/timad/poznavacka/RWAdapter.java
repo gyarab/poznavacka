@@ -22,6 +22,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
 
     public interface OnItemClickListener {
         void onItemClick(int position);
+        void onPracticeClick(int position);
         void onShareClick(int position);
         void onDeleteClick(int position);
     }
@@ -33,6 +34,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public static class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder{
         public TextView textView1;
         public TextView textView2;
+        public ImageView practiceImg;
         public ImageView shareImg;
         public ImageView deleteImg;
         public CardView cView;
@@ -41,6 +43,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
             super(itemView);
             textView1 = itemView.findViewById(R.id.itemText1);
             textView2 = itemView.findViewById(R.id.itemText2);
+            practiceImg = itemView.findViewById(R.id.img_practice);
             shareImg = itemView.findViewById(R.id.img_share);
             deleteImg = itemView.findViewById(R.id.img_delete);
             cView = itemView.findViewById(R.id.cardView1);
@@ -52,6 +55,18 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
                             listener.onItemClick(position);
+                        }
+                    }
+                }
+            });
+
+            practiceImg.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onPracticeClick(position);
                         }
                     }
                 }
