@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -19,6 +20,7 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
+import com.example.timad.poznavacka.TaskCompleted;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,7 +52,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class SharedListsFragment extends Fragment {
+public class SharedListsFragment extends Fragment implements TaskCompleted {
     private static final String TAG = "SharedFragment";
 
     // shared list starts here
@@ -130,13 +132,10 @@ public class SharedListsFragment extends Fragment {
                         // TODO delete?
                             //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
                         {
-                            try {
-                                MyListsFragment.getSMC(context).saveDrawable(drawable_from_url(z.getImageURL()), path, item.getId());
-                                Log.d("Saving", "Image saved: " + z.getImageURL());
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                                Log.d("Saving", "Image not saved: " + z.getImageURL());
-                            }
+
+                            DrawableFromUrlAsync drawableFromUrlAsync = new DrawableFromUrlAsync();
+                            Drawable image = drawableFromUrlAsync.doInBackground(z.getImageURL());
+                            MyListsFragment.getSMC(context).saveDrawable(image, path, item.getId());
                         }
                     }
                 }
@@ -154,6 +153,7 @@ public class SharedListsFragment extends Fragment {
         });
 
     }
+
 
     private void buildRecyclerView(View view, final String collectionName) {
         mRecyclerView = view.findViewById(R.id.downloadView);
@@ -305,38 +305,69 @@ public class SharedListsFragment extends Fragment {
         });
     }
 
-/*    //search
     @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.preview_poznavacka_menu, menu);
+    public void onTaskComplete(Drawable returnDrawable) {
 
-        MenuItem searchItem = menu.findItem(R.id.action_search);
-        SearchView searchView = (SearchView) searchItem.getActionView();
+    }
 
-        searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+    /*    //search
+        @Override
+        public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+            inflater.inflate(R.menu.preview_poznavacka_menu, menu);
 
-        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
-            @Override
-            public boolean onQueryTextSubmit(String query) {
-                return false;
+            MenuItem searchItem = menu.findItem(R.id.action_search);
+            SearchView searchView = (SearchView) searchItem.getActionView();
+
+            searchView.setImeOptions(EditorInfo.IME_ACTION_DONE);
+
+            searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return false;
+                }
+
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    mSharedListAdapter.getFilter().filter(newText);
+                    return false;
+                }
+            });
+        }*/
+    private class DrawableFromUrlAsync extends AsyncTask<String, Void, Drawable> {
+
+        private TaskCompleted mCallback;
+
+        public DrawableFromUrlAsync() {
+//        this.mCallback = (TaskCompleted) getContext();
+        }
+
+        @Override
+        protected Drawable doInBackground(String... strings) {
+            String url = strings[0];
+            Drawable returnDrawable = null;
+            try {
+                returnDrawable = drawable_from_url(url);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
+            return returnDrawable;
+        }
 
+        /*
             @Override
-            public boolean onQueryTextChange(String newText) {
-                mSharedListAdapter.getFilter().filter(newText);
-                return false;
+            protected void onPostExecute(Drawable drawable) {
+                mCallback.onTaskComplete(drawable);
             }
-        });
-    }*/
+        */
+        Drawable drawable_from_url(String url) throws java.io.IOException {
 
-    Drawable drawable_from_url(String url) throws java.io.IOException {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-agent", "Mozilla");
 
-        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-        connection.setRequestProperty("User-agent", "Mozilla");
-
-        connection.connect();
-        InputStream input = connection.getInputStream();
-        Bitmap bitmap = BitmapFactory.decodeStream(input);
-        return new BitmapDrawable(Objects.requireNonNull(getContext()).getResources(), bitmap);
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            return new BitmapDrawable(Objects.requireNonNull(getContext()).getResources(), bitmap);
+        }
     }
 }
