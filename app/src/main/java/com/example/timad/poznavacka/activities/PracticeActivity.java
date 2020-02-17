@@ -59,7 +59,7 @@ public class PracticeActivity extends AppCompatActivity {
         //hiding the scene
         fab_restart.hide();
 
-        res = getResources(); //vymenit za firebase
+        res = getResources();
 
         if (loaded) {
 

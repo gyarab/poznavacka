@@ -5,7 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -13,7 +12,6 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -37,16 +35,13 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -132,9 +127,17 @@ public class SharedListsFragment extends Fragment {
                     ArrayList<Zastupce> zastupceArr = gson.fromJson(item.getContent(), cType);
                     for(Zastupce z: zastupceArr) {
                         if(!(z.getImageURL() == null || z.getImageURL().isEmpty()))
-                            // TODO finish
+                        // TODO delete?
                             //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
-                            Log.d("Saving", "Image saved: " + z.getImageURL());
+                        {
+                            try {
+                                MyListsFragment.getSMC(context).saveDrawable(drawable_from_url(z.getImageURL()), path, item.getId());
+                                Log.d("Saving", "Image saved: " + z.getImageURL());
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                                Log.d("Saving", "Image not saved: " + z.getImageURL());
+                            }
+                        }
                     }
                 }
 
@@ -181,7 +184,7 @@ public class SharedListsFragment extends Fragment {
         });
     }
 
-    /* TODO finish
+    /* TODO delete?
     private static class WikiSearchRepresentativesCopy extends AsyncTask<Void, String, Void> {
 
         private WeakReference<SharedListsFragment> fragmentWeakReference;
@@ -325,4 +328,15 @@ public class SharedListsFragment extends Fragment {
             }
         });
     }*/
+
+    Drawable drawable_from_url(String url) throws java.io.IOException {
+
+        HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+        connection.setRequestProperty("User-agent", "Mozilla");
+
+        connection.connect();
+        InputStream input = connection.getInputStream();
+        Bitmap bitmap = BitmapFactory.decodeStream(input);
+        return new BitmapDrawable(Objects.requireNonNull(getContext()).getResources(), bitmap);
+    }
 }
