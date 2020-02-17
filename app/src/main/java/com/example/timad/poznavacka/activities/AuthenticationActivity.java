@@ -141,7 +141,8 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
-            Intent intent0 = new Intent(AuthenticationActivity.this, AuthenticationActivity.class);
+            Toast.makeText(getApplicationContext(), "Error with authenticating", Toast.LENGTH_SHORT).show();
+            Intent intent0 = new Intent(AuthenticationActivity.this, ListsActivity.class); //TODO RETURN TO Authentication
             startActivity(intent0);
             finish();
         } else {
