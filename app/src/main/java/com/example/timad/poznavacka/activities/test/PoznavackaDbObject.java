@@ -1,10 +1,13 @@
 package com.example.timad.poznavacka.activities.test;
 
+import android.graphics.drawable.Drawable;
+
 public class PoznavackaDbObject {
     String name;
     String id;
     String content;
     String authorsName;
+
 
     public PoznavackaDbObject(String name, String id, String content, String authorsName) {
         this.name = name;
