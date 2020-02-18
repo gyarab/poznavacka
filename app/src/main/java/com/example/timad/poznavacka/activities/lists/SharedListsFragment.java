@@ -20,7 +20,6 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
-import com.example.timad.poznavacka.TaskCompleted;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -39,6 +38,7 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -52,7 +52,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-public class SharedListsFragment extends Fragment implements TaskCompleted {
+public class SharedListsFragment extends Fragment {
     private static final String TAG = "SharedFragment";
 
     // shared list starts here
@@ -62,6 +62,11 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
+
+    private static ArrayList<String> imgUrls = new ArrayList<>();
+    private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
+    private static ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+    private static PoznavackaDbObject item;
 
     @Nullable
     @Override
@@ -104,7 +109,7 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                item = documentSnapshot.toObject(PoznavackaDbObject.class);
 
                 // Store images
                 Context context = getContext();
@@ -120,24 +125,13 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
                     return;
                 }
 
-                if(! MyListsFragment.getSMC(getContext()).createAndWriteToFile(path, item.getId(), item.getContent())){
+                if (!MyListsFragment.getSMC(getContext()).createAndWriteToFile(path, item.getId(), item.getContent())) {
                     Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                     return;
                 } else {
-                    Gson gson = new Gson();
-                    Type cType = new TypeToken<ArrayList<Zastupce>>(){}.getType();
-                    ArrayList<Zastupce> zastupceArr = gson.fromJson(item.getContent(), cType);
-                    for(Zastupce z: zastupceArr) {
-                        if(!(z.getImageURL() == null || z.getImageURL().isEmpty()))
-                        // TODO delete?
-                            //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
-                        {
 
-                            DrawableFromUrlAsync drawableFromUrlAsync = new DrawableFromUrlAsync();
-                            Drawable image = drawableFromUrlAsync.doInBackground(z.getImageURL());
-                            MyListsFragment.getSMC(context).saveDrawable(image, path, item.getId());
-                        }
-                    }
+                    new DrawableFromUrlAsync(SharedListsFragment.this).execute();  //viz Async metoda dole
+
                 }
 
                 String pathPoznavacka = "poznavacka.txt";
@@ -178,7 +172,7 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
                 String authorsName = "author";
                 //TODO
 
-                removePoznavacka(id,collectionName,authorsName,position);
+                removePoznavacka(id, collectionName, authorsName, position);
 
             }
         });
@@ -217,7 +211,7 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
                         if (task.isSuccessful()) {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(),document.getString("authorsName")));
+                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(), document.getString("authorsName")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -253,13 +247,13 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
     // nedodelane
-    public void removePoznavacka(final String documentName, final String collectionName, final String authorsName,final int position) {
+    public void removePoznavacka(final String documentName, final String collectionName, final String authorsName, final int position) {
         DocumentReference docRef = db.collection(collectionName).document(documentName);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if(item.getAuthorsName().equals(authorsName)) {
+                if (item.getAuthorsName().equals(authorsName)) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -277,8 +271,8 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
                                 }
                             });
 
-                }else{
-                    Toast.makeText(getActivity(),"ur user name doesnt match creator"+","+item.getAuthorsName()+","+authorsName, Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "ur user name doesnt match creator" + "," + item.getAuthorsName() + "," + authorsName, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -293,7 +287,7 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef,data.getAuthorsName()));
+                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef, data.getAuthorsName()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }
@@ -305,10 +299,6 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
         });
     }
 
-    @Override
-    public void onTaskComplete(Drawable returnDrawable) {
-
-    }
 
     /*    //search
         @Override
@@ -333,32 +323,45 @@ public class SharedListsFragment extends Fragment implements TaskCompleted {
                 }
             });
         }*/
-    private class DrawableFromUrlAsync extends AsyncTask<String, Void, Drawable> {
+    private class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
 
-        private TaskCompleted mCallback;
+        private WeakReference<SharedListsFragment> fragmentWeakReference;
 
-        public DrawableFromUrlAsync() {
-//        this.mCallback = (TaskCompleted) getContext();
+        DrawableFromUrlAsync(SharedListsFragment context) {
+            fragmentWeakReference = new WeakReference<>(context);
         }
 
         @Override
-        protected Drawable doInBackground(String... strings) {
-            String url = strings[0];
-            Drawable returnDrawable = null;
-            try {
-                returnDrawable = drawable_from_url(url);
-            } catch (IOException e) {
-                e.printStackTrace();
+        protected Drawable doInBackground(Void... voids) {
+            SharedListsFragment fragment = fragmentWeakReference.get();
+            String path = item.getId() + "/";
+            Gson gson = new Gson();
+            Type cType = new TypeToken<ArrayList<Zastupce>>() {
+            }.getType();
+            zastupceArr = gson.fromJson(item.getContent(), cType);
+            for (Zastupce z : zastupceArr) {
+                Drawable returnDrawable = null;
+                if (!(z.getImageURL() == null || z.getImageURL().isEmpty()))
+                // TODO delete?
+                //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
+                {
+                    //imgUrls.add(z.getImageURL());
+                    try {
+                        returnDrawable = drawable_from_url(z.getImageURL());
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, item.getId());
+
+                           /* DrawableFromUrlAsync drawableFromUrlAsync = new DrawableFromUrlAsync();
+                            Drawable image = drawableFromUrlAsync.doInBackground(z.getImageURL());
+                            MyListsFragment.getSMC(context).saveDrawable(image, path, item.getId());*/
+                }
             }
-            return returnDrawable;
+            return null;
         }
 
-        /*
-            @Override
-            protected void onPostExecute(Drawable drawable) {
-                mCallback.onTaskComplete(drawable);
-            }
-        */
+
         Drawable drawable_from_url(String url) throws java.io.IOException {
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
