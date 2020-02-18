@@ -82,6 +82,8 @@ public class Zastupce {
         this.image = image;
     }
 
+    public int getParameters() { return parameters; }
+
     public String toString(){
         String s = Integer.toString(parameters) + ": ";
         for (int i = 0; i < parameters; i ++){

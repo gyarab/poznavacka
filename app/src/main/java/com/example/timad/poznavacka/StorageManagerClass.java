@@ -1,9 +1,12 @@
 package com.example.timad.poznavacka;
 
+import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.Log;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.PoznavackaInfo;
@@ -12,6 +15,8 @@ import com.google.gson.Gson;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -122,6 +127,21 @@ public class StorageManagerClass {
             return false;
         }
         return true;
+    }
+
+    // https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+    public Drawable readDrawable(String path, String name, Context context) {
+        Bitmap bitmap = null;
+
+        try {
+            File file =new File(ENV_PATH + path + name + ".png");
+            bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
+        }
+        catch (FileNotFoundException e)
+        {
+            e.printStackTrace();
+        }
+        return new BitmapDrawable(context.getResources(), bitmap);
     }
 
     public boolean createAndWriteToFile(String path, String name ,String json){

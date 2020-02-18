@@ -1,8 +1,10 @@
 package com.example.timad.poznavacka.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -10,12 +12,19 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
+import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsFragment;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,6 +44,11 @@ public class PracticeActivity extends AppCompatActivity {
     FloatingActionButton fab_checked;
     FloatingActionButton fab_restart;
     View sceneView;
+
+    // Array with zastupci
+    PoznavackaInfo mLoadedPoznavacka;
+    ArrayList<Zastupce> mZastupceArrOrig = null;
+    int parameterCount;
 
     //load this from local storage
     List<String> zastupci = Arrays.asList("Mlok skvrnitý", "Velemlok čínský", "Čolek obecný", "Čolek velký", "Červor", "Ropucha obecná", "Rosnička obecná", "Kuňka obecná", "Skokan hnědý", "Skokan zelený", "Kožatka velká", "Kareta obecná", "Želva sloní", "Želva nádherná", "Želva bahenní", "Hatérie novozélandská", "Gekon zední", "Leguán zelený", "Ještěrka obecná", "Ještěrka zelená", "Slepýš křehký", "Anakonda velká", "Kobra indická", "Taipan velký", "Užovka obojková", "Užovka podplamatá", "Zmije obecná", "Krokodýl nilský", "Aligátor severoamerický", "Gaviál indický", "Pštros dvouprstý", "Nandu pampový", "Kasuár přilbový", "Emu hnědý", "Kachna divoká", "Polák chocholačka", "Morčák velký");
@@ -60,6 +74,39 @@ public class PracticeActivity extends AppCompatActivity {
         fab_restart.hide();
 
         res = getResources();
+        loaded = false;
+
+        outer: if(MyListsFragment.sActivePoznavacka != null){
+            if(mLoadedPoznavacka == null){
+                // Proceed
+            } else if (mLoadedPoznavacka.getId().equals(MyListsFragment.sActivePoznavacka.getId())){
+                loaded = true;
+                break outer;
+            }
+
+            Gson gson = new Gson();
+            Context context = this;
+            String path = MyListsFragment.sActivePoznavacka.getId() + "/";
+
+            /*File f = new File(context.getFilesDir().getPath() + "/" + path);
+            Log.d("ObrazekF", "Path: " + context.getFilesDir().getPath() + "/" + path);
+            File[] files = f.listFiles();
+            for (File f2: files){
+                Log.d("ObrazekF", "Files:" + f2.getName());
+            }*/
+
+            Type cType = new TypeToken<ArrayList<Zastupce>>(){}.getType();
+            String json = MyListsFragment.getSMC(context).readFile(path + MyListsFragment.sActivePoznavacka.getId() + ".txt", false);
+            mZastupceArrOrig = gson.fromJson(json, cType);
+
+            for (Zastupce z: mZastupceArrOrig) {
+                z.setImage(MyListsFragment.getSMC(context).readDrawable(path, z.getParameter(0), context));
+            }
+
+            mLoadedPoznavacka = MyListsFragment.sActivePoznavacka;
+            parameterCount = mZastupceArrOrig.get(0).getParameters();
+            loaded = true;
+        }
 
         if (loaded) {
 
@@ -69,9 +116,15 @@ public class PracticeActivity extends AppCompatActivity {
         Log.d("tridy", String.valueOf(tridy.size()));
          */
 
-            puvodniPocetVsechZastupcu = nenauceniZastupci.size();
+            puvodniPocetVsechZastupcu = mZastupceArrOrig.size() - 1;
             pocetVsechZastupcu = puvodniPocetVsechZastupcu;
 
+            nenauceniZastupci = new ArrayList<Integer>();
+            for(int i = 1; i < mZastupceArrOrig.size(); i++) {
+                nenauceniZastupci.add(i);
+            }
+
+            Log.d("Obrazek", "Working so far");
 
             //first appearance
             updateScene(get_setRandomisedCurrentZastupce());
@@ -221,8 +274,17 @@ public class PracticeActivity extends AppCompatActivity {
     }
 
     private void updateScene(int i) {
-        imageView.setImageDrawable(ResourcesCompat.getDrawable(res, getResources().getIdentifier("image" + i, "drawable", getPackageName()), null));
-        textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));
+        /*imageView.setImageDrawable(ResourcesCompat.getDrawable(res, getResources().getIdentifier("image" + i, "drawable", getPackageName()), null));
+        textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));*/
+
+        String s = "";
+
+        for (int x = 0; x < parameterCount; x++) {
+            s += mZastupceArrOrig.get(i).getParameter(x) + "\n";
+        }
+
+        textView.setText(s);
+        imageView.setImageDrawable(mZastupceArrOrig.get(currentZastupce).getImage());
     }
 
     private void showScene() {
