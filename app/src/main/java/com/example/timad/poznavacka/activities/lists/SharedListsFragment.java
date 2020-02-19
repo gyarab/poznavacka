@@ -232,7 +232,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                addToFireStore(collecionShareName, item, db);
+                addToFireStore(collecionShareName, item);
 
                 try {
                     Toast.makeText(getActivity(), documentSnapshot.get("name").toString(), Toast.LENGTH_LONG).show();
@@ -280,8 +280,8 @@ public class SharedListsFragment extends Fragment {
 
     }
 
-    static void addToFireStore(String CollectionName, final PoznavackaDbObject data, FirebaseFirestore db) {
-        CollectionReference dbPoznavacka = db.collection(CollectionName);
+     public static void addToFireStore(String CollectionName, final PoznavackaDbObject data) {
+        CollectionReference dbPoznavacka = FirebaseFirestore.getInstance().collection(CollectionName);
 
         dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
             @Override

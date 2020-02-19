@@ -17,6 +17,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.activities.PracticeActivity;
+import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -111,7 +112,12 @@ public class MyListsFragment extends Fragment {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         // Sdilet poznavacku TODO
+                        //
 
+                        String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                        SharedListsFragment.addToFireStore("Poznavacka",new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(),sPoznavackaInfoArr.get(position).getId(),s,sPoznavackaInfoArr.get(position).getAuthor()));
+
+                        //
                         Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
                         toast.show();
                         dialog.dismiss();

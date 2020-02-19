@@ -30,7 +30,7 @@ public class WelcomeActivity extends AppCompatActivity {
 
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
-            Intent intent0 = new Intent(WelcomeActivity.this, AuthenticationActivity.class);
+            Intent intent0 = new Intent(WelcomeActivity.this, ListsActivity.class);
             startActivity(intent0);
             finish();
         } else {
