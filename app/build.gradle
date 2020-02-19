@@ -6,10 +6,10 @@ android {
             keyAlias = 'release'
             keyPassword 'android'
             storePassword 'android'
-            storeFile file('C:\\Users\\timad\\.android\\release.keystore')
+            storeFile file('C:\\Users\\ratus\\.android\\release.keystore')
         }
         debug {
-            storeFile file('C:\\Users\\timad\\.android\\debug.keystore')
+            storeFile file('C:\\Users\\ratus\\.android\\debug.keystore')
             storePassword 'android'
             keyAlias = 'AndroidDebugKey'
             keyPassword 'android'

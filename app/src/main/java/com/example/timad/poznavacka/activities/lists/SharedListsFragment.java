@@ -323,6 +323,7 @@ public class SharedListsFragment extends Fragment {
                 }
             });
         }*/
+
     private class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
 
         private WeakReference<SharedListsFragment> fragmentWeakReference;
