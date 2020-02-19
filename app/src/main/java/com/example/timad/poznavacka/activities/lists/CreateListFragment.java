@@ -325,7 +325,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     if (MyListsFragment.sPoznavackaInfoArr == null) {
                         MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
                     }
-                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
+                    if(autoImportIsChecked){
+                        MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
+                    } else {
+                        MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
+                    }
                     MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");

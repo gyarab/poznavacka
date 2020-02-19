@@ -26,29 +26,26 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
     private static ArrayList<Zastupce> mZastupceList;
     private static int mParameters;
     private static int[] mIds;
-    /*
-    private OnItemClickListener listener;
+
+    public OnItemClickListener listener;
 
     public interface  OnItemClickListener{
         void onViewClick(int position);
 
     }
+
     public  void setOnItemClickListener(OnItemClickListener listener){
         this.listener=listener;
     }
-    */
-
-
 
 
     public static class ZastupceViewHolder extends RecyclerView.ViewHolder {
         public ImageView zastupceImage;
         public ArrayList<EditText> editTArr;
 
-
         //image  --   https://stackoverflow.com/a/41479670/10746262
 
-        public ZastupceViewHolder(@NonNull View itemView) {
+        public ZastupceViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             editTArr = new ArrayList<>();
             for (int x = 0; x < mParameters; x++){
@@ -68,8 +65,9 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     public void afterTextChanged(Editable editable) {   }
                 });
             }
+
             zastupceImage = itemView.findViewById(mIds[mParameters]);
-/*
+
             zastupceImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -80,11 +78,6 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     }
                 }
             });
-            */
-
-
-
-
 
             /*for (int i = 0; i < mParameters; i++){
                 // https://stackoverflow.com/questions/31844373/saving-edittext-content-in-recyclerview
@@ -212,7 +205,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
     @Override
     public ZastupceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
-        ZastupceViewHolder ipvh = new ZastupceViewHolder(createCardView(parent));
+        ZastupceViewHolder ipvh = new ZastupceViewHolder(createCardView(parent), listener);
         return ipvh;
     }
 
