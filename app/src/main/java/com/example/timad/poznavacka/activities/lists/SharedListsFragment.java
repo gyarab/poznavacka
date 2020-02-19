@@ -137,7 +137,7 @@ public class SharedListsFragment extends Fragment {
                 if (MyListsFragment.sPoznavackaInfoArr == null) {
                     MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName()));
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getHeadImagePath(), item.getHeadImageUrl()));
                 MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                 Log.d("Files", "Saved successfully");
@@ -370,8 +370,7 @@ public class SharedListsFragment extends Fragment {
             SharedListsFragment fragment = fragmentWeakReference.get();
             String path = item.getId() + "/";
             Gson gson = new Gson();
-            Type cType = new TypeToken<ArrayList<Zastupce>>() {
-            }.getType();
+            Type cType = new TypeToken<ArrayList<Zastupce>>() {}.getType();
             zastupceArr = gson.fromJson(item.getContent(), cType);
             for (Zastupce z : zastupceArr) {
                 Drawable returnDrawable = null;
@@ -383,9 +382,10 @@ public class SharedListsFragment extends Fragment {
                     try {
                         returnDrawable = drawable_from_url(z.getImageURL());
                     } catch (IOException e) {
+                        Log.d("Obrazek", "Obrazek nestahnut");
                         e.printStackTrace();
                     }
-                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, item.getId());
+                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, z.getParameter(0));
 
                            /* DrawableFromUrlAsync drawableFromUrlAsync = new DrawableFromUrlAsync();
                             Drawable image = drawableFromUrlAsync.doInBackground(z.getImageURL());
@@ -404,6 +404,7 @@ public class SharedListsFragment extends Fragment {
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
+            Log.d("Obrazek", "Obrazek stahnut");
             return new BitmapDrawable(Objects.requireNonNull(getContext()).getResources(), bitmap);
         }
     }
