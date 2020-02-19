@@ -1,10 +1,13 @@
 package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.Editable;
@@ -47,6 +50,7 @@ import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -76,24 +80,19 @@ public class SharedListsFragment extends Fragment {
         //vyt vori array prida do arraye vytvori recykler view
         createArr();
         displayFirestore("Poznavacka", view);
-
         searchView = view.findViewById(R.id.search_view);
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
             }
-
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 if (mSharedListAdapter != null) {
                     mSharedListAdapter.getFilter().filter(s);
                 }
             }
-
             @Override
             public void afterTextChanged(Editable s) {
-
             }
         });
         return view;
@@ -159,20 +158,53 @@ public class SharedListsFragment extends Fragment {
         mSharedListAdapter.setOnItemClickListener(new SharedListAdapter.OnItemClickListener() {
 
             @Override
-            public void onDownloadClick(int position) {
+            public void onDownloadClick(final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.app_name);
+                builder.setIcon(R.drawable.ic_file_download);
+                builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
+                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String id = arrayList.get(position).getId();
+                        pickDocument(id, collectionName);
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
 
-                String id = arrayList.get(position).getId();
-                pickDocument(id, collectionName);
 
             }
 
             @Override
-            public void onDeleteClick(int position) {
-                String id = arrayList.get(position).getId();
-                String authorsName = "author";
-                //TODO
+            public void onDeleteClick(final int position) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                builder.setTitle(R.string.app_name);
+                builder.setIcon(R.drawable.ic_delete);
+                builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
+                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String id = arrayList.get(position).getId();
+                        String authorsName = "author";
+                        removePoznavacka(id, collectionName, authorsName, position);
+                        dialog.dismiss();
+                    }
+                }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
 
-                removePoznavacka(id, collectionName, authorsName, position);
 
             }
         });
@@ -211,6 +243,7 @@ public class SharedListsFragment extends Fragment {
                         if (task.isSuccessful()) {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
+
                                     arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(), document.getString("authorsName")));
                                 }
                             } catch (Exception e) {
@@ -363,7 +396,7 @@ public class SharedListsFragment extends Fragment {
         }
 
 
-        Drawable drawable_from_url(String url) throws java.io.IOException {
+        public Drawable drawable_from_url(String url) throws java.io.IOException {
 
             HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
             connection.setRequestProperty("User-agent", "Mozilla");

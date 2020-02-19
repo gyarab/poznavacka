@@ -7,13 +7,16 @@ public class PoznavackaDbObject {
     String id;
     String content;
     String authorsName;
+    String headImageUrl;
+    String headImagePath;
 
-
-    public PoznavackaDbObject(String name, String id, String content, String authorsName) {
+    public PoznavackaDbObject(String name, String id, String content, String authorsName, String headImageUrl, String headImagePath) {
         this.name = name;
         this.id = id;
         this.content = content;
         this.authorsName = authorsName;
+        this.headImageUrl = headImageUrl;
+        this.headImagePath = headImagePath;
     }
 
     public PoznavackaDbObject() {
@@ -49,5 +52,21 @@ public class PoznavackaDbObject {
 
     public void setAuthorsName(String authorsName) {
         this.authorsName = authorsName;
+    }
+
+    public String getHeadImageUrl() {
+        return headImageUrl;
+    }
+
+    public void setHeadImageUrl(String headImageUrl) {
+        this.headImageUrl = headImageUrl;
+    }
+
+    public String getHeadImagePath() {
+        return headImagePath;
+    }
+
+    public void setHeadImagePath(String headImagePath) {
+        this.headImagePath = headImagePath;
     }
 }
