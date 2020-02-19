@@ -37,6 +37,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         public ImageView practiceImg;
         public ImageView shareImg;
         public ImageView deleteImg;
+        public ImageView prewiewImg;
         public CardView cView;
 
         public PoznavackaInfoViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
@@ -46,7 +47,9 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
             practiceImg = itemView.findViewById(R.id.img_practice);
             shareImg = itemView.findViewById(R.id.img_share);
             deleteImg = itemView.findViewById(R.id.img_delete);
+            prewiewImg = itemView.findViewById(R.id.img_prewiew);
             cView = itemView.findViewById(R.id.cardView1);
+
 
             itemView.setOnClickListener(new View.OnClickListener(){
                 @Override
@@ -114,7 +117,8 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
         holder.textView1.setText(currentPoznavackaInfo.getName());
-        holder.textView2.setText(currentPoznavackaInfo.getId());
+        holder.textView2.setText(currentPoznavackaInfo.getAuthor());
+        holder.prewiewImg.setImageResource(R.drawable.ic_image);
 
         if(MyListsFragment.mPositionOfActivePoznavackaInfo ==position){
             holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));

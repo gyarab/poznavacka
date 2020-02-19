@@ -113,13 +113,17 @@ public class MyListsFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // Sdilet poznavacku TODO
                         //
-
-                        String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
-                        SharedListsFragment.addToFireStore("Poznavacka",new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(),sPoznavackaInfoArr.get(position).getId(),s,sPoznavackaInfoArr.get(position).getAuthor(),sPoznavackaInfoArr.get(position).getPrewievImageUrl(),sPoznavackaInfoArr.get(position).getPrewievImageLocation()));
-
+                        if(SharedListsFragment.checkInternet(getContext())) {
+                            String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                            SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), s, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation()));
+                            Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
+                            toast.show();
+                        }else {
+                            Toast.makeText(getContext(),"ur not connected, connect plis!",Toast.LENGTH_SHORT).show();
+                        }
                         //
-                        Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
-                        toast.show();
+
+
                         dialog.dismiss();
                     }
                 });

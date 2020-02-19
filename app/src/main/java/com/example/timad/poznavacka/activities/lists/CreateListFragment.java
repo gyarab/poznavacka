@@ -138,6 +138,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         switchPressedOnce = false;
 
 
+
         //info
         infoTip.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -324,7 +325,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     if (MyListsFragment.sPoznavackaInfoArr == null) {
                         MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
                     }
-                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
+                    MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
                     MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
@@ -820,7 +821,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         }
 
         @Override
-        protected void onPreExecute() {
+        public void onPreExecute() {
             super.onPreExecute();
             CreateListFragment fragment = fragmentWeakReference.get();
             fragment.progressBar.setVisibility(View.VISIBLE);
@@ -835,9 +836,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             }
             fragment.mRecyclerView.setLayoutManager(fragment.mLManager);
             fragment.mRecyclerView.setAdapter(fragment.mAdapter);
+            //TODO adapter cannot set for some reason on item click listener
 
         }
-
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
@@ -922,7 +923,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return representatives;
     }
 
-    private String capitalize(String representative, String languageURL) {
+    private  String capitalize(String representative, String languageURL) {
         if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
             representative = representative.substring(0, 1).toUpperCase() + representative.substring(1).toLowerCase();
         } else {

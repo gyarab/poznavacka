@@ -16,7 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> implements Filterable {
     private ArrayList<PreviewPoznavacka> arr;
     private ArrayList<PreviewPoznavacka> arrFull;
-    public OnItemClickListener listener;
+    private OnItemClickListener listener;
 
     public interface  OnItemClickListener{
         void onDownloadClick(int position);
@@ -89,8 +89,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         PreviewPoznavacka item = arr.get(position);
 
         holder.mImageView.setImageResource(item.getImageRecource());
-        holder.mTextView1.setText(item.getAuthorsName());
-        holder.mTextView2.setText(item.getName());
+        holder.mTextView1.setText(item.getName());
+        holder.mTextView2.setText(item.getAuthorsName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
         holder.mImageView3.setImageResource(R.drawable.ic_delete);
     }

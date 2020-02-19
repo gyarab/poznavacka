@@ -76,25 +76,32 @@ public class SharedListsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
-        db = FirebaseFirestore.getInstance();
-        //vyt vori array prida do arraye vytvori recykler view
-        createArr();
-        displayFirestore("Poznavacka", view);
-        searchView = view.findViewById(R.id.search_view);
-        searchView.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (mSharedListAdapter != null) {
-                    mSharedListAdapter.getFilter().filter(s);
+
+        if(checkInternet(getContext())) {
+            db = FirebaseFirestore.getInstance();
+            //vyt vori array prida do arraye vytvori recykler view
+            createArr();
+            displayFirestore("Poznavacka", view);
+            searchView = view.findViewById(R.id.search_view);
+            searchView.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
                 }
-            }
-            @Override
-            public void afterTextChanged(Editable s) {
-            }
-        });
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    if (mSharedListAdapter != null) {
+                        mSharedListAdapter.getFilter().filter(s);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
+            });
+        }else {
+            Toast.makeText(getContext(),"ur not connected, connect plis!",Toast.LENGTH_SHORT).show();
+        }
         return view;
     }
 
@@ -330,6 +337,18 @@ public class SharedListsFragment extends Fragment {
                 //Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    public static boolean checkInternet(Context context){
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED || connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            connected = true;
+        } else {
+            connected = false;
+        }
+
+        return  connected;
     }
 
 
