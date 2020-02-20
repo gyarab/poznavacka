@@ -1,7 +1,6 @@
 package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
-import android.content.ContextWrapper;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -36,7 +35,9 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
-import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
+import com.example.timad.poznavacka.activities.AuthenticationActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -46,8 +47,6 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
@@ -59,7 +58,6 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
-import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -121,82 +119,88 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        final View view = inflater.inflate(R.layout.fragment_createlist, container, false);
-        firestoreImpl = new FirestoreImpl();
-        btnCREATE = view.findViewById(R.id.createButton);
-        btnSAVE = view.findViewById(R.id.saveButton);
-        progressBar = view.findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.INVISIBLE);
-        userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
-        userInputTitle = view.findViewById(R.id.userInputTitle);
-        autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
-        userDividngString = view.findViewById(R.id.dividingCharacter);
-        languageSpinner = view.findViewById(R.id.languageSpinner);
-        infoTip = view.findViewById(R.id.infoTip);
-        infoTextHolder = view.findViewById(R.id.infoTextHolder);
-        db = FirebaseFirestore.getInstance(); //testing
-        switchPressedOnce = false;
+        final View view;
+        if (!SharedListsFragment.checkInternet(getContext())) {
+            view = inflater.inflate(R.layout.fragment_not_connected_to_internet, container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_createlist, container, false);
+            btnCREATE = view.findViewById(R.id.createButton);
+            btnSAVE = view.findViewById(R.id.saveButton);
+            progressBar = view.findViewById(R.id.progressBar);
+            progressBar.setVisibility(View.INVISIBLE);
+            userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
+            userInputTitle = view.findViewById(R.id.userInputTitle);
+            autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
+            userDividngString = view.findViewById(R.id.dividingCharacter);
+            languageSpinner = view.findViewById(R.id.languageSpinner);
+            infoTip = view.findViewById(R.id.infoTip);
+            infoTextHolder = view.findViewById(R.id.infoTextHolder);
+            mRecyclerView = view.findViewById(R.id.recyclerViewZ);
 
 
+            firestoreImpl = new FirestoreImpl();
+            db = FirebaseFirestore.getInstance(); //testing
+            switchPressedOnce = false;
+            final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
 
-        //info
-        infoTip.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                SpannableString tooltipText = SpannableString.valueOf(getResources().getString(R.string.create_fragment_text));
-                //tooltipText.setSpan(new UnderlineSpan(), 0, 15, 0);
-                final Tooltip tooltip = new Tooltip.Builder(getContext())
-                        .anchor(infoTextHolder, 0, 0, false)
-                        .closePolicy(ClosePolicy.Companion.getTOUCH_ANYWHERE_CONSUME())
-                        .showDuration(0)
-                        .text(tooltipText)
-                        .arrow(false)
-                        .create();
-                tooltip.show(infoTextHolder, Tooltip.Gravity.CENTER, false);
-            }
-        });
 
-        /* RecyclerView */
-        mRecyclerView = view.findViewById(R.id.recyclerViewZ);
-        HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
+            //info
+            infoTip.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    SpannableString tooltipText = SpannableString.valueOf(getResources().getString(R.string.create_fragment_text));
+                    //tooltipText.setSpan(new UnderlineSpan(), 0, 15, 0);
+                    final Tooltip tooltip = new Tooltip.Builder(getContext())
+                            .anchor(infoTextHolder, 0, 0, false)
+                            .closePolicy(ClosePolicy.Companion.getTOUCH_ANYWHERE_CONSUME())
+                            .showDuration(0)
+                            .text(tooltipText)
+                            .arrow(false)
+                            .create();
+                    tooltip.show(infoTextHolder, Tooltip.Gravity.CENTER, false);
+                }
+            });
 
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = (int) ((float) displayMetrics.heightPixels * 0.7f);
-        //int width = (int) ((float) displayMetrics.widthPixels * 2f);
+            /* RecyclerView */
+            HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
 
-        //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
-        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollV.getLayoutParams();
-        params.height = height;
-        scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
+            DisplayMetrics displayMetrics = new DisplayMetrics();
+            getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+            int height = (int) ((float) displayMetrics.heightPixels * 0.7f);
+            //int width = (int) ((float) displayMetrics.widthPixels * 2f);
+
+            //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
+            RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollV.getLayoutParams();
+            params.height = height;
+            scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
         /*NestedScrollView.LayoutParams params2 = (NestedScrollView.LayoutParams) scrollV.getChildAt(0).getLayoutParams();
         params2.width = width;
         scrollV.getChildAt(0).setLayoutParams(new NestedScrollView.LayoutParams(params2));*/
 
-        mZastupceArr = new ArrayList<>();
+            mZastupceArr = new ArrayList<>();
 
-        mLManager = new LinearLayoutManager(getContext());
+            mLManager = new LinearLayoutManager(getContext());
 
-        //spinner
-        languageURL = "Select Language";
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languageSpinner.setAdapter(adapter);
-        languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
-        languageSpinner.setOnItemSelectedListener(this);
+            //spinner
+            languageURL = "Select Language";
+            ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
+            adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+            languageSpinner.setAdapter(adapter);
+            languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
+            languageSpinner.setOnItemSelectedListener(this);
 
-        //switch
-        autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                if (isChecked) {
-                    String rawRepresentatives = userInputRepresentatives.getText().toString();
-                    dividingString = userDividngString.getText().toString().trim().toLowerCase();
-                    title = userInputTitle.getText().toString().trim();
-                    if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
+            //switch
+            autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    if (isChecked) {
+                        String rawRepresentatives = userInputRepresentatives.getText().toString();
+                        dividingString = userDividngString.getText().toString().trim().toLowerCase();
+                        title = userInputTitle.getText().toString().trim();
+                        if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
 
-                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (dividingString) + "\\s*")));
+                            representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (dividingString) + "\\s*")));
                        /* if (dividingString.isEmpty()) { //single
                             exampleRepresentative = rawRepresentatives.trim();
                         } else { //multiple
@@ -207,135 +211,143 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             }
                         }*/
 
-                        //exampleRepresentative = capitalize(exampleRepresentative, languageURL);
-                        switchPressedOnce = true;
-                        autoImportIsChecked = true;
-                        Intent intent = new Intent(getContext(), PopActivity.class);
-                        startActivity(intent);
+                            //exampleRepresentative = capitalize(exampleRepresentative, languageURL);
+                            switchPressedOnce = true;
+                            autoImportIsChecked = true;
+                            Intent intent = new Intent(getContext(), PopActivity.class);
+                            startActivity(intent);
 
+                        } else {
+                            Toast.makeText(getContext(), "Fill all the info", Toast.LENGTH_SHORT).show();
+                            autoImportSwitch.setChecked(false);
+                            autoImportIsChecked = false;
+                        }
                     } else {
-                        Toast.makeText(getContext(), "Fill all the info", Toast.LENGTH_SHORT).show();
-                        autoImportSwitch.setChecked(false);
                         autoImportIsChecked = false;
                     }
-                } else {
-                    autoImportIsChecked = false;
                 }
-            }
-        });
+            });
 
 
-        final WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(CreateListFragment.this)};
-        //create button
-        btnCREATE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
+            final WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(CreateListFragment.this)};
+            //create button
+            btnCREATE.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
 
-                title = userInputTitle.getText().toString().trim();
-                dividingString = userDividngString.getText().toString().trim().toLowerCase();
-                String rawRepresentatives = userInputRepresentatives.getText().toString();
+                    title = userInputTitle.getText().toString().trim();
+                    dividingString = userDividngString.getText().toString().trim().toLowerCase();
+                    String rawRepresentatives = userInputRepresentatives.getText().toString();
 
-                if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
-                    representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
-                    listCreated = false;
-                    WikiSearchRepresentatives[0].cancel(true);
-                    Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
-                    //final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
+                    if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
+                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
+                        listCreated = false;
+                        WikiSearchRepresentatives[0].cancel(true);
+                        Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
+                        //final WikiSearchRepresentatives WikiSearchRepresentatives = new WikiSearchRepresentatives(CreateListFragment.this);
 
-                    //recyclerView getting user parameters into account
+                        //recyclerView getting user parameters into account
 
-                    if (autoImportIsChecked) {
-                        mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
-                        parameters = userParametersCount;
-                        loadingRepresentative = false;
-                    } else {
-                        mAdapter = new ZastupceAdapter(mZastupceArr, 1);
-                        parameters = 1;
-                        loadingRepresentative = true;
-                    }
-                    mRecyclerView.setLayoutManager(mLManager);
-                    mRecyclerView.setAdapter(mAdapter);
-
-                    //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(CreateListFragment.this);
-
-                    WikiSearchRepresentatives[0].execute();
-                } else {
-                    Toast.makeText(getContext(), "Insert all info", Toast.LENGTH_SHORT).show();
-                }
-            }
-        });
-
-
-        btnSAVE.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (listCreated) {
-
-                    title = userInputTitle.getText().toString();
-
-                    // Store images
-                    Gson gson = new Gson();
-                    Context context = getContext();
-                    String uuid = UUID.randomUUID().toString();
-                    String path = uuid + "/";
-                    File dir = new File(context.getFilesDir().getPath() + "/" + path);
-
-                    // Create folder
-                    try {
-                        dir.mkdir();
-                    } catch (Exception e) {
-                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                        return;
-                    }
-
-                    // Saves images locally
-                    for (Zastupce z : mZastupceArr) {
-                        if (z.getImage() != null) {
-                            if (! MyListsFragment.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
-                                Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                                return;
-                            }
+                        if (autoImportIsChecked) {
+                            mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
+                            parameters = userParametersCount;
+                            loadingRepresentative = false;
                         } else {
-                            // TODO exception for first thing
+                            mAdapter = new ZastupceAdapter(mZastupceArr, 1);
+                            parameters = 1;
+                            loadingRepresentative = true;
+                        }
+                        mRecyclerView.setLayoutManager(mLManager);
+                        mRecyclerView.setAdapter(mAdapter);
+
+                        //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(CreateListFragment.this);
+
+                        WikiSearchRepresentatives[0].execute();
+                    } else {
+                        Toast.makeText(getContext(), "Insert all info", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+
+            btnSAVE.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (listCreated) {
+
+                        title = userInputTitle.getText().toString();
+
+                        // Store images
+                        Gson gson = new Gson();
+                        Context context = getContext();
+                        String uuid = null;
+                        if (acct != null) {
+                            uuid = acct.getIdToken();
+                        } else {
+                            Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
+                            startActivity(intent0);
+                            Objects.requireNonNull(getActivity()).finish();
+                        }
+                        String path = uuid + "/";
+                        File dir = new File(context.getFilesDir().getPath() + "/" + path);
+
+                        // Create folder
+                        try {
+                            dir.mkdir();
+                        } catch (Exception e) {
+                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                            e.printStackTrace();
+                            return;
+                        }
+
+                        // Saves images locally
+                        for (Zastupce z : mZastupceArr) {
+                            if (z.getImage() != null) {
+                                if (!MyListsFragment.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
+                                    Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                                    return;
+                                }
+                            } else {
+                                // TODO exception for first thing
 
                             /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                             deletePoznavacka(dir);
                             return;*/
+                            }
+                            z.setImage(null);
                         }
-                        z.setImage(null);
-                    }
 
-                    // Saving mZastupceArr
-                    String json = gson.toJson(mZastupceArr);
-                    //add to file
-                    String userName = "user";
-                    // Add to database
-                    //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
-                    //SharedListsFragment.addToFireStore("Poznavacka", item);
+                        // Saving mZastupceArr
+                        String json = gson.toJson(mZastupceArr);
+                        //add to file
+                        String userName = acct.getDisplayName();
 
-                    //Log.d("Files", json);
-                    if(! MyListsFragment.getSMC(context).createAndWriteToFile(path, uuid, json)){
-                        Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                        // Add to database
+                        //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
+                        //SharedListsFragment.addToFireStore("Poznavacka", item);
 
-                    String pathPoznavacka = "poznavacka.txt";
-                    if (MyListsFragment.sPoznavackaInfoArr == null) {
-                        MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
-                    }
-                    if(autoImportIsChecked){
-                        MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
-                    } else {
-                        MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
-                    }
-                    MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+                        //Log.d("Files", json);
+                        if (!MyListsFragment.getSMC(context).createAndWriteToFile(path, uuid, json)) {
+                            Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
 
-                    Log.d("Files", "Saved successfully");
-                    Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+                        String pathPoznavacka = "poznavacka.txt";
+                        if (MyListsFragment.sPoznavackaInfoArr == null) {
+                            MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
+                        }
+                        if (autoImportIsChecked) {
+                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
+                        } else {
+                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
+                        }
+                        MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
-                    // Deletes everything base in folder
+                        Log.d("Files", "Saved successfully");
+                        Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+
+                        // Deletes everything base in folder
                 /*File[] files = c.getFilesDir().listFiles();
                 for (int i = 0; i < files.length; i++)
                 {
@@ -364,11 +376,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
 
                 }*/
-                } else {
-                    Toast.makeText(getContext(), "Create list first", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "Create list first", Toast.LENGTH_SHORT).show();
+                    }
                 }
-            }
-        });
+            });
+        }
 
         return view;
     }
@@ -843,6 +856,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             //TODO adapter cannot set for some reason on item click listener
 
         }
+
         @Override
         protected void onProgressUpdate(String... values) {
             super.onProgressUpdate(values);
@@ -927,7 +941,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
         return representatives;
     }
 
-    private  String capitalize(String representative, String languageURL) {
+    private String capitalize(String representative, String languageURL) {
         if (!(languageURL.equals("ar") || languageURL.equals("kr") || languageURL.equals("ru") || languageURL.equals("vi"))) {
             representative = representative.substring(0, 1).toUpperCase() + representative.substring(1).toLowerCase();
         } else {

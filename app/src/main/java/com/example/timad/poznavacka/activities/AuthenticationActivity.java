@@ -18,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import androidx.annotation.NonNull;
@@ -114,6 +115,17 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         startActivityForResult(signInIntent, RC_SIGN_IN);
     }
 
+    protected void signOut() {
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Intent intent0 = new Intent(AuthenticationActivity.this, AuthenticationActivity.class);
+                startActivity(intent0);
+                finish();
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -142,6 +154,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private void updateUI(GoogleSignInAccount account) {
         if (account == null) {
             Toast.makeText(getApplicationContext(), "Error with authenticating", Toast.LENGTH_SHORT).show();
+
             Intent intent0 = new Intent(AuthenticationActivity.this, AuthenticationActivity.class); //TODO RETURN TO Authentication
             startActivity(intent0);
             finish();

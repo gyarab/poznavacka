@@ -14,31 +14,40 @@
 
 
         <RelativeLayout
-            android:layout_above="@+id/bottomBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomBar">
 
-            <androidx.viewpager.widget.ViewPager
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:id="@+id/container"
-                app:layout_behavior="@string/appbar_scrolling_view_behavior">
+            <Button
+                android:id="@+id/button_sign_out"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:text="@string/sign_out" />
 
-            </androidx.viewpager.widget.ViewPager>
+            <TextView
+                android:id="@+id/textview_signed_in_as"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/button_sign_out"
+                android:layout_centerHorizontal="true"
+                android:textColor="@color/text_color"
+                android:textSize="20sp"
+                android:paddingBottom="20dp" />
 
         </RelativeLayout>
 
 
         <RelativeLayout
+            android:id="@+id/bottomBar"
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:id="@+id/bottomBar"
             android:layout_alignParentBottom="true">
 
             <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavView_Bar"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:id="@+id/bottomNavView_Bar"
                 android:background="@drawable/navigation_border_top"
                 app:itemIconTint="@color/bnv_tab_item_foreground"
                 app:itemTextColor="@color/bnv_tab_item_foreground"

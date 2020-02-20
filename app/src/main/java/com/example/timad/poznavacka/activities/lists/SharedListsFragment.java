@@ -25,6 +25,8 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -66,6 +68,7 @@ public class SharedListsFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
+    private GoogleSignInAccount acct;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
     private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
@@ -79,6 +82,7 @@ public class SharedListsFragment extends Fragment {
 
         if(checkInternet(getContext())) {
             db = FirebaseFirestore.getInstance();
+            acct = GoogleSignIn.getLastSignedInAccount(getContext());
             //vyt vori array prida do arraye vytvori recykler view
             createArr();
             displayFirestore("Poznavacka", view);
@@ -199,8 +203,8 @@ public class SharedListsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String id = arrayList.get(position).getId();
-                        String authorsName = "author";
-                        removePoznavacka(id, collectionName, authorsName, position);
+                        String usersName = acct.getDisplayName();
+                        removePoznavacka(id, collectionName, usersName, position);
                         dialog.dismiss();
                     }
                 }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -216,30 +220,6 @@ public class SharedListsFragment extends Fragment {
             }
         });
     }
-
-    /* TODO delete?
-    private static class WikiSearchRepresentativesCopy extends AsyncTask<Void, String, Void> {
-
-        private WeakReference<SharedListsFragment> fragmentWeakReference;
-
-        Drawable drawableFromUrl(String url) {
-            SharedListsFragment fragment = fragmentWeakReference.get();
-            try {
-
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setRequestProperty("User-agent", "Mozilla");
-
-                connection.connect();
-                InputStream input = connection.getInputStream();
-                Bitmap bitmap = BitmapFactory.decodeStream(input);
-                return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
-            } catch (IOException e){
-                Toast.makeText(fragment.getActivity(), "Something went wrong while downloading Poznavacka", Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-            }
-            return null;
-        }
-    }*/
 
     private void displayFirestore(final String collectionName, final View view) {
         db.collection(collectionName)
@@ -287,13 +267,13 @@ public class SharedListsFragment extends Fragment {
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
     // nedodelane
-    public void removePoznavacka(final String documentName, final String collectionName, final String authorsName, final int position) {
+    public void removePoznavacka(final String documentName, final String collectionName, final String usersName, final int position) {
         DocumentReference docRef = db.collection(collectionName).document(documentName);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getAuthorsName().equals(authorsName)) {
+                if (item.getId().equals(acct.getIdToken())) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -312,7 +292,7 @@ public class SharedListsFragment extends Fragment {
                             });
 
                 } else {
-                    Toast.makeText(getActivity(), "ur user name doesnt match creator" + "," + item.getAuthorsName() + "," + authorsName, Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "ur user name doesnt match creator " + item.getAuthorsName() + ", " + usersName, Toast.LENGTH_LONG).show();
                 }
             }
         });
@@ -394,21 +374,14 @@ public class SharedListsFragment extends Fragment {
             for (Zastupce z : zastupceArr) {
                 Drawable returnDrawable = null;
                 if (!(z.getImageURL() == null || z.getImageURL().isEmpty()))
-                // TODO delete?
-                //MyListsFragment.getSMC(context).saveDrawable(WikiSearchRepresentativesCopy(z.getImageURL()), path, item.getId());
                 {
-                    //imgUrls.add(z.getImageURL());
                     try {
                         returnDrawable = drawable_from_url(z.getImageURL());
                     } catch (IOException e) {
                         Log.d("Obrazek", "Obrazek nestahnut");
                         e.printStackTrace();
                     }
-                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, z.getParameter(0));
-
-                           /* DrawableFromUrlAsync drawableFromUrlAsync = new DrawableFromUrlAsync();
-                            Drawable image = drawableFromUrlAsync.doInBackground(z.getImageURL());
-                            MyListsFragment.getSMC(context).saveDrawable(image, path, item.getId());*/
+                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, item.getId());
                 }
             }
             return null;

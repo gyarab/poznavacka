@@ -4,11 +4,20 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -16,17 +25,45 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class AccountActivity extends AppCompatActivity {
     private static final String TAG = "AccountActivity";
+    TextView signedInAs;
+    Button signOutButton;
+    GoogleSignInClient mGoogleSignInClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_account);
+        signedInAs = findViewById(R.id.textview_signed_in_as);
+        signOutButton = findViewById(R.id.button_sign_out);
+
+        final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplication());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView_Bar);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(3);
         menuItem.setChecked(true);
+
+        if (acct != null) {
+            signedInAs.setText("Signed in as " + acct.getDisplayName());
+        } else {
+            signedInAs.setText(R.string.user_not_signed_in);
+        }
+
+        signOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                /*AuthenticationActivity authenticationActivity = new AuthenticationActivity();
+                authenticationActivity.signOut();*/
+                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                        .requestProfile()
+                        .requestId()
+                        .requestEmail()
+                        .build();
+                mGoogleSignInClient = GoogleSignIn.getClient(getApplication(), gso);
+                signOut();
+            }
+        });
 
 
 
@@ -63,6 +100,18 @@ public class AccountActivity extends AppCompatActivity {
         });
 
     }
+
+    private void signOut() {
+        mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
+            @Override
+            public void onComplete(@NonNull Task<Void> task) {
+                Intent intent0 = new Intent(AccountActivity.this, AuthenticationActivity.class);
+                startActivity(intent0);
+                finish();
+            }
+        });
+    }
+
 
 }
 

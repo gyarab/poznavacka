@@ -54,5 +54,8 @@
     <string name="title_input">Title</string>
     <string name="dividing_word_character_input">Dividing sequence</string>
     <string name="the_representatives_input">The representatives</string>
-    <string name="search_lists">Search lists</string>
+    <string name="search_lists">Search lists online</string>
+    <string name="user_not_signed_in">You are not signed in</string>
+    <string name="sign_out">Sign out</string>
+    <string name="internet_connection_required">Internet connection required</string>
 </resources>

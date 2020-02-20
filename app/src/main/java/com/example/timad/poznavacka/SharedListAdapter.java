@@ -117,7 +117,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
 
                 for (PreviewPoznavacka item :
                         arrFull) {
-                    if (item.getName().toLowerCase().contains(filterPattern)) {
+                    if (item.getName().toLowerCase().contains(filterPattern) || item.getAuthorsName().toLowerCase().contains(filterPattern)) {
                         filteredList.add(item);
                     }
                 }
