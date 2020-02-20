@@ -173,7 +173,7 @@ public class SharedListsFragment extends Fragment {
                 AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                 builder.setTitle(R.string.app_name);
                 builder.setIcon(R.drawable.ic_file_download);
-                builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
+                builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
                 builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
@@ -203,7 +203,14 @@ public class SharedListsFragment extends Fragment {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String id = arrayList.get(position).getId();
-                        String usersName = acct.getDisplayName();
+                        String usersName;
+                        try{
+                            usersName= acct.getDisplayName();
+                        }catch (Exception e){
+                            Toast.makeText(getActivity(),"ur not logged in"+e.toString(),Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
                         removePoznavacka(id, collectionName, usersName, position);
                         dialog.dismiss();
                     }
@@ -273,7 +280,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getId().equals(acct.getIdToken())) {
+                if (item.getAuthorsName().equals(usersName)) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
