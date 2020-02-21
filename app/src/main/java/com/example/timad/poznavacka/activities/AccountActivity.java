@@ -19,6 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -27,7 +29,7 @@ public class AccountActivity extends AppCompatActivity {
     private static final String TAG = "AccountActivity";
     TextView signedInAs;
     Button signOutButton;
-    GoogleSignInClient mGoogleSignInClient;
+    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,7 +47,7 @@ public class AccountActivity extends AppCompatActivity {
         menuItem.setChecked(true);
 
         if (acct != null) {
-            signedInAs.setText("Signed in as " + acct.getDisplayName());
+            signedInAs.setText("Signed in as " + user.getDisplayName());
         } else {
             signedInAs.setText(R.string.user_not_signed_in);
         }
@@ -53,14 +55,6 @@ public class AccountActivity extends AppCompatActivity {
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                /*AuthenticationActivity authenticationActivity = new AuthenticationActivity();
-                authenticationActivity.signOut();*/
-                GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                        .requestProfile()
-                        .requestId()
-                        .requestEmail()
-                        .build();
-                mGoogleSignInClient = GoogleSignIn.getClient(getApplication(), gso);
                 signOut();
             }
         });
@@ -102,6 +96,14 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     private void signOut() {
+        FirebaseAuth.getInstance().signOut();
+
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestProfile()
+                .requestId()
+                .requestEmail()
+                .build();
+        GoogleSignInClient mGoogleSignInClient = GoogleSignIn.getClient(getApplication(), gso);
         mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {

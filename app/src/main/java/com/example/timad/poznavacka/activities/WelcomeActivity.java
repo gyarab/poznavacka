@@ -6,8 +6,8 @@ import android.os.Handler;
 
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -18,19 +18,19 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        final GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-                updateUI(account);
+                updateUI(user);
             }
         }, SPLASH_TIME_OUT);
 
     }
 
-    private void updateUI(GoogleSignInAccount account) {
-        if (account == null) {
-            Intent intent0 = new Intent(WelcomeActivity.this, ListsActivity.class);
+    private void updateUI(FirebaseUser user) {
+        if (user == null) {
+            Intent intent0 = new Intent(WelcomeActivity.this, AuthenticationActivity.class);
             startActivity(intent0);
             finish();
         } else {

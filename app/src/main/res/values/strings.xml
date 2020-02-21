@@ -19,7 +19,6 @@
     <string name="contact_us">Contact us</string>
     <string name="pin">PIN</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="select_list">Select the list first</string>
     <string name="open">open</string>
@@ -44,6 +43,11 @@
     <string name="signature_title">Your signature</string>
     <string name="reply_title">Default reply action</string>
 
+    <!-- User -->
+    <string name="user_not_signed_in">You are not signed in</string>
+    <string name="sign_out">Sign out</string>
+    <!--<string name="default_web_client_id">882289086797-lm51brb1i8pm5m9tiqndurp9bg9hep7i.apps.googleusercontent.com</string>-->
+
     <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
@@ -55,7 +59,5 @@
     <string name="dividing_word_character_input">Dividing sequence</string>
     <string name="the_representatives_input">The representatives</string>
     <string name="search_lists">Search lists online</string>
-    <string name="user_not_signed_in">You are not signed in</string>
-    <string name="sign_out">Sign out</string>
     <string name="internet_connection_required">Internet connection required</string>
 </resources>

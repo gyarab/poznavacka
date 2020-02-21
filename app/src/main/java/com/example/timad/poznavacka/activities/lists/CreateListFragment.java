@@ -36,8 +36,8 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 
@@ -141,7 +141,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             firestoreImpl = new FirestoreImpl();
             db = FirebaseFirestore.getInstance(); //testing
             switchPressedOnce = false;
-            final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getActivity());
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
 
 
             //info
@@ -282,8 +283,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Gson gson = new Gson();
                         Context context = getContext();
                         String uuid = null;
-                        if (acct != null) {
-                            uuid = acct.getIdToken();
+                        if (user != null) {
+                            uuid = user.getUid();
                         } else {
                             Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
                             startActivity(intent0);
@@ -321,7 +322,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         // Saving mZastupceArr
                         String json = gson.toJson(mZastupceArr);
                         //add to file
-                        String userName = acct.getDisplayName();
+                        String userName = user.getDisplayName();
 
                         // Add to database
                         //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);

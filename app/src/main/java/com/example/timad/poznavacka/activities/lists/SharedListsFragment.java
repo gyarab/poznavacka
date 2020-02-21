@@ -25,12 +25,12 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -68,7 +68,7 @@ public class SharedListsFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
-    private GoogleSignInAccount acct;
+    private FirebaseUser user;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
     private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
@@ -82,7 +82,7 @@ public class SharedListsFragment extends Fragment {
 
         if(checkInternet(getContext())) {
             db = FirebaseFirestore.getInstance();
-            acct = GoogleSignIn.getLastSignedInAccount(getContext());
+            user = FirebaseAuth.getInstance().getCurrentUser();
             //vyt vori array prida do arraye vytvori recykler view
             createArr();
             displayFirestore("Poznavacka", view);
@@ -205,7 +205,7 @@ public class SharedListsFragment extends Fragment {
                         String id = arrayList.get(position).getId();
                         String usersName;
                         try{
-                            usersName= acct.getDisplayName();
+                            usersName = user.getDisplayName();
                         }catch (Exception e){
                             Toast.makeText(getActivity(),"ur not logged in"+e.toString(),Toast.LENGTH_SHORT).show();
                             return;
@@ -280,7 +280,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getAuthorsName().equals(usersName)) {
+                if (item.getId().equals(user.getUid())) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
