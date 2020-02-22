@@ -1,4 +1,4 @@
-package com.example.timad.poznavacka.activities.lists;
+package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
 import android.content.Intent;
@@ -36,6 +36,8 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -66,9 +68,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import it.sephiroth.android.library.xtooltip.ClosePolicy;
 import it.sephiroth.android.library.xtooltip.Tooltip;
 
-import static com.example.timad.poznavacka.activities.lists.PopActivity.reversedUserScientificClassification;
-import static com.example.timad.poznavacka.activities.lists.PopActivity.userParametersCount;
-import static com.example.timad.poznavacka.activities.lists.PopActivity.userScientificClassification;
+import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.reversedUserScientificClassification;
+import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.userParametersCount;
+import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.userScientificClassification;
 
 
 public class CreateListFragment extends Fragment implements AdapterView.OnItemSelectedListener {
@@ -91,7 +93,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private ImageView infoTip;
     private TextView infoTextHolder;
 
-    static String languageURL;
+    public static String languageURL;
 
     private boolean switchPressedOnce;
     private boolean loadingRepresentative;
@@ -101,7 +103,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private FirestoreImpl firestoreImpl;
     private FirebaseFirestore db; //for testing no longer
 
-    static ArrayList<String> representatives;
+    public static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
     private String title;
     private String dividingString;
@@ -126,6 +128,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             view = inflater.inflate(R.layout.fragment_createlist, container, false);
             btnCREATE = view.findViewById(R.id.createButton);
             btnSAVE = view.findViewById(R.id.saveButton);
+            btnSAVE.setVisibility(View.INVISIBLE);
             progressBar = view.findViewById(R.id.progressBar);
             progressBar.setVisibility(View.INVISIBLE);
             userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
@@ -262,6 +265,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         mRecyclerView.setAdapter(mAdapter);
 
                         //WikiSearchRepresentatives.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                        btnSAVE.setVisibility(View.INVISIBLE);
                         WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(CreateListFragment.this);
 
                         WikiSearchRepresentatives[0].execute();
@@ -879,6 +883,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             fragment.progressBar.startAnimation(AnimationUtils.loadAnimation(fragment.getContext(), android.R.anim.fade_out));
             fragment.mAdapter.notifyDataSetChanged();
             fragment.listCreated = true;
+            fragment.btnSAVE.setVisibility(View.VISIBLE);
         }
 
         @Override

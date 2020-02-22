@@ -60,4 +60,5 @@
     <string name="the_representatives_input">The representatives</string>
     <string name="search_lists">Search lists online</string>
     <string name="internet_connection_required">Internet connection required</string>
+    <string name="give_your_list_a_name">Give your list a name.</string>
 </resources>

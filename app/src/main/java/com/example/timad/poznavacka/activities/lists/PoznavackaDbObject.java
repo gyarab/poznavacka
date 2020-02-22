@@ -1,6 +1,4 @@
-package com.example.timad.poznavacka.activities.test;
-
-import android.graphics.drawable.Drawable;
+package com.example.timad.poznavacka.activities.lists;
 
 public class PoznavackaDbObject {
     String name;

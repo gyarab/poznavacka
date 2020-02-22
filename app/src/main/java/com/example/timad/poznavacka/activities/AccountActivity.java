@@ -69,16 +69,19 @@ public class AccountActivity extends AppCompatActivity {
                     case R.id.nav_practice:
                         Intent intent0 = new Intent(AccountActivity.this, PracticeActivity.class);
                         startActivity(intent0);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_lists:
                         Intent intent1 = new Intent(AccountActivity.this, ListsActivity.class);
                         startActivity(intent1);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_test:
                         Intent intent3 = new Intent(AccountActivity.this, TestActivity.class);
                         startActivity(intent3);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_account:

@@ -4,7 +4,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,13 +16,11 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.activities.PracticeActivity;
-import com.example.timad.poznavacka.activities.test.PoznavackaDbObject;
+import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
@@ -47,21 +44,24 @@ public class MyListsFragment extends Fragment {
     private RecyclerView.LayoutManager mLManager;
     public static int mPositionOfActivePoznavackaInfo;
 
+    private FloatingActionButton newListBTN;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         View view = inflater.inflate(R.layout.fragment_mylists, container, false);
 
-        if(sPoznavackaInfoArr == null){
+        if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
             String s = getSMC(getContext()).readFile("poznavacka.txt", true);
             /*File file2 = new File(mPath + "/poznavacka.txt");
             file2.delete();*/
 
             if (s != null) {
-                if(!s.isEmpty()) {
-                    Type cType = new TypeToken<ArrayList<PoznavackaInfo>>(){}.getType();
+                if (!s.isEmpty()) {
+                    Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
+                    }.getType();
                     sPoznavackaInfoArr = gson.fromJson(s, cType);
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
@@ -71,6 +71,18 @@ public class MyListsFragment extends Fragment {
             }
         }
         //createArr();
+
+        /* Add new button */
+        newListBTN = view.findViewById(R.id.new_list_btn);
+        newListBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent0 = new Intent(getContext(), CreateListActivity.class);
+                startActivity(intent0);
+                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                getActivity().finish();
+            }
+        });
 
         /* RecyclerView */
         mRecyclerView = view.findViewById(R.id.recyclerViewL);
@@ -113,13 +125,13 @@ public class MyListsFragment extends Fragment {
                     public void onClick(DialogInterface dialog, int id) {
                         // Sdilet poznavacku TODO
                         //
-                        if(SharedListsFragment.checkInternet(getContext())) {
+                        if (SharedListsFragment.checkInternet(getContext())) {
                             String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
                             SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), s, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation()));
                             Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
                             toast.show();
-                        }else {
-                            Toast.makeText(getContext(),"ur not connected, connect plis!",Toast.LENGTH_SHORT).show();
+                        } else {
+                            Toast.makeText(getContext(), "ur not connected, connect plis!", Toast.LENGTH_SHORT).show();
                         }
                         //
 
@@ -159,10 +171,10 @@ public class MyListsFragment extends Fragment {
                         sPoznavackaInfoArr.remove(position);
                         getSMC(context).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
-                        if(position <= mPositionOfActivePoznavackaInfo){
+                        if (position <= mPositionOfActivePoznavackaInfo) {
                             mPositionOfActivePoznavackaInfo -= 1;
-                            if(sPoznavackaInfoArr.size() > 0) {
-                                if(mPositionOfActivePoznavackaInfo < 0) {
+                            if (sPoznavackaInfoArr.size() > 0) {
+                                if (mPositionOfActivePoznavackaInfo < 0) {
                                     mPositionOfActivePoznavackaInfo = 0;
                                 }
                                 sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
@@ -193,8 +205,8 @@ public class MyListsFragment extends Fragment {
         return view;
     }
 
-    public static StorageManagerClass getSMC(Context context){
-        if(sSMC == null){
+    public static StorageManagerClass getSMC(Context context) {
+        if (sSMC == null) {
             sSMC = new StorageManagerClass(context.getFilesDir().getPath());
         }
 
@@ -202,7 +214,7 @@ public class MyListsFragment extends Fragment {
     }
 
     /* Ještě je potřeba implementovat smazání souboru */
-    public void removeItem(int pos){
+    public void removeItem(int pos) {
         sPoznavackaInfoArr.remove(pos);
         mAdapter.notifyDataSetChanged();
     }

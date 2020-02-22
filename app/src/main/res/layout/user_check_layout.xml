@@ -7,7 +7,7 @@
     android:layout_height="wrap_content"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     android:layout_gravity="center_vertical"
-    tools:context=".activities.lists.PopActivity"
+    tools:context=".activities.lists.createList.PopActivity"
     tools:showIn="@layout/activity_main"
     tools:layout_editor_absoluteY="81dp"
     tools:layout_editor_absoluteX="0dp">

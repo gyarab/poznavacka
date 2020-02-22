@@ -1,4 +1,4 @@
-package com.example.timad.poznavacka.activities.lists;
+package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.app.Activity;
 import android.graphics.Color;
@@ -30,7 +30,7 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.example.timad.poznavacka.activities.lists.CreateListFragment.languageURL;
+import static com.example.timad.poznavacka.activities.lists.createList.CreateListFragment.languageURL;
 
 public class PopActivity extends Activity {
 
@@ -43,10 +43,10 @@ public class PopActivity extends Activity {
     ViewGroup viewGroup;
     ScrollView sv;
 
-    static ArrayList<String> userScientificClassification;
-    static ArrayList<String> reversedUserScientificClassification;
+    public static ArrayList<String> userScientificClassification;
+    public static ArrayList<String> reversedUserScientificClassification;
 
-    static int userParametersCount = 1;
+    public static int userParametersCount = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

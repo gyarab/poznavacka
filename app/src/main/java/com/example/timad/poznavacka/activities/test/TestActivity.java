@@ -49,11 +49,13 @@ public class TestActivity extends AppCompatActivity {
                     case R.id.nav_practice:
                         Intent intent0 = new Intent(TestActivity.this, PracticeActivity.class);
                         startActivity(intent0);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_lists:
                         Intent intent1 = new Intent(TestActivity.this, ListsActivity.class);
                         startActivity(intent1);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_test:
@@ -64,6 +66,7 @@ public class TestActivity extends AppCompatActivity {
                     case R.id.nav_account:
                         Intent intent4 = new Intent(TestActivity.this, AccountActivity.class);
                         startActivity(intent4);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
 
 

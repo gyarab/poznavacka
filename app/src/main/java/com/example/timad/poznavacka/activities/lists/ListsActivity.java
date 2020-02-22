@@ -40,20 +40,6 @@ public class ListsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
 
-        /*
-
-        DELETE LIST
-        CREATE LIST
-        switche = jeden pro automatické vybrání obrázku (buď z wikipedie nebo první z vyhledávání)
-                  pokud bude tvůrce listu chtít třídu nebo řád:
-                        druhý pro automatické vybrání třídy a řádu (z wikipedie, mám nástřel v pythonu)
-
-
-        IMPORT LIST
-        SELECT LIST
-
-         */
-
 
         //fragments navigation
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
@@ -66,7 +52,7 @@ public class ListsActivity extends AppCompatActivity {
 
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_list_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_file_download);
-        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_add_circle_black_24dp);
+//        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_add_circle_black_24dp);
 
 
 
@@ -87,6 +73,7 @@ public class ListsActivity extends AppCompatActivity {
                     case R.id.nav_practice:
                         Intent intent0 = new Intent(ListsActivity.this, PracticeActivity.class);
                         startActivity(intent0);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
                     case R.id.nav_lists:
@@ -97,11 +84,13 @@ public class ListsActivity extends AppCompatActivity {
                     case R.id.nav_test:
                         Intent intent3 = new Intent(ListsActivity.this, TestActivity.class);
                         startActivity(intent3);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
 
                     case R.id.nav_account:
                         Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
                         startActivity(intent4);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
 
                 }
@@ -117,7 +106,7 @@ public class ListsActivity extends AppCompatActivity {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new MyListsFragment());
         adapter.addFragment(new SharedListsFragment());
-        adapter.addFragment(new CreateListFragment());
+        //adapter.addFragment(new CreateListFragment());
         viewPager.setAdapter(adapter);
     }
 

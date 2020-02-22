@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".activities.lists.PopActivity"
+            android:name=".activities.lists.createList.PopActivity"
             android:theme="@style/AppTheme.Pop" />
         <activity
             android:name=".activities.SwitchActivity"
@@ -37,6 +37,7 @@
         <activity android:name=".activities.test.TestActivity" />
         <activity android:name=".FirestoreImpl" />
         <activity android:name=".activities.AccountActivity" />
+        <activity android:name=".activities.lists.MyListsFragment" />
         <activity
             android:name=".activities.AuthenticationActivity"
             android:screenOrientation="portrait" />
@@ -48,6 +49,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".activities.lists.createList.CreateListActivity" />
 
     </application>
 
