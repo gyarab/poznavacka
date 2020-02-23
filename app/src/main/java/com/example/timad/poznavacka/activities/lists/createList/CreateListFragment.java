@@ -38,6 +38,8 @@ import com.example.timad.poznavacka.ZastupceAdapter;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsFragment;
 import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
+import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
+import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -48,11 +50,14 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -114,8 +119,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
 
-
     private int parameters;
+
+    Integer responseCode = null;
+    String responseMessage = "";
 
 
     @Nullable
@@ -145,7 +152,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             db = FirebaseFirestore.getInstance(); //testing
             switchPressedOnce = false;
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
 
 
             //info
@@ -402,7 +408,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             case "Select Language":
                 languageURL = "Select Language";
                 break;
-            case "English":
+            case "English (Latin)":
                 languageURL = "en";
                 break;
             case "Czech":
@@ -472,7 +478,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     }
 
 
-    private static class WikiSearchRepresentatives extends AsyncTask<Void, String, Void> {
+    private class WikiSearchRepresentatives extends AsyncTask<Void, String, Void> {
 
         private WeakReference<CreateListFragment> fragmentWeakReference;
 
@@ -491,15 +497,90 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 publishProgress("");
             }
 
-
             for (String representative :
                     representatives) {
                 Log.d(TAG, "------------------------------");
                 Log.d(TAG, "current representative = " + representative);
-                String searchText = representative.replace(" ", "_");
+
+                //Google search
+                String searchText = "";
+                Drawable img = null;
+                String imageURL = "";
+                String result = "";
+                String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + representative;
+                URL url = null;
+                try {
+                    url = new URL(urlString);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                HttpURLConnection conn = null;
+                try {
+                    conn = (HttpURLConnection) url.openConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    responseCode = conn.getResponseCode();
+                    responseMessage = conn.getResponseMessage();
+                } catch (IOException e) {
+                    Log.e(TAG, "Http getting response code ERROR " + e.toString());
+
+                }
+
+                Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+
+                try {
+                    if (responseCode != null && responseCode == 200) {
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = rd.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        rd.close();
+                        conn.disconnect();
+                        result = sb.toString();
+                        Log.d(TAG, "result=" + result);
+                    } else {
+                        //response problem
+
+                        String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
+                        Log.e(TAG, errorMsg);
+                        //result = errorMsg;
+                    }
+
+                } catch (IOException e) {
+                    Log.e(TAG, "Http Response ERROR " + e.toString());
+                }
+
+
+                Gson gson = new Gson();
+                try {
+                    GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
+                    GoogleItemObject googleItemObject = googleSearchObject.getItems().get(0);
+                    String wikipeidaURL = googleItemObject.getFormattedUrl();
+                    Log.d(TAG, "google test is = " + wikipeidaURL);
+                    imageURL = googleItemObject.getPagemap().getCse_image().get(0).getSrc();
+                    searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
+                } catch (Exception e) {
+                    //not connected to internet
+                    e.printStackTrace();
+                    Log.d(TAG, "no wiki");
+                    publishProgress(representative);
+                }
+
+
+                try {
+                    img = drawable_from_url(imageURL);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
 
                 Document doc = null;
                 try {
+                    Log.d(TAG, "connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText /*URLEncoder.encode(searchText, "UTF-8")*/ + "?redirect=true");
                     doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
@@ -512,8 +593,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 //checking for the right table
                 ArrayList<String> newData = new ArrayList<>();
                 int classificationPointer = 0;
-                Drawable img = null;
-                String imageURL = "";
 
                 Element infoBox = null;
 
@@ -579,12 +658,15 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         ArrayList harvestedInfoBox = harvestInfo(infoBox);
                         newData = (ArrayList<String>) harvestedInfoBox.get(0);
                         classificationPointer = (int) harvestedInfoBox.get(1);
-                        img = (Drawable) harvestedInfoBox.get(2);
-                        imageURL = (String) harvestedInfoBox.get(3);
+                            /*img = (Drawable) harvestedInfoBox.get(2);
+                            imageURL = (String) harvestedInfoBox.get(3);*/
                     }
 
-
-                    newData.add(doc.title());
+                    String displayNameOfRepresentative = doc.title();
+                    if (doc.title().contains("(")) {
+                        displayNameOfRepresentative = doc.title().substring(0, doc.title().indexOf("(")).trim();
+                    }
+                    newData.add(displayNameOfRepresentative);
                     Collections.reverse(newData);
 
                     //loading into mZastupceArr
@@ -616,6 +698,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 }
                 publishProgress("");
             }
+
             return null;
         }
 
@@ -695,8 +778,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             ArrayList returnList = new ArrayList();
 
             ArrayList<String> newData = new ArrayList<>();
-            Drawable img = null;
-            String imageURL = "";
+           /* Drawable img = null;
+            String imageURL = "";*/
             int classificationPointer = 0;
 
             String[] dataPair;
@@ -728,12 +811,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         }
                         break;
                     }
+                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                        dataPair = dataPair.clone()[1].split("\n");
+                    }
                     for (int i = 0; i < 2; i++) {
                         dataPair[i] = dataPair[i].trim();
                         Log.d(TAG, "found " + dataPair[i]);
                     }
-
-                    //LEFT OFF, u Marsu naor, class, colspan=2, class.. prestane prirazovat klasifikaci
 
                     Log.d(TAG, "classPointer = " + classificationPointer);
                     Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
@@ -774,17 +858,17 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 }
 
 
-                //get the image
+                /*//get the image
                 else if (img == null) {
                     ArrayList imgAndUrl = getImageFromTr(tr);
                     img = (Drawable) imgAndUrl.get(0);
                     imageURL = (String) imgAndUrl.get(1);
-                }
+                }*/
             }
             returnList.add(newData);
             returnList.add(classificationPointer);
-            returnList.add(img);
-            returnList.add(imageURL);
+            /*returnList.add(img);
+            returnList.add(imageURL);*/
             return returnList;
         }
 

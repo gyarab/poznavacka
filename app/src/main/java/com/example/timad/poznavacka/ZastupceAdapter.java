@@ -3,15 +3,12 @@ package com.example.timad.poznavacka;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
 
 import java.util.ArrayList;
 
@@ -170,8 +167,10 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
         ImageView imgV = new ImageView(parent.getContext());
         imgV.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.WRAP_CONTENT,
-                LinearLayout.LayoutParams.MATCH_PARENT,
+                //LinearLayout.LayoutParams.WRAP_CONTENT,
+                300,
+                //LinearLayout.LayoutParams.MATCH_PARENT,
+                300,
                 1f
         ));
         imgV.setMinimumWidth(400);
@@ -193,7 +192,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     1f
             ));
             editT.setTextSize(14);
-            editT.setMaxLines(2);
+            //editT.setMaxLines(2);
             editT.setWidth(EDITTEXT_WIDTH);
             editT.setId(mIds[i]);
             //Log.i("GenerateId", "ET" + i + ": " + editT.getId());

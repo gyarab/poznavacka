@@ -18,14 +18,22 @@ import android.widget.ScrollView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
+import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
+import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,6 +55,9 @@ public class PopActivity extends Activity {
     public static ArrayList<String> reversedUserScientificClassification;
 
     public static int userParametersCount = 1;
+
+    Integer responseCode = null;
+    String responseMessage = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,7 +127,7 @@ public class PopActivity extends Activity {
         });
     }
 
-    private static class WikiSearchClassification extends AsyncTask<Void, String, Void> {
+    private class WikiSearchClassification extends AsyncTask<Void, String, Void> {
 
         private WeakReference<PopActivity> fragmentWeakReference;
         private boolean checkboxAdded = false;
@@ -191,13 +202,70 @@ public class PopActivity extends Activity {
             ArrayList<String> representatives = CreateListFragment.representatives;
             for (String representative :
                     representatives) {
-                String searchText = representative.replace(" ", "_");
+                //Google search
+                String result = "";
+                String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + representative;
+                URL url = null;
+                try {
+                    url = new URL(urlString);
+                } catch (MalformedURLException e) {
+                    e.printStackTrace();
+                }
+                HttpURLConnection conn = null;
+                try {
+                    conn = (HttpURLConnection) url.openConnection();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    responseCode = conn.getResponseCode();
+                    responseMessage = conn.getResponseMessage();
+                } catch (IOException e) {
+                    Log.e(TAG, "Http getting response code ERROR " + e.toString());
 
-                Log.d(TAG, "Connecting to site");
+                }
+
+                Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+
+                try {
+                    if (responseCode != null && responseCode == 200) {
+                        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                        StringBuilder sb = new StringBuilder();
+                        String line;
+                        while ((line = rd.readLine()) != null) {
+                            sb.append(line + "\n");
+                        }
+                        rd.close();
+                        conn.disconnect();
+                        result = sb.toString();
+                        Log.d(TAG, "result=" + result);
+                    } else {
+                        //response problem
+
+                        String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
+                        Log.e(TAG, errorMsg);
+                        //result = errorMsg;
+                    }
+
+                } catch (IOException e) {
+                    Log.e(TAG, "Http Response ERROR " + e.toString());
+                }
+                Log.d(TAG, "and google result is = " + result);
+
+
+                Gson gson = new Gson();
+                //JsonObject jsonResult = gson.fromJson(result, JsonObject.class);
+                GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
+                GoogleItemObject myGoogleSearchObject = googleSearchObject.getItems().get(0);
+                String wikipeidaURL = myGoogleSearchObject.getFormattedUrl();
+                Log.d(TAG, "google test is = " + wikipeidaURL);
+                String searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
+
+
                 Document doc = null;
                 try {
-                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirects=true").userAgent("Mozilla").get();
-                    Log.d(TAG, "Classification - connected to " + representative);
+                    Log.d(TAG, "connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText /*URLEncoder.encode(searchText, "UTF-8")*/ + "?redirect=true");
+                    doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
                     e.printStackTrace();
@@ -216,12 +284,12 @@ public class PopActivity extends Activity {
                                 rawTables) {
                             if (languageURL.equals("en") || languageURL.equals("cs")) {
                                 if (table.id().toLowerCase().contains("info")) {
-                                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                                    Log.d(TAG, "does contain id info = " + table.id());
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
                                 } else if (table.attr("class").toLowerCase().contains("info")) {
-                                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
@@ -392,6 +460,9 @@ public class PopActivity extends Activity {
                     if (dataPair.length == 1) { //detected wrong table
                         Log.d(TAG, "different table");
                         break;
+                    }
+                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                        dataPair = dataPair.clone()[1].split("\n");
                     }
                     for (int i = 0; i < 2; i++) {
                         dataPair[i] = dataPair[i].trim();
