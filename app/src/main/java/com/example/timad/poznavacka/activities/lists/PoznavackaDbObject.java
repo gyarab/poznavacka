@@ -5,14 +5,16 @@ public class PoznavackaDbObject {
     String id;
     String content;
     String authorsName;
+    String authorsID;
     String headImageUrl;
     String headImagePath;
 
-    public PoznavackaDbObject(String name, String id, String content, String authorsName, String headImageUrl, String headImagePath) {
+    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID,String headImageUrl, String headImagePath) {
         this.name = name;
         this.id = id;
         this.content = content;
         this.authorsName = authorsName;
+        this.authorsID = authorsID;
         this.headImageUrl = headImageUrl;
         this.headImagePath = headImagePath;
     }
@@ -50,6 +52,14 @@ public class PoznavackaDbObject {
 
     public void setAuthorsName(String authorsName) {
         this.authorsName = authorsName;
+    }
+
+    public String getAuthorsID() {
+        return authorsID;
+    }
+
+    public void setAuthorsID(String authorsID) {
+        this.authorsID = authorsID;
     }
 
     public String getHeadImageUrl() {
