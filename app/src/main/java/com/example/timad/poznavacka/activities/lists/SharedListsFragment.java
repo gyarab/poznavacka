@@ -333,7 +333,6 @@ public class SharedListsFragment extends Fragment {
         } else {
             connected = false;
         }
-
         return  connected;
     }
 
