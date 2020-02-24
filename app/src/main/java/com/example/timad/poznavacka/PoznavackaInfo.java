@@ -5,6 +5,7 @@ public class PoznavackaInfo {
     private String name;
     private String id;
     private String author;
+    private String authorsID;
     private String prewievImageLocation;
     private String prewievImageUrl;
 
@@ -14,10 +15,11 @@ public class PoznavackaInfo {
         this.author = author;
     }
 
-    public PoznavackaInfo(String name, String id, String author, String prewievImageLocation, String prewievImageUrl){
+    public PoznavackaInfo(String name, String id, String author, String authorsID, String prewievImageLocation, String prewievImageUrl){
         this.name = name;
         this.id = id;
         this.author = author;
+        this.authorsID = authorsID;
         this.prewievImageLocation = prewievImageLocation;
         this.prewievImageUrl = prewievImageUrl;
     }
@@ -32,6 +34,10 @@ public class PoznavackaInfo {
 
     public String getAuthor(){
         return author;
+    }
+
+    public String getAuthorsID(){
+        return authorsID;
     }
 
     public void setPrewievImageLocation(String prewievImageLocation){ this.prewievImageLocation = prewievImageLocation; }

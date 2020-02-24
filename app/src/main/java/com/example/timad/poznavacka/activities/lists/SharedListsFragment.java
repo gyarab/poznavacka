@@ -147,7 +147,7 @@ public class SharedListsFragment extends Fragment {
                 if (MyListsFragment.sPoznavackaInfoArr == null) {
                     MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getHeadImagePath(), item.getHeadImageUrl()));
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl()));
                 MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                 Log.d("Files", "Saved successfully");
@@ -333,7 +333,6 @@ public class SharedListsFragment extends Fragment {
         } else {
             connected = false;
         }
-
         return  connected;
     }
 

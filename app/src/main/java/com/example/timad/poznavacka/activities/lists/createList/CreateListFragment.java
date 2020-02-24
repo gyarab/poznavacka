@@ -65,6 +65,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.UUID;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -292,14 +293,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         // Store images
                         Gson gson = new Gson();
                         Context context = getContext();
-                        String uuid = null;
-                        if (user != null) {
-                            uuid = user.getUid();
-                        } else {
-                            Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
-                            startActivity(intent0);
-                            Objects.requireNonNull(getActivity()).finish();
-                        }
+                        String uuid = UUID.randomUUID().toString();
                         String path = uuid + "/";
                         File dir = new File(context.getFilesDir().getPath() + "/" + path);
 
@@ -334,6 +328,15 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         //add to file
                         String userName = user.getDisplayName();
 
+                        String userID = null;
+                        if (user != null) {
+                            userID = user.getUid();
+                        } else {
+                            Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
+                            startActivity(intent0);
+                            Objects.requireNonNull(getActivity()).finish();
+                        }
+
                         // Add to database
                         //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
                         //SharedListsFragment.addToFireStore("Poznavacka", item);
@@ -349,9 +352,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
                         }
                         if (autoImportIsChecked) {
-                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
+                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL()));
                         } else {
-                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
+                            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL()));
                         }
                         MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
