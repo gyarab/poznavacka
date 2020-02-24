@@ -9,11 +9,13 @@
         <item name="android:fontFamily">@font/lineto_circular_pro_medium</item>
     </style>
 
-    <style name="AppTheme.NoActionBar">
-        <item name="windowActionBar">false</item>
-        <item name="windowNoTitle">true</item>
+    <style name="AppTheme.ExtendedFloatingActionButton" parent="Theme.MaterialComponents">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
         <item name="android:fontFamily">@font/lineto_circular_pro_medium</item>
     </style>
+
 
     <style name="AppTheme.Pop">
         <item name="android:windowIsTranslucent">true</item>

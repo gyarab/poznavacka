@@ -39,6 +39,9 @@
         <activity android:name=".activities.AccountActivity" />
         <activity android:name=".activities.lists.MyListsFragment" />
         <activity
+            android:name=".activities.lists.createList.CreateListFragment"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
             android:name=".activities.AuthenticationActivity"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.WelcomeActivity">

@@ -1,21 +1,31 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.example.timad.poznavacka.LockableViewPager;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
 
+import java.util.ArrayList;
+
 import androidx.activity.OnBackPressedCallback;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
-public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener {
+public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener {
+
+    private final String TAG = "CreateListActivity";
 
     protected SectionsPageAdapter mSectionsPageAdapter;
     public static LockableViewPager mViewPager;
+
+    private String title;
+    private String rawRepresentatives;
+    private ArrayList<String> representatives;
+    private String languageURL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +57,9 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
         //TODO change back
         adapter.addFragment(new CreateListFragment());
-        //adapter.addFragment(new SetTitleFragment());
+        /*adapter.addFragment(new SetTitleFragment());
+        adapter.addFragment(new SetRepresentativesFragment());
+        adapter.addFragment(new SetCreateOptionsFragment());*/
 
         viewPager.setAdapter(adapter);
         viewPager.setSwipeable(false);
@@ -58,7 +70,34 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     }
 
     @Override
-    public void onEditTitleChange(Uri uri) {
+    public void updateTitle(String input) {
+        title = input;
+        Log.d(TAG, "loading into setRepresentativesFragment");
+        SetRepresentativesFragment setRepresentativesFragment = new SetRepresentativesFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_set_title, setRepresentativesFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
+
+    @Override
+    public void updateRepresentatives(String input) {
+        rawRepresentatives = input;
+        Log.d(TAG, "loading into setCreateOptionsFragment");
+        Bundle bundle = new Bundle();
+        bundle.putString("ARG_RAWREPRESENTATIVES", rawRepresentatives);
+        SetCreateOptionsFragment setCreateOptionsFragment = new SetCreateOptionsFragment();
+        setCreateOptionsFragment.setArguments(bundle);
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.fragment_set_representatives, setCreateOptionsFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
+
+    @Override
+    public void updateCreateOptions(String languageURL, ArrayList<String> representatives) {
+        this.representatives = representatives;
+        this.languageURL = languageURL;
     }
 }

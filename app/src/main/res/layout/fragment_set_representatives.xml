@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_set_representatives"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.createList.SetTitleFragment"
-    android:id="@+id/fragment_set_title">
+    tools:context=".activities.lists.createList.SetRepresentativesFragment">
 
     <ScrollView
         android:id="@+id/scrollView"
@@ -26,24 +26,31 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerHorizontal="true"
+                android:layout_marginStart="40dp"
+                android:layout_marginEnd="20dp"
                 android:layout_marginBottom="230dp"
-                android:text="@string/give_your_list_a_name"
+                android:text="@string/representatives_text"
                 android:textColor="@color/text_color"
                 android:textSize="20sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:lineSpacingMultiplier="1.2"
+                android:gravity="center" />
 
             <EditText
-                android:id="@+id/title_input"
+                android:id="@+id/representatives_input"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="50dp"
-                android:textAlignment="center"
-                android:textSize="40sp"
-                android:layout_centerInParent="true"
+                android:layout_below="@+id/title_text_view_hint"
+                android:layout_centerHorizontal="true"
+                android:layout_marginStart="50dp"
+                android:layout_marginTop="-200dp"
+                android:layout_marginEnd="50dp"
+                android:layout_marginBottom="50dp"
+                android:inputType="textMultiLine"
                 android:shadowColor="@color/colorAccent"
+                android:textAlignment="center"
                 android:textColor="@color/text_color"
-                android:inputType="text"
-                android:maxLines="1" />
+                android:textSize="20sp" />
 
         </RelativeLayout>
 
@@ -51,7 +58,7 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/button_next"
+        android:id="@+id/button_next_representatives"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
 

@@ -17,7 +17,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.fragment.app.Fragment;
 
 
-public class SetTitleFragment extends Fragment {
+public class SetRepresentativesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -27,11 +27,11 @@ public class SetTitleFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private EditText titleInput;
+    private EditText representativesInput;
     private TextView textView;
     private FloatingActionButton btnNext;
 
-    public SetTitleFragment() {
+    public SetRepresentativesFragment() {
         // Required empty public constructor
     }
 
@@ -44,8 +44,8 @@ public class SetTitleFragment extends Fragment {
      * @return A new instance of fragment SetTitleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SetTitleFragment newInstance(String param1, String param2) {
-        SetTitleFragment fragment = new SetTitleFragment();
+    public static SetRepresentativesFragment newInstance(String param1, String param2) {
+        SetRepresentativesFragment fragment = new SetRepresentativesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -59,22 +59,29 @@ public class SetTitleFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
 
+/*        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+            @Override
+            public void handleOnBackPressed() {
+                getFragmentManager().popBackStackImmediate();
+            }
+        };
+        getActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);*/
     }
 
     //the actual fragment operations
     @Override
     public void onStart() {
         super.onStart();
-        titleInput = getView().findViewById(R.id.title_input);
-        btnNext = getView().findViewById(R.id.button_next);
-        titleInput.requestFocus();
-        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        representativesInput = getView().findViewById(R.id.representatives_input);
+        btnNext = getView().findViewById(R.id.button_next_representatives);
+        representativesInput.requestFocus();
+        final InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         //btnNext.setVisibility(View.INVISIBLE);
         btnNext.hide();
 
-        titleInput.addTextChangedListener(new TextWatcher() {
+        representativesInput.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -99,8 +106,9 @@ public class SetTitleFragment extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                imgr.hideSoftInputFromWindow(getView().getWindowToken(), 0);
                 btnNext.setVisibility(View.GONE);
-                onButtonPressed(titleInput.getText().toString());
+                onButtonPressed(representativesInput.getText().toString());
             }
         });
 
@@ -110,13 +118,13 @@ public class SetTitleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_set_title, container, false);
+        return inflater.inflate(R.layout.fragment_set_representatives, container, false);
     }
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String input) {
         if (mListener != null) {
-            mListener.updateTitle(input);
+            mListener.updateRepresentatives(input);
         }
     }
 
@@ -149,6 +157,8 @@ public class SetTitleFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void updateTitle(String input);
+        void updateRepresentatives(String input);
     }
+
+
 }
