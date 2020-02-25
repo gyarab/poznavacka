@@ -42,7 +42,7 @@ public class MyListsFragment extends Fragment {
     private RecyclerView mRecyclerView;
     public static RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
-    public static int mPositionOfActivePoznavackaInfo;
+    public static int sPositionOfActivePoznavackaInfo;
 
     private FloatingActionButton newListBTN;
 
@@ -63,6 +63,8 @@ public class MyListsFragment extends Fragment {
                     Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
                     }.getType();
                     sPoznavackaInfoArr = gson.fromJson(s, cType);
+                    sActivePoznavacka = sPoznavackaInfoArr.get(0);
+                    sPositionOfActivePoznavackaInfo = 0;
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
                 }
@@ -98,15 +100,15 @@ public class MyListsFragment extends Fragment {
                 /* udělej něco s tim
                 mAdaper.notify... */
 
-                mPositionOfActivePoznavackaInfo = position;
-                sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
+                sPositionOfActivePoznavackaInfo = position;
+                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onPracticeClick(final int position) {
-                mPositionOfActivePoznavackaInfo = position;
-                sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
+                sPositionOfActivePoznavackaInfo = position;
+                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
 
                 // TODO switch to PracticeActivity
@@ -171,13 +173,13 @@ public class MyListsFragment extends Fragment {
                         sPoznavackaInfoArr.remove(position);
                         getSMC(context).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
-                        if (position <= mPositionOfActivePoznavackaInfo) {
-                            mPositionOfActivePoznavackaInfo -= 1;
+                        if (position <= sPositionOfActivePoznavackaInfo) {
+                            sPositionOfActivePoznavackaInfo -= 1;
                             if (sPoznavackaInfoArr.size() > 0) {
-                                if (mPositionOfActivePoznavackaInfo < 0) {
-                                    mPositionOfActivePoznavackaInfo = 0;
+                                if (sPositionOfActivePoznavackaInfo < 0) {
+                                    sPositionOfActivePoznavackaInfo = 0;
                                 }
-                                sActivePoznavacka = sPoznavackaInfoArr.get(mPositionOfActivePoznavackaInfo);
+                                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                             }
                         }
                         mAdapter.notifyDataSetChanged();

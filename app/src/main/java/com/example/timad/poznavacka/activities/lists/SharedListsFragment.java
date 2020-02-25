@@ -386,7 +386,7 @@ public class SharedListsFragment extends Fragment {
                         Log.d("Obrazek", "Obrazek nestahnut");
                         e.printStackTrace();
                     }
-                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, item.getId());
+                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, z.getParameter(0));
                 }
             }
             return null;

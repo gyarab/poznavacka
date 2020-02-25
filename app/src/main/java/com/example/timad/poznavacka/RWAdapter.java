@@ -1,6 +1,5 @@
 package com.example.timad.poznavacka;
 
-import android.content.Context;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -120,10 +119,11 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
         holder.textView1.setText(currentPoznavackaInfo.getName());
         holder.textView2.setText(currentPoznavackaInfo.getAuthor());
-        Drawable d = MyListsFragment.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId(), mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
+
+        Drawable d = MyListsFragment.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);
 
-        if(MyListsFragment.mPositionOfActivePoznavackaInfo ==position){
+        if(MyListsFragment.sPositionOfActivePoznavackaInfo == position){
             holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));
         }else{
             holder.cView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));

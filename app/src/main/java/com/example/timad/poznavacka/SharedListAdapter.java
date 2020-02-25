@@ -90,7 +90,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
     @Override
     public void onBindViewHolder(@NonNull SharedListAdapter.downloadViewHolder holder, int position) {
         PreviewPoznavacka item = arr.get(position);
-        Picasso.get().load(item.getImageRecource()).resize(holder.mImageView.getWidth(), holder.mImageView.getMaxHeight()).error(R.drawable.ic_image).into(holder.mImageView);
+        //Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Asian_Elephant_Prague_Zoo.jpg/258px-Asian_Elephant_Prague_Zoo.jpg").fit().into(holder.mImageView);
+        Picasso.get().load(item.getImageRecource()).fit().error(R.drawable.ic_image).into(holder.mImageView);
         holder.mTextView1.setText(item.getName());
         holder.mTextView2.setText(item.getAuthorsName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);

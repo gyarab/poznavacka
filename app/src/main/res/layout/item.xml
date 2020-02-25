@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    app:cardCornerRadius="4dp">
+    app:cardCornerRadius="4dp"
+    android:layout_margin="4dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -23,7 +24,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Line 1"
-            android:textSize="10sp"
+            android:textSize="20sp"
             android:textStyle="bold"
             android:layout_toEndOf="@+id/imgView"/>
 
@@ -53,9 +54,10 @@
             android:layout_height="wrap_content"
             android:text="name"
             android:layout_toEndOf="@+id/imgView"
-            android:textSize="10sp"
+            android:textSize="15sp"
             android:textStyle="bold"
             android:layout_below="@+id/textView"
+            android:layout_marginStart="8dp"
             />
     </RelativeLayout>
 
