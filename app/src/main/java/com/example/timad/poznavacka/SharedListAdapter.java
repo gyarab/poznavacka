@@ -13,6 +13,9 @@ import java.util.ArrayList;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
+import com.squareup.picasso.Picasso;
+
 public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> implements Filterable {
     private ArrayList<PreviewPoznavacka> arr;
     private ArrayList<PreviewPoznavacka> arrFull;
@@ -87,8 +90,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
     @Override
     public void onBindViewHolder(@NonNull SharedListAdapter.downloadViewHolder holder, int position) {
         PreviewPoznavacka item = arr.get(position);
-
-        holder.mImageView.setImageResource(item.getImageRecource());
+        Picasso.get().load(item.getImageRecource()).resize(holder.mImageView.getWidth(), holder.mImageView.getMaxHeight()).error(R.drawable.ic_image).into(holder.mImageView);
         holder.mTextView1.setText(item.getName());
         holder.mTextView2.setText(item.getAuthorsName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);

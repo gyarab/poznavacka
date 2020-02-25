@@ -237,7 +237,7 @@ public class SharedListsFragment extends Fragment {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, document.getString("name"), document.getId(), document.getString("authorsName")));
+                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -313,7 +313,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(R.drawable.ic_image, data.getName(), docRef, data.getAuthorsName()));
+                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }

@@ -1,7 +1,7 @@
 package com.example.timad.poznavacka;
 
 public class PreviewPoznavacka {
-    private int imageRecource;
+    private String imageRecource;
     private String name;
     private String id;
     private String authorsName;
@@ -9,18 +9,18 @@ public class PreviewPoznavacka {
     public PreviewPoznavacka() {
     }
 
-    public PreviewPoznavacka(int imageRecource, String name, String id, String authorsName) {
+    public PreviewPoznavacka(String imageRecource, String name, String id, String authorsName) {
         this.imageRecource = imageRecource;
         this.name = name;
         this.id = id;
         this.authorsName = authorsName;
     }
 
-    public int getImageRecource() {
+    public String getImageRecource() {
         return imageRecource;
     }
 
-    public void setImageRecource(int imageRecource) {
+    public void setImageRecource(String imageRecource) {
         this.imageRecource = imageRecource;
     }
 
