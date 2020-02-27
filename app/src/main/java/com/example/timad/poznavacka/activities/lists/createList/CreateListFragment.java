@@ -9,7 +9,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.SpannableString;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -71,8 +70,6 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import it.sephiroth.android.library.xtooltip.ClosePolicy;
-import it.sephiroth.android.library.xtooltip.Tooltip;
 
 import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.reversedUserScientificClassification;
 import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.userParametersCount;
@@ -93,7 +90,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private ProgressBar progressBar;
     private EditText userInputTitle;
     private EditText userInputRepresentatives;
-    private EditText userDividngString;
     private Switch autoImportSwitch;
     private Spinner languageSpinner;
     private ImageView infoTip;
@@ -112,7 +108,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     public static ArrayList<String> representatives;
     public ArrayList<String> exampleRepresentativeClassification;
     private String title;
-    private String dividingString;
+    private String dividingString = ",";
 
     //RecyclerView
     private RecyclerView mRecyclerView;
@@ -142,9 +138,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             userInputRepresentatives = view.findViewById(R.id.userInputRepresentatives);
             userInputTitle = view.findViewById(R.id.userInputTitle);
             autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
-            userDividngString = view.findViewById(R.id.dividingCharacter);
             languageSpinner = view.findViewById(R.id.languageSpinner);
-            infoTip = view.findViewById(R.id.infoTip);
             infoTextHolder = view.findViewById(R.id.infoTextHolder);
             mRecyclerView = view.findViewById(R.id.recyclerViewZ);
 
@@ -155,22 +149,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
 
-            //info
-            infoTip.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    SpannableString tooltipText = SpannableString.valueOf(getResources().getString(R.string.create_fragment_text));
-                    //tooltipText.setSpan(new UnderlineSpan(), 0, 15, 0);
-                    final Tooltip tooltip = new Tooltip.Builder(getContext())
-                            .anchor(infoTextHolder, 0, 0, false)
-                            .closePolicy(ClosePolicy.Companion.getTOUCH_ANYWHERE_CONSUME())
-                            .showDuration(0)
-                            .text(tooltipText)
-                            .arrow(false)
-                            .create();
-                    tooltip.show(infoTextHolder, Tooltip.Gravity.CENTER, false);
-                }
-            });
 
             /* RecyclerView */
             HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
@@ -207,11 +185,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                     if (isChecked) {
                         String rawRepresentatives = userInputRepresentatives.getText().toString();
-                        dividingString = userDividngString.getText().toString().trim().toLowerCase();
                         title = userInputTitle.getText().toString().trim();
-                        if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
+                        if (!(title.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
 
-                            representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (dividingString) + "\\s*")));
+                            representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (",") + "\\s*")));
                        /* if (dividingString.isEmpty()) { //single
                             exampleRepresentative = rawRepresentatives.trim();
                         } else { //multiple
@@ -247,11 +224,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 public void onClick(View view) {
 
                     title = userInputTitle.getText().toString().trim();
-                    dividingString = userDividngString.getText().toString().trim().toLowerCase();
                     String rawRepresentatives = userInputRepresentatives.getText().toString();
 
-                    if (!(title.isEmpty() || dividingString.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
-                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + dividingString + "\\s*")));
+                    if (!(title.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
+                        representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + "," + "\\s*")));
                         listCreated = false;
                         WikiSearchRepresentatives[0].cancel(true);
                         Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
