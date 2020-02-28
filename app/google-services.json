@@ -15,6 +15,22 @@
       },
       "oauth_client": [
         {
+          "client_id": "882289086797-8pgpdqsmurf6bnca8fe4kovmn2rh2cc9.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "b71cd547ba81934a4ec40371590585f335bdce75"
+          }
+        },
+        {
+          "client_id": "882289086797-0s3man2jteb85kejv8bueaebtejfj677.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "dce12a0c8a2cc20ceb02f83f498014b02b1a1d29"
+          }
+        },
+        {
           "client_id": "882289086797-h7l330v7fdocvr2h0i77bfoo2o6jmfnm.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -60,7 +76,7 @@
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "882289086797-70nfl4kjvampic9nj0ql3ioeoikv6882.apps.googleusercontent.com",
+              "client_id": "882289086797-lm51brb1i8pm5m9tiqndurp9bg9hep7i.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

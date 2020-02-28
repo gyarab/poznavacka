@@ -80,32 +80,41 @@ public class SharedListsFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
 
         if(checkInternet(getContext())) {
-            db = FirebaseFirestore.getInstance();
-            user = FirebaseAuth.getInstance().getCurrentUser();
-            //vyt vori array prida do arraye vytvori recykler view
-            createArr();
-            displayFirestore("Poznavacka", view);
-            searchView = view.findViewById(R.id.search_view);
-            searchView.addTextChangedListener(new TextWatcher() {
-                @Override
-                public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-                }
+          buildSharedListFragment(view);
+        }else {
+            Toast.makeText(getContext(),"ur not connected,restart app and connect plis!",Toast.LENGTH_SHORT).show();
+        }
+        return view;
+    }
 
-                @Override
-                public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+    private void buildSharedListFragment(View view){
+        db = FirebaseFirestore.getInstance();
+        user = FirebaseAuth.getInstance().getCurrentUser();
+        //vyt vori array prida do arraye vytvori recykler view
+        createArr();
+        displayFirestore("Poznavacka", view);
+        searchView = view.findViewById(R.id.search_view);
+        searchView.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if(checkInternet(getContext())) {
                     if (mSharedListAdapter != null) {
                         mSharedListAdapter.getFilter().filter(s);
                     }
+                }else{
+                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
                 }
+            }
 
-                @Override
-                public void afterTextChanged(Editable s) {
-                }
-            });
-        }else {
-            Toast.makeText(getContext(),"ur not connected, connect plis!",Toast.LENGTH_SHORT).show();
-        }
-        return view;
+            @Override
+            public void afterTextChanged(Editable s) {
+            }
+        });
     }
 
     //vytvori arraylist
@@ -169,60 +178,66 @@ public class SharedListsFragment extends Fragment {
 
             @Override
             public void onDownloadClick(final int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.app_name);
-                builder.setIcon(R.drawable.ic_file_download);
-                builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
-                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String id = arrayList.get(position).getId();
-                        pickDocument(id, collectionName);
-                        dialog.dismiss();
-                    }
-                }).setNegativeButton("no", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                if(checkInternet(getContext())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_file_download);
+                    builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String id = arrayList.get(position).getId();
+                            pickDocument(id, collectionName);
+                            dialog.dismiss();
+                        }
+                    }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
 
-
+                }else{
+                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override
             public void onDeleteClick(final int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.app_name);
-                builder.setIcon(R.drawable.ic_delete);
-                builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
-                builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String id = arrayList.get(position).getId();
-                        String usersName;
-                        try{
-                            usersName = user.getDisplayName();
-                        }catch (Exception e){
-                            Toast.makeText(getActivity(),"ur not logged in"+e.toString(),Toast.LENGTH_SHORT).show();
-                            return;
+                if(checkInternet(getContext())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_delete);
+                    builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String id = arrayList.get(position).getId();
+                            String usersName;
+                            try {
+                                usersName = user.getDisplayName();
+                            } catch (Exception e) {
+                                Toast.makeText(getActivity(), "ur not logged in" + e.toString(), Toast.LENGTH_SHORT).show();
+                                return;
+                            }
+
+                            removePoznavacka(id, collectionName, usersName, position);
+                            dialog.dismiss();
                         }
+                    }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
 
-                        removePoznavacka(id, collectionName, usersName, position);
-                        dialog.dismiss();
-                    }
-                }).setNegativeButton("no", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-
-
+                }else {
+                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
+                }
             }
         });
     }
