@@ -7,159 +7,170 @@
     android:orientation="vertical">
 
 
-        <RelativeLayout
-            android:id="@+id/relativeLayout"
+    <RelativeLayout
+        android:id="@+id/relativeLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="10dp">
+
+        <EditText
+            android:id="@+id/userInputTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="10dp">
+            android:ems="10"
+            android:hint="@string/title_input"
+            android:inputType="none"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/hint_color" />
 
-            <EditText
-                android:id="@+id/userInputTitle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:ems="10"
-                android:hint="@string/title_input"
-                android:inputType="none"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/hint_color" />
+        <ImageView
+            android:id="@+id/infoImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userInputTitle"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/ic_info_blue_24dp" />
 
-            <EditText
-                android:id="@+id/dividingCharacter"
+        <!--            <EditText
+                        android:id="@+id/dividingCharacter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/userInputTitle"
+                        android:layout_marginTop="35dp"
+                        android:ems="10"
+                        android:hint="@string/dividing_word_character_input"
+                        android:inputType="none"
+                        android:textAllCaps="false"
+                        android:textColor="@color/text_color"
+                        android:textColorHint="@color/hint_color" />-->
+
+        <TextView
+            android:id="@+id/userHintTextView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/infoImage"
+            android:layout_marginStart="10dp"
+            android:layout_toEndOf="@+id/infoImage"
+            android:text="@string/representatives_text"
+            android:textColor="@color/text_color" />
+
+        <EditText
+            android:id="@+id/userInputRepresentatives"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/userHintTextView"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="10dp"
+            android:ems="10"
+            android:hint="@string/the_representatives_input"
+            android:inputType="textMultiLine"
+            android:textColor="@color/text_color"
+            android:textColorHint="@color/hint_color" />
+
+
+        <Button
+            android:id="@+id/createButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/layout_with_border"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/create_button"
+            android:text="@string/create_button" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/createButton"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="30dp"
+            android:background="@drawable/save_button"
+            android:text="@string/save_button" />
+
+        <ProgressBar
+            android:id="@+id/progressBar"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/createButton"
+            android:layout_marginStart="50dp"
+            android:layout_marginEnd="50dp"
+            android:layout_toStartOf="@+id/saveButton"
+            android:layout_toEndOf="@+id/createButton" />
+
+        <!--            <ImageButton
+                        android:id="@+id/infoTip"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_above="@+id/userInputRepresentatives"
+                        android:layout_below="@+id/userInputTitle"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginStart="66dp"
+                        android:translationY="28dp"
+                        android:layout_toEndOf="@+id/dividingCharacter"
+                        android:background="@color/colorPrimary"
+                        app:srcCompat="@drawable/ic_info_blue_24dp"
+                        tools:ignore="ContentDescription" />-->
+
+
+        <RelativeLayout
+            android:id="@+id/layout_with_border"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/userInputRepresentatives"
+            android:layout_marginTop="30dp"
+            android:background="@drawable/layout_border"
+            android:orientation="vertical"
+            android:paddingTop="25dp"
+            android:paddingBottom="25dp">
+
+            <Spinner
+                android:id="@+id/languageSpinner"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/userInputTitle"
-                android:layout_marginTop="35dp"
-                android:ems="10"
-                android:hint="@string/dividing_word_character_input"
-                android:inputType="none"
-                android:textAllCaps="false"
-                android:textColor="@color/text_color"
-                android:textColorHint="@color/hint_color" />
+                android:layout_alignStart="@+id/autoImportSwitch"
+                android:layout_alignEnd="@+id/autoImportSwitch"
+                android:layout_marginBottom="10dp"
+                android:prompt="@string/language_spinner_prompt"
+                android:spinnerMode="dropdown" />
 
-            <EditText
-                android:id="@+id/userInputRepresentatives"
-                android:layout_width="match_parent"
+            <Switch
+                android:id="@+id/autoImportSwitch"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/dividingCharacter"
+                android:layout_below="@+id/languageSpinner"
                 android:layout_centerHorizontal="true"
-                android:layout_marginTop="30dp"
-                android:ems="10"
-                android:hint="@string/the_representatives_input"
-                android:inputType="textMultiLine"
+                android:layout_marginTop="10dp"
+                android:gravity="center_horizontal"
+                android:switchPadding="20dp"
+                android:text="@string/autoRadDruhSwitch"
                 android:textColor="@color/text_color"
-                android:textColorHint="@color/hint_color" />
-
-
-            <Button
-                android:id="@+id/createButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/layout_with_border"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="30dp"
-                android:layout_marginTop="30dp"
-                android:layout_marginBottom="30dp"
-                android:background="@drawable/create_button"
-                android:text="@string/create_button" />
-
-            <Button
-                android:id="@+id/saveButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/createButton"
-                android:layout_alignParentEnd="true"
-                android:layout_marginEnd="30dp"
-                android:background="@drawable/save_button"
-                android:text="@string/save_button" />
-
-            <ProgressBar
-                android:id="@+id/progressBar"
-                style="?android:attr/progressBarStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/createButton"
-                android:layout_marginStart="50dp"
-                android:layout_marginEnd="50dp"
-                android:layout_toStartOf="@+id/saveButton"
-                android:layout_toEndOf="@+id/createButton" />
-
-            <ImageButton
-                android:id="@+id/infoTip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_above="@+id/userInputRepresentatives"
-                android:layout_below="@+id/userInputTitle"
-                android:layout_centerHorizontal="true"
-                android:layout_marginStart="66dp"
-                android:translationY="28dp"
-                android:layout_toEndOf="@+id/dividingCharacter"
-                android:background="@color/colorPrimary"
-                app:srcCompat="@drawable/ic_info_blue_24dp"
-                tools:ignore="ContentDescription" />
-
-            <TextView
-                android:id="@+id/infoTextHolder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/dividingCharacter"
-                android:layout_alignParentEnd="true"
-                android:layout_marginTop="23dp"
-                android:layout_marginEnd="60dp"
-                android:text="" />
-
-            <RelativeLayout
-                android:id="@+id/layout_with_border"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/userInputRepresentatives"
-                android:layout_marginTop="30dp"
-                android:paddingTop="25dp"
-                android:paddingBottom="25dp"
-                android:background="@drawable/layout_border"
-                android:orientation="vertical">
-
-                <Spinner
-                    android:id="@+id/languageSpinner"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignStart="@+id/autoImportSwitch"
-                    android:layout_alignEnd="@+id/autoImportSwitch"
-                    android:layout_marginBottom="10dp"
-                    android:prompt="@string/language_spinner_prompt"
-                    android:spinnerMode="dropdown" />
-
-                <Switch
-                    android:id="@+id/autoImportSwitch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/languageSpinner"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
-                    android:gravity="center_horizontal"
-                    android:switchPadding="20dp"
-                    android:text="@string/autoRadDruhSwitch"
-                    android:textColor="@color/text_color"
-                    android:textSize="20sp" />
-
-            </RelativeLayout>
-
-            <HorizontalScrollView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_below="@+id/createButton">
-
-
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/recyclerViewZ"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:scrollbars="horizontal|vertical">
-
-                </androidx.recyclerview.widget.RecyclerView>
-
-            </HorizontalScrollView>
+                android:textSize="20sp" />
 
         </RelativeLayout>
+
+        <HorizontalScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/createButton">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recyclerViewZ"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:scrollbars="horizontal|vertical">
+
+            </androidx.recyclerview.widget.RecyclerView>
+
+        </HorizontalScrollView>
+
+    </RelativeLayout>
 
 
 </RelativeLayout>

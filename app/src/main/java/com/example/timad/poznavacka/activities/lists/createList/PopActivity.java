@@ -20,6 +20,8 @@ import android.widget.Toast;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
+import com.example.timad.poznavacka.google_search_objects.GoogleSearchObjectAutoCorrect;
+import com.example.timad.poznavacka.google_search_objects.Spelling;
 import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
@@ -200,67 +202,86 @@ public class PopActivity extends Activity {
         protected Void doInBackground(Void... voids) {
             PopActivity fragment = fragmentWeakReference.get();
             ArrayList<String> representatives = CreateListFragment.representatives;
+
+            allRepresentatives:
             for (String representative :
                     representatives) {
-                //Google search
-                String result = "";
-                String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + representative;
-                URL url = null;
-                try {
-                    url = new URL(urlString);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                HttpURLConnection conn = null;
-                try {
-                    conn = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    responseCode = conn.getResponseCode();
-                    responseMessage = conn.getResponseMessage();
-                } catch (IOException e) {
-                    Log.e(TAG, "Http getting response code ERROR " + e.toString());
-
-                }
-
-                Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
-
-                try {
-                    if (responseCode != null && responseCode == 200) {
-                        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        StringBuilder sb = new StringBuilder();
-                        String line;
-                        while ((line = rd.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        rd.close();
-                        conn.disconnect();
-                        result = sb.toString();
-                        Log.d(TAG, "result=" + result);
-                    } else {
-                        //response problem
-
-                        String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
-                        Log.e(TAG, errorMsg);
-                        //result = errorMsg;
+                String searchText = representative.trim().replace(" ", "_");
+                String googleSearchRepresentative = representative;
+                boolean searchSuccessful = false;
+                while (!searchSuccessful) {
+                    searchSuccessful = true;
+                    //Google search
+                    String result = "";
+                    String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + googleSearchRepresentative;
+                    URL url = null;
+                    try {
+                        url = new URL(urlString);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                    }
+                    HttpURLConnection conn = null;
+                    try {
+                        conn = (HttpURLConnection) url.openConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        responseCode = conn.getResponseCode();
+                        responseMessage = conn.getResponseMessage();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Http getting response code ERROR " + e.toString());
+                        Toast.makeText(fragment, "Are you online?", Toast.LENGTH_SHORT).show();
+                        break allRepresentatives;
                     }
 
-                } catch (IOException e) {
-                    Log.e(TAG, "Http Response ERROR " + e.toString());
+                    Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+
+                    try {
+                        if (responseCode != null && responseCode == 200) {
+                            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = rd.readLine()) != null) {
+                                sb.append(line + "\n");
+                            }
+                            rd.close();
+                            conn.disconnect();
+                            result = sb.toString();
+                            Log.d(TAG, "result=" + result);
+                        } else {
+                            //response problem
+
+                            String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
+                            Toast.makeText(fragment, "Are you online?", Toast.LENGTH_SHORT).show();
+                            Log.e(TAG, errorMsg);
+                            //result = errorMsg;
+                        }
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Http Response ERROR " + e.toString());
+                    }
+                    Log.d(TAG, "and google result is = " + result);
+
+
+                    Gson gson = new Gson();
+                    try {
+                        GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
+                        Log.d(TAG, googleSearchObject.toString());
+                        GoogleItemObject myGoogleSearchObject = googleSearchObject.getItems().get(0);
+                        String wikipeidaURL = myGoogleSearchObject.getFormattedUrl();
+                        Log.d(TAG, "google test is = " + wikipeidaURL);
+                        searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
+                    } catch (Exception e) {
+                        //auto correction
+                        e.printStackTrace();
+                        searchSuccessful = false;
+                        GoogleSearchObjectAutoCorrect googleSearchObjectAutoCorrect = gson.fromJson(result, GoogleSearchObjectAutoCorrect.class);
+                        Log.d(TAG, googleSearchObjectAutoCorrect.toString());
+                        Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
+                        googleSearchRepresentative = spelling.getCorrectedQuery();
+                    }
                 }
-                Log.d(TAG, "and google result is = " + result);
-
-
-                Gson gson = new Gson();
-                //JsonObject jsonResult = gson.fromJson(result, JsonObject.class);
-                GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
-                GoogleItemObject myGoogleSearchObject = googleSearchObject.getItems().get(0);
-                String wikipeidaURL = myGoogleSearchObject.getFormattedUrl();
-                Log.d(TAG, "google test is = " + wikipeidaURL);
-                String searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
-
 
                 Document doc = null;
                 try {

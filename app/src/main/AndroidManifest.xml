@@ -20,21 +20,21 @@
         <activity
             android:name=".activities.lists.createList.PopActivity"
             android:theme="@style/AppTheme.Pop" />
-        <activity
-            android:name=".activities.SwitchActivity"
-            android:screenOrientation="portrait" />
+        <activity android:name=".activities.SwitchActivity" />
         <activity
             android:name=".activities.MainActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme" />
         <activity
             android:name=".activities.lists.ListsActivity"
-            android:screenOrientation="portrait"
             android:theme="@style/AppTheme">
 
         </activity>
-        <activity android:name=".activities.PracticeActivity" />
-        <activity android:name=".activities.PracticeActivity2" />
+        <activity
+            android:name=".activities.PracticeActivity"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".activities.PracticeActivity2"
+            android:screenOrientation="portrait" />
         <activity android:name=".activities.test.TestActivity" />
         <activity android:name=".FirestoreImpl" />
         <activity android:name=".activities.AccountActivity" />
@@ -43,8 +43,10 @@
             android:name=".activities.lists.createList.CreateListFragment"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".activities.AuthenticationActivity"
-            android:screenOrientation="portrait" />
+            android:name=".activities.lists.createList.GeneratedListFragment"
+            android:screenOrientation="landscape"
+            android:configChanges="orientation|keyboardHidden" />
+        <activity android:name=".activities.AuthenticationActivity" />
         <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

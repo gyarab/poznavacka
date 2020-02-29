@@ -1,6 +1,7 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
+import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.example.timad.poznavacka.R;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 /**
@@ -72,7 +74,7 @@ public class GeneratedListFragment extends Fragment {
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onSave();
         }
     }
 
@@ -85,6 +87,12 @@ public class GeneratedListFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnFragmentInteractionListener");
         }
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        //setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
     }
 
     @Override
@@ -105,6 +113,6 @@ public class GeneratedListFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onSave();
     }
 }

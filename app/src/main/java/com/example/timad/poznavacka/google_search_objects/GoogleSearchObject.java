@@ -6,8 +6,8 @@ public class GoogleSearchObject {
     private String kind;
     Url UrlObject;
     Queries QueriesObject;
-    Context ContextObject;
     SearchInformation SearchInformationObject;
+    Context ContextObject;
     ArrayList<GoogleItemObject> items = new ArrayList<>();
 
     public ArrayList<GoogleItemObject> getItems() {
