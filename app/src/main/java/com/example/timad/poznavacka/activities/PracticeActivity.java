@@ -4,11 +4,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ImageView;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
@@ -19,48 +18,34 @@ import com.example.timad.poznavacka.activities.lists.ListsActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsFragment;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class PracticeActivity extends AppCompatActivity {
 
-    TextView textView;
-    ImageView imageView;
-    ImageView imageView_classic;
-    FloatingActionButton fab_crossed;
-    FloatingActionButton fab_checked;
-    FloatingActionButton fab_restart;
-    View sceneView;
+    private static final int ALL = 1;
+    private static  final int NOT_MEM = 0;
+
+    TextView mTextView;
+    Button mButtonAll;
+    Button mButtonNotMemorized;
 
     // Array with zastupci
-    PoznavackaInfo mLoadedPoznavacka;
-    ArrayList<Zastupce> mZastupceArrOrig = null;
-    int parameterCount;
+    static PoznavackaInfo sLoadedPoznavacka;
+    static ArrayList<Zastupce> sZastupceArrOrig = null;
+    //int parameterCount;
 
-    //load this from local storage
-    List<String> zastupci = Arrays.asList("Mlok skvrnitý", "Velemlok čínský", "Čolek obecný", "Čolek velký", "Červor", "Ropucha obecná", "Rosnička obecná", "Kuňka obecná", "Skokan hnědý", "Skokan zelený", "Kožatka velká", "Kareta obecná", "Želva sloní", "Želva nádherná", "Želva bahenní", "Hatérie novozélandská", "Gekon zední", "Leguán zelený", "Ještěrka obecná", "Ještěrka zelená", "Slepýš křehký", "Anakonda velká", "Kobra indická", "Taipan velký", "Užovka obojková", "Užovka podplamatá", "Zmije obecná", "Krokodýl nilský", "Aligátor severoamerický", "Gaviál indický", "Pštros dvouprstý", "Nandu pampový", "Kasuár přilbový", "Emu hnědý", "Kachna divoká", "Polák chocholačka", "Morčák velký");
-    List<String> rady = Arrays.asList("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Hatérie", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Krokodýli", "Krokodýli", "Krokodýli", "Pštrosi", "Nanduové", "Kasuárové", "Kasuárové", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí");
-    List<String> tridy = Arrays.asList("Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci");
-
-    static boolean loaded = false;
-    static ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
-    int puvodniPocetVsechZastupcu;
-    int pocetVsechZastupcu;
-    int currentZastupce;
+    boolean mLoaded = false;
+    public static ArrayList<Integer> sNenauceniZastupci = new ArrayList<>();
 
     protected Resources res;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,17 +53,11 @@ public class PracticeActivity extends AppCompatActivity {
         setContentView(R.layout.activity_practice);
         init();
 
-        //hiding the scene
-        fab_restart.hide();
-
-        res = getResources();
-        loaded = false;
-
         outer: if(MyListsFragment.sActivePoznavacka != null){
-            if(mLoadedPoznavacka == null){
+            if(sLoadedPoznavacka == null){
                 // Proceed
-            } else if (mLoadedPoznavacka.getId().equals(MyListsFragment.sActivePoznavacka.getId())){
-                loaded = true;
+            } else if (sLoadedPoznavacka.getId().equals(MyListsFragment.sActivePoznavacka.getId())){
+                mLoaded = true;
                 break outer;
             }
 
@@ -86,125 +65,42 @@ public class PracticeActivity extends AppCompatActivity {
             Context context = this;
             String path = MyListsFragment.sActivePoznavacka.getId() + "/";
 
-            /*File f = new File(context.getFilesDir().getPath() + "/" + path);
-            Log.d("ObrazekF", "Path: " + context.getFilesDir().getPath() + "/" + path);
-            File[] files = f.listFiles();
-            for (File f2: files){
-                Log.d("ObrazekF", "Files:" + f2.getName());
-            }*/
+            Type zastupceArrType = new TypeToken<ArrayList<Zastupce>>(){}.getType();
+            String jsonZastupce = MyListsFragment.getSMC(context).readFile(path + MyListsFragment.sActivePoznavacka.getId() + ".txt", false);
+            sZastupceArrOrig = gson.fromJson(jsonZastupce, zastupceArrType);
 
-            Type cType = new TypeToken<ArrayList<Zastupce>>(){}.getType();
-            String json = MyListsFragment.getSMC(context).readFile(path + MyListsFragment.sActivePoznavacka.getId() + ".txt", false);
-            mZastupceArrOrig = gson.fromJson(json, cType);
+            Type intArrType =  new TypeToken<ArrayList<Integer>>(){}.getType();
+            String jsonInt = MyListsFragment.getSMC(context).readFile(path + "nenauceni.txt", true);
+            if(jsonInt.equals("") || jsonInt.isEmpty()) {
+                sNenauceniZastupci = fillArr();
+            } else {
+                sNenauceniZastupci = gson.fromJson(jsonInt, intArrType);
+            }
 
-            for (Zastupce z: mZastupceArrOrig) {
+            for (Zastupce z: sZastupceArrOrig) {
                 z.setImage(MyListsFragment.getSMC(context).readDrawable(path, z.getParameter(0), context));
             }
 
-            mLoadedPoznavacka = MyListsFragment.sActivePoznavacka;
-            parameterCount = mZastupceArrOrig.get(0).getParameters();
-            loaded = true;
+            sLoadedPoznavacka = MyListsFragment.sActivePoznavacka;
+            //parameterCount = sZastupceArrOrig.get(0).getParameters();
+            mLoaded = true;
         }
 
-        if (loaded) {
-
-        /*
-        Log.d("zastupci", String.valueOf(zastupci.size()));
-        Log.d("rady", String.valueOf(rady.size()));
-        Log.d("tridy", String.valueOf(tridy.size()));
-         */
-
-            puvodniPocetVsechZastupcu = mZastupceArrOrig.size() - 1;
-            pocetVsechZastupcu = puvodniPocetVsechZastupcu;
-
-            nenauceniZastupci = new ArrayList<Integer>();
-            for(int i = 1; i < mZastupceArrOrig.size(); i++) {
-                nenauceniZastupci.add(i);
-            }
-
-            Log.d("Obrazek", "Working so far");
-
-            //first appearance
-            updateScene(get_setRandomisedCurrentZastupce());
+        if(!mLoaded){
+            mTextView.setText(R.string.select_list);
+            mButtonAll.setEnabled(false);
+            mButtonNotMemorized.setEnabled(false);
         } else {
-
-            textView.setText(R.string.select_list);
-            fab_crossed.hide();
-            fab_checked.hide();
-            fab_restart.hide();
+            int count = sZastupceArrOrig.size();
+            if(sZastupceArrOrig.get(0).getParameter(0).equals("") || sZastupceArrOrig.get(0).getParameter(0).isEmpty()){
+                count -= 1;
+            }
+            mButtonAll.setText("Practice all (" + count + ")");
+            mButtonNotMemorized.setText("Practice not memorized (" + sNenauceniZastupci.size() + ")");
+            if(sNenauceniZastupci.size() < 1){
+                mButtonNotMemorized.setEnabled(false);
+            }
         }
-
-
-        sceneView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                if (loaded) {
-                    showScene();
-                }
-            }
-        });
-
-
-        fab_crossed.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                hideScene();
-                updateScene(get_setRandomisedCurrentZastupce());
-            }
-        });
-
-        fab_checked.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                //removes the current representative
-                if (pocetVsechZastupcu > 1) {
-                    nenauceniZastupci.removeAll(Collections.singleton(currentZastupce));
-                    pocetVsechZastupcu--;
-                    hideScene();
-                    updateScene(get_setRandomisedCurrentZastupce());
-
-                } else {
-                    //all learnt
-                    imageView_classic.setVisibility(View.VISIBLE);
-                    imageView_classic.setImageResource(R.drawable.check);
-                    imageView.setVisibility(View.INVISIBLE);
-                    hideScene();
-                    sceneView.setClickable(false);
-                    textView.setVisibility(View.VISIBLE);
-                    textView.setText(null);
-
-                    /*final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_0);
-                        }
-                    }, 1500);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_1);
-                            fab_restart.show();
-                        }
-                    }, 4000);*/
-                }
-            }
-        });
-
-        fab_restart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                nenauceniZastupci.clear();
-                hideScene();
-                fab_restart.hide();
-                sceneView.setClickable(true);
-                Intent welcomeIntent = new Intent(PracticeActivity.this, SwitchActivity.class);
-                startActivity(welcomeIntent);
-                imageView_classic.setVisibility(View.INVISIBLE);
-                imageView.setVisibility(View.VISIBLE);
-            }
-        });
-
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
@@ -243,60 +139,55 @@ public class PracticeActivity extends AppCompatActivity {
 
                 }
 
-
                 return false;
             }
         });
     }
 
+    public void init(){
+        mTextView = findViewById(R.id.textViewLoaded);
+        mTextView.setText("");
+        mButtonAll = findViewById(R.id.buttonAll);
+        mButtonAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+                Bundle b = new Bundle();
+                b.putInt("key", ALL);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            }
+        });
 
-    private int get_setRandomisedCurrentZastupce() {
-        //if (pocetVsechZastupcu > 1) {
-        int randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
-        while (nenauceniZastupci.get(randomisedCurrentZastupce) == currentZastupce) {
-            randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
+        mButtonNotMemorized = findViewById(R.id.buttonNotMem);
+        mButtonNotMemorized.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+                Bundle b = new Bundle();
+                b.putInt("key", NOT_MEM);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            }
+        });
+
+        mLoaded = false;
+    }
+
+    public ArrayList<Integer> fillArr(){
+        ArrayList<Integer> arr = new ArrayList<Integer>();
+        if(sZastupceArrOrig.get(0).getParameter(0).equals("") || sZastupceArrOrig.get(0).getParameter(0).isEmpty()) {
+            for (int i = 1; i < sZastupceArrOrig.size(); i++){
+                arr.add(i);
+            }
+        } else {
+            for (int i = 0; i < sZastupceArrOrig.size(); i++){
+                arr.add(i);
+            }
         }
-        currentZastupce = nenauceniZastupci.get(randomisedCurrentZastupce);
-        return currentZastupce;
-        /*} else {
-            return currentZastupce;
-        }*/
 
-    }
-
-    private void init() {
-        textView = findViewById(R.id.textName);
-        fab_crossed = findViewById(R.id.floatingActionButton_crossed);
-        fab_checked = findViewById(R.id.floatingActionButton_checked);
-        fab_restart = findViewById(R.id.floatingActionButton_restart);
-        imageView = findViewById(R.id.imageView);
-        imageView_classic = findViewById(R.id.imageView_classic);
-        sceneView = findViewById(R.id.sceneView);
-    }
-
-    private void updateScene(int i) {
-        /*imageView.setImageDrawable(ResourcesCompat.getDrawable(res, getResources().getIdentifier("image" + i, "drawable", getPackageName()), null));
-        textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));*/
-
-        String s = "";
-
-        for (int x = 0; x < parameterCount; x++) {
-            s += mZastupceArrOrig.get(i).getParameter(x) + "\n";
-        }
-
-        textView.setText(s);
-        imageView.setImageDrawable(mZastupceArrOrig.get(currentZastupce).getImage());
-    }
-
-    private void showScene() {
-        textView.setVisibility(View.VISIBLE);
-        fab_checked.show();
-        fab_crossed.show();
-    }
-
-    private void hideScene() {
-        textView.setVisibility(View.INVISIBLE);
-        fab_checked.hide();
-        fab_crossed.hide();
+        return arr;
     }
 }

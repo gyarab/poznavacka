@@ -34,6 +34,7 @@
 
         </activity>
         <activity android:name=".activities.PracticeActivity" />
+        <activity android:name=".activities.PracticeActivity2" />
         <activity android:name=".activities.test.TestActivity" />
         <activity android:name=".FirestoreImpl" />
         <activity android:name=".activities.AccountActivity" />

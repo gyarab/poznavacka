@@ -98,6 +98,23 @@ public class StorageManagerClass {
         }
     }
 
+    public void updateFile(String path, String name, ArrayList<Integer> arr) {
+        File file = new File(ENV_PATH + path + name);
+        FileWriter fw;
+        String s;
+
+        s = GSON.toJson(arr);
+
+        try {
+            fw = new FileWriter(file);
+            fw.write(s);
+            fw.flush();
+            fw.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void deletePoznavacka(String path) {
         File directory = new File(ENV_PATH + path);
 

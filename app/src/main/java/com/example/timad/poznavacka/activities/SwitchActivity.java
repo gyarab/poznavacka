@@ -74,7 +74,7 @@ public class SwitchActivity extends AppCompatActivity {
                                 }
                             }
 
-                            PracticeActivity.nenauceniZastupci = listToPass;
+                            //PracticeActivity.sNenauceniZastupci = listToPass;
                             Intent homeIntent = new Intent(SwitchActivity.this, PracticeActivity.class);
                             startActivity(homeIntent);
                             finish();
