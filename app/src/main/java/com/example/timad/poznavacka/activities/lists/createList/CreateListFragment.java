@@ -39,6 +39,8 @@ import com.example.timad.poznavacka.activities.lists.MyListsFragment;
 import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
 import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
+import com.example.timad.poznavacka.google_search_objects.GoogleSearchObjectAutoCorrect;
+import com.example.timad.poznavacka.google_search_objects.Spelling;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -139,7 +141,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             userInputTitle = view.findViewById(R.id.userInputTitle);
             autoImportSwitch = view.findViewById(R.id.autoImportSwitch);
             languageSpinner = view.findViewById(R.id.languageSpinner);
-            infoTextHolder = view.findViewById(R.id.infoTextHolder);
             mRecyclerView = view.findViewById(R.id.recyclerViewZ);
 
 
@@ -476,79 +477,159 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 publishProgress("");
             }
 
+            allRepresentatives:
             for (String representative :
                     representatives) {
-                Log.d(TAG, "------------------------------");
-                Log.d(TAG, "current representative = " + representative);
-
-                //Google search
-                String searchText = "";
+                String searchText = representative.trim().replace(" ", "_");
                 Drawable img = null;
                 String imageURL = "";
-                String result = "";
-                String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + representative;
-                URL url = null;
-                try {
-                    url = new URL(urlString);
-                } catch (MalformedURLException e) {
-                    e.printStackTrace();
-                }
-                HttpURLConnection conn = null;
-                try {
-                    conn = (HttpURLConnection) url.openConnection();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    responseCode = conn.getResponseCode();
-                    responseMessage = conn.getResponseMessage();
-                } catch (IOException e) {
-                    Log.e(TAG, "Http getting response code ERROR " + e.toString());
+                String googleSearchRepresentative = representative;
+                boolean searchSuccessful = false;
+                while (!searchSuccessful) {
+                    searchSuccessful = true;
+                    Log.d(TAG, "------------------------------");
+                    Log.d(TAG, "current representative = " + representative);
 
-                }
+                    //Google search
+                    String result = "";
+                    String urlString = "https://www.googleapis.com/customsearch/v1/siterestrict?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:phdn1jengcl&lr=lang_" + languageURL + "&q=" + googleSearchRepresentative;
+                    URL url = null;
+                    try {
+                        url = new URL(urlString);
+                    } catch (MalformedURLException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "no wiki");
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        publishProgress(representative);
+                        continue;
+                    }
+                    HttpURLConnection conn = null;
+                    try {
+                        conn = (HttpURLConnection) url.openConnection();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                        Log.d(TAG, "no wiki");
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        publishProgress(representative);
+                        continue;
+                    }
+                    try {
+                        responseCode = conn.getResponseCode();
+                        responseMessage = conn.getResponseMessage();
+                    } catch (IOException e) {
+                        Log.e(TAG, "Http getting response code ERROR " + e.toString());
+                        Log.d(TAG, "no wiki");
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        publishProgress(representative);
+                        continue;
 
-                Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
-
-                try {
-                    if (responseCode != null && responseCode == 200) {
-                        BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
-                        StringBuilder sb = new StringBuilder();
-                        String line;
-                        while ((line = rd.readLine()) != null) {
-                            sb.append(line + "\n");
-                        }
-                        rd.close();
-                        conn.disconnect();
-                        result = sb.toString();
-                        Log.d(TAG, "result=" + result);
-                    } else {
-                        //response problem
-
-                        String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
-                        Log.e(TAG, errorMsg);
-                        //result = errorMsg;
                     }
 
-                } catch (IOException e) {
-                    Log.e(TAG, "Http Response ERROR " + e.toString());
-                }
+                    Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+
+                    try {
+                        if (responseCode != null && responseCode == 200) {
+                            BufferedReader rd = new BufferedReader(new InputStreamReader(conn.getInputStream()));
+                            StringBuilder sb = new StringBuilder();
+                            String line;
+                            while ((line = rd.readLine()) != null) {
+                                sb.append(line + "\n");
+                            }
+                            rd.close();
+                            conn.disconnect();
+                            result = sb.toString();
+                            Log.d(TAG, "result=" + result);
+                        } else {
+                            //response problem
+
+                            String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
+                            Log.e(TAG, errorMsg);
+                            Log.d(TAG, "no wiki");
+                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                            publishProgress(representative);
+                            continue;
+                            //result = errorMsg;
+                        }
+
+                    } catch (IOException e) {
+                        Log.e(TAG, "Http Response ERROR " + e.toString());
+                        Log.d(TAG, "no wiki");
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        publishProgress(representative);
+                        continue;
+                    }
 
 
-                Gson gson = new Gson();
-                try {
+                    Gson gson = new Gson();
                     GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
-                    GoogleItemObject googleItemObject = googleSearchObject.getItems().get(0);
+                    GoogleItemObject googleItemObject = new GoogleItemObject();
+                    try {
+                        googleItemObject = googleSearchObject.getItems().get(0);
+                    } catch (Exception e) {
+                        //redirect, auto-correct
+                        e.printStackTrace();
+                        searchSuccessful = false;
+                        GoogleSearchObjectAutoCorrect googleSearchObjectAutoCorrect = gson.fromJson(result, GoogleSearchObjectAutoCorrect.class);
+                        Log.d(TAG, googleSearchObjectAutoCorrect.toString());
+                        Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
+                        googleSearchRepresentative = spelling.getCorrectedQuery();
+                    }
                     String wikipeidaURL = googleItemObject.getFormattedUrl();
                     Log.d(TAG, "google test is = " + wikipeidaURL);
-                    imageURL = googleItemObject.getPagemap().getCse_image().get(0).getSrc();
+                    try {
+                        imageURL = googleItemObject.getPagemap().getCse_image().get(0).getSrc();
+                    } catch (Exception e) {
+                        //get image from different search
+                        String imgResult = "";
+                        String imgUrlString = "https://www.googleapis.com/customsearch/v1?key=AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38&cx=011868713606192238742:xncw829zqmv&search_type=image&lr=lang_" + languageURL + "&q=" + googleSearchRepresentative;
+                        URL imgUrl = null;
+                        try {
+                            imgUrl = new URL(imgUrlString);
+                        } catch (MalformedURLException ex) {
+                            ex.printStackTrace();
+                        }
+                        HttpURLConnection imgconn = null;
+                        try {
+                            imgconn = (HttpURLConnection) imgUrl.openConnection();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        try {
+                            responseCode = imgconn.getResponseCode();
+                            responseMessage = imgconn.getResponseMessage();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                        Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+                        try {
+                            if (responseCode != null && responseCode == 200) {
+                                BufferedReader rd = new BufferedReader(new InputStreamReader(imgconn.getInputStream()));
+                                StringBuilder sb = new StringBuilder();
+                                String line;
+                                while ((line = rd.readLine()) != null) {
+                                    sb.append(line + "\n");
+                                }
+                                rd.close();
+                                imgconn.disconnect();
+                                imgResult = sb.toString();
+                                Log.d(TAG, "result=" + imgResult);
+                            } else {
+                                //response problem
+                                String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
+                                Log.e(TAG, errorMsg);
+                                Log.d(TAG, "no wiki");
+                                continue;
+                            }
+                        } catch (Exception ee) {
+                            ee.printStackTrace();
+                        }
+                        e.printStackTrace();
+                        GoogleSearchObject imggoogleSearchObject = gson.fromJson(imgResult, GoogleSearchObject.class);
+                        GoogleItemObject imggoogleItemObject = imggoogleSearchObject.getItems().get(0);
+                        imageURL = imggoogleItemObject.getLink();
+                    }
                     searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
-                } catch (Exception e) {
-                    //not connected to internet
-                    e.printStackTrace();
-                    Log.d(TAG, "no wiki");
-                    publishProgress(representative);
                 }
-
 
                 try {
                     img = drawable_from_url(imageURL);
@@ -565,7 +646,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     //not connected to internet
                     e.printStackTrace();
                     Log.d(TAG, "no wiki");
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                     publishProgress(representative);
+                    continue;
                 }
 
 
@@ -761,7 +844,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             String imageURL = "";*/
             int classificationPointer = 0;
 
-            String[] dataPair;
+            String[] dataPair = new String[2];
             boolean imageDetected = false;
             int trCounter = 0;
             CreateListFragment fragment = fragmentWeakReference.get();
@@ -782,14 +865,35 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 Log.d(TAG, "current tr = " + trCounter);
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                     trsWihtoutColspan++;
-                    dataPair = tr.wholeText().split("\n", 2);
-                    if (dataPair.length == 1) { //detected wrong table
+                    String[] data = tr.wholeText().split("\n");
+                    Log.d(TAG, "data = " + data.toString());
+                    //dataPair = tr.wholeText().split("\n", 2);
+                    if (data.length == 1) { //detected wrong table
                         Log.d(TAG, "different table");
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
                         break;
                     }
+                    dataPair[0] = data[0];
+                    String values = "";
+                    for (int i = 0; i < data.length; i++) {
+                        if (!(i == 0) && !(i == 1)) {
+                            if (data[i].contains("[")) {
+                                data[i] = data[i].substring(0, data[i].indexOf("["));
+                            }
+                            if (i == 2) {
+                                values += data[i];
+                                Log.d(TAG, "adding value = " + data[i]);
+                            } else {
+                                values += ", " + data[i];
+                                Log.d(TAG, "adding value = " + ", " + data[i]);
+                                //HERE LEFT OFF, stát jágr
+                                //TODO oddelit vice values na ", "
+                            }
+                        }
+                    }
+                    dataPair[1] = values;
                     if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
                         dataPair = dataPair.clone()[1].split("\n");
                     }

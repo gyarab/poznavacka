@@ -25,9 +25,7 @@ import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Random;
 
 import androidx.annotation.NonNull;
@@ -47,11 +45,6 @@ public class PracticeActivity extends AppCompatActivity {
     PoznavackaInfo mLoadedPoznavacka;
     ArrayList<Zastupce> mZastupceArrOrig = null;
     int parameterCount;
-
-    //load this from local storage
-    List<String> zastupci = Arrays.asList("Mlok skvrnitý", "Velemlok čínský", "Čolek obecný", "Čolek velký", "Červor", "Ropucha obecná", "Rosnička obecná", "Kuňka obecná", "Skokan hnědý", "Skokan zelený", "Kožatka velká", "Kareta obecná", "Želva sloní", "Želva nádherná", "Želva bahenní", "Hatérie novozélandská", "Gekon zední", "Leguán zelený", "Ještěrka obecná", "Ještěrka zelená", "Slepýš křehký", "Anakonda velká", "Kobra indická", "Taipan velký", "Užovka obojková", "Užovka podplamatá", "Zmije obecná", "Krokodýl nilský", "Aligátor severoamerický", "Gaviál indický", "Pštros dvouprstý", "Nandu pampový", "Kasuár přilbový", "Emu hnědý", "Kachna divoká", "Polák chocholačka", "Morčák velký");
-    List<String> rady = Arrays.asList("", "", "", "", "", "", "", "", "", "", "", "", "", "", "", "Hatérie", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Šupinatí", "Krokodýli", "Krokodýli", "Krokodýli", "Pštrosi", "Nanduové", "Kasuárové", "Kasuárové", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí", "Vrubozubí");
-    List<String> tridy = Arrays.asList("Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Obojživelníci", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Plazi", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci", "Ptáci");
 
     static boolean loaded = false;
     static ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
@@ -126,6 +119,7 @@ public class PracticeActivity extends AppCompatActivity {
 
             //first appearance
             updateScene(get_setRandomisedCurrentZastupce());
+            hideScene();
         } else {
 
             textView.setText(R.string.select_list);
@@ -172,21 +166,6 @@ public class PracticeActivity extends AppCompatActivity {
                     sceneView.setClickable(false);
                     textView.setVisibility(View.VISIBLE);
                     textView.setText(null);
-
-                    /*final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_0);
-                        }
-                    }, 1500);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_1);
-                            fab_restart.show();
-                        }
-                    }, 4000);*/
                 }
             }
         });

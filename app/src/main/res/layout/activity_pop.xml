@@ -32,7 +32,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:paddingTop="20dp"
-        android:text="@string/wiki_auto_import"
+        android:text="@string/classification"
         android:textColor="@color/colorWhite"
         android:textSize="35sp"
         app:layout_constraintEnd_toEndOf="parent"

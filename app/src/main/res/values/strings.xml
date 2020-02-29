@@ -53,7 +53,7 @@
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="wiki_auto_import"><u><b>Wiki auto-import</b></u></string>
+    <string name="classification"><u><b>Classification</b></u></string>
     <string name="text_wiki_import_description">Check classification to be generated</string>
     <string name="title_input">Title</string>
     <string name="dividing_word_character_input">Dividing sequence</string>
