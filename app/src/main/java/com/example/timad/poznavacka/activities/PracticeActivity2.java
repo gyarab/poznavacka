@@ -40,6 +40,7 @@ public class PracticeActivity2 extends AppCompatActivity {
     PoznavackaInfo mLoadedPoznavacka;
     ArrayList<Zastupce> mZastupceArrOrig;
     int parameterCount;
+    boolean rad;
 
     ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
     int[] zastupciProPriste;
@@ -60,9 +61,8 @@ public class PracticeActivity2 extends AppCompatActivity {
         //hiding the scene
         fab_restart.hide();
 
-        Log.d("Obrazek", "Working so far");
-
         //first appearance
+        hideScene();
         updateScene(get_setRandomisedCurrentZastupce());
 
         sceneView.setOnClickListener(new View.OnClickListener() {
@@ -77,7 +77,7 @@ public class PracticeActivity2 extends AppCompatActivity {
             public void onClick(View view) {
                 zastupciProPriste[currentZastupce] += 1;
                 hideScene();
-                if(pocetVsechZastupcu == 1){
+                if(pocetVsechZastupcu <= 1){
                     updateScene(currentZastupce);
                 } else {
                     updateScene(get_setRandomisedCurrentZastupce());
@@ -105,7 +105,7 @@ public class PracticeActivity2 extends AppCompatActivity {
                     textView.setVisibility(View.VISIBLE);
                     textView.setText(null);
 
-                    // Ulozeni nenaucenych zastupcu
+                    // Updating file with not memorized Zastupci
                     ArrayList<Integer> arr = new ArrayList<>();
                     for (int i = 0; i < zastupciProPriste.length; i++){
                         if(zastupciProPriste[i] > 0){
@@ -115,21 +115,6 @@ public class PracticeActivity2 extends AppCompatActivity {
 
                     PracticeActivity.sNenauceniZastupci = arr;
                     MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", arr);
-
-                    /*final Handler handler = new Handler();
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_0);
-                        }
-                    }, 1500);
-                    handler.postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            textView.setText(R.string.all_learnt_message_1);
-                            fab_restart.show();
-                        }
-                    }, 4000);*/
                 }
             }
         });
@@ -181,6 +166,11 @@ public class PracticeActivity2 extends AppCompatActivity {
         String s = "";
 
         for (int x = 0; x < parameterCount; x++) {
+            if(rad){
+                if(x > 0){
+                    s += mZastupceArrOrig.get(0).getParameter(x) + ": ";
+                }
+            }
             s += mZastupceArrOrig.get(i).getParameter(x) + "\n";
         }
 
@@ -195,7 +185,6 @@ public class PracticeActivity2 extends AppCompatActivity {
     }
 
     private void hideScene() {
-        Log.d("Zastupci", "Pocer: " + pocetVsechZastupcu);
         textView.setVisibility(View.INVISIBLE);
         fab_checked.hide();
         fab_crossed.hide();
@@ -207,6 +196,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         mZastupceArrOrig = PracticeActivity.sZastupceArrOrig;
         puvodniPocetVsechZastupcu = mZastupceArrOrig.size();
         parameterCount = mZastupceArrOrig.get(0).getParameters();
+        rad = mZastupceArrOrig.get(0).getParameter(0).equals("") || mZastupceArrOrig.get(0).getParameter(0).isEmpty();
 
         Bundle b = getIntent().getExtras();
         int value = -1;
@@ -215,7 +205,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         }
 
         if(value == 1){ // ALL
-            if(mZastupceArrOrig.get(0).getParameter(0).equals("") || mZastupceArrOrig.get(0).getParameter(0).isEmpty()){
+            if(rad){
                 puvodniPocetVsechZastupcu -= 1;
             }
             pocetVsechZastupcu = puvodniPocetVsechZastupcu;
@@ -233,8 +223,8 @@ public class PracticeActivity2 extends AppCompatActivity {
     }
 
     private ArrayList<Integer> fillArr(){
-        ArrayList<Integer> arr = new ArrayList<Integer>();
-        if(mZastupceArrOrig.get(0).getParameter(0).equals("") || mZastupceArrOrig.get(0).getParameter(0).isEmpty()) {
+        ArrayList<Integer> arr = new ArrayList<>();
+        if(rad) {
             for (int i = 1; i < mZastupceArrOrig.size(); i++){
                 arr.add(i);
             }
