@@ -55,8 +55,6 @@ public class MyListsFragment extends Fragment {
         if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
             String s = getSMC(getContext()).readFile("poznavacka.txt", true);
-            /*File file2 = new File(mPath + "/poznavacka.txt");
-            file2.delete();*/
 
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -67,12 +65,13 @@ public class MyListsFragment extends Fragment {
                     sPositionOfActivePoznavackaInfo = 0;
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
+                    sPositionOfActivePoznavackaInfo = -1;
                 }
             } else {
                 sPoznavackaInfoArr = new ArrayList<>();
+                sPositionOfActivePoznavackaInfo = -1;
             }
         }
-        //createArr();
 
         /* Add new button */
         newListBTN = view.findViewById(R.id.new_list_btn);
@@ -97,9 +96,6 @@ public class MyListsFragment extends Fragment {
         mAdapter.setOnItemClickListener(new RWAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
-                /* udělej něco s tim
-                mAdaper.notify... */
-
                 sPositionOfActivePoznavackaInfo = position;
                 sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
@@ -111,7 +107,6 @@ public class MyListsFragment extends Fragment {
                 sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
 
-                // TODO switch to PracticeActivity
                 Context context = getContext();
                 Intent myIntent = new Intent(context, PracticeActivity.class);
                 context.startActivity(myIntent);
@@ -125,8 +120,7 @@ public class MyListsFragment extends Fragment {
                 builder.setMessage("Do you want to share " + sPoznavackaInfoArr.get(position).getName() + "?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        // Sdilet poznavacku TODO
-                        //
+                        // Sharing of poznavacka
                         if (SharedListsFragment.checkInternet(getContext())) {
                             String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
                             SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), s, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(),sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation()));
@@ -135,8 +129,6 @@ public class MyListsFragment extends Fragment {
                         } else {
                             Toast.makeText(getContext(), "ur not connected, connect plis!", Toast.LENGTH_SHORT).show();
                         }
-                        //
-
 
                         dialog.dismiss();
                     }
@@ -167,7 +159,6 @@ public class MyListsFragment extends Fragment {
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Context context = getContext();
-
                         getSMC(context).deletePoznavacka(sPoznavackaInfoArr.get(position).getId() + "/");
 
                         sPoznavackaInfoArr.remove(position);
@@ -180,6 +171,8 @@ public class MyListsFragment extends Fragment {
                                     sPositionOfActivePoznavackaInfo = 0;
                                 }
                                 sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                            } else {
+                                sActivePoznavacka = null;
                             }
                         }
                         mAdapter.notifyDataSetChanged();
@@ -213,11 +206,5 @@ public class MyListsFragment extends Fragment {
         }
 
         return sSMC;
-    }
-
-    /* Ještě je potřeba implementovat smazání souboru */
-    public void removeItem(int pos) {
-        sPoznavackaInfoArr.remove(pos);
-        mAdapter.notifyDataSetChanged();
     }
 }

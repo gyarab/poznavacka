@@ -43,7 +43,6 @@ public class PracticeActivity2 extends AppCompatActivity {
     boolean rad;
 
     ArrayList<Integer> nenauceniZastupci = new ArrayList<>();
-    int[] zastupciProPriste;
     int puvodniPocetVsechZastupcu;
     int pocetVsechZastupcu;
     int currentZastupce;
@@ -75,7 +74,6 @@ public class PracticeActivity2 extends AppCompatActivity {
         fab_crossed.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                zastupciProPriste[currentZastupce] += 1;
                 hideScene();
                 if(pocetVsechZastupcu <= 1){
                     updateScene(currentZastupce);
@@ -105,16 +103,9 @@ public class PracticeActivity2 extends AppCompatActivity {
                     textView.setVisibility(View.VISIBLE);
                     textView.setText(null);
 
-                    // Updating file with not memorized Zastupci
-                    ArrayList<Integer> arr = new ArrayList<>();
-                    for (int i = 0; i < zastupciProPriste.length; i++){
-                        if(zastupciProPriste[i] > 0){
-                            arr.add(i);
-                        }
-                    }
-
-                    PracticeActivity.sNenauceniZastupci = arr;
-                    MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", arr);
+                    nenauceniZastupci.removeAll(Collections.singleton(currentZastupce));
+                    PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
+                    MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
                 }
             }
         });
@@ -134,6 +125,16 @@ public class PracticeActivity2 extends AppCompatActivity {
         });
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        // Save state when leaving this activity before learning all
+        if(nenauceniZastupci.size() > 0){
+            PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
+            MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
+        }
+    }
 
     private int get_setRandomisedCurrentZastupce() {
         //if (pocetVsechZastupcu > 1) {
@@ -211,14 +212,8 @@ public class PracticeActivity2 extends AppCompatActivity {
             pocetVsechZastupcu = puvodniPocetVsechZastupcu;
             nenauceniZastupci = fillArr();
         } else if (value == 0) { // Not memorized
-            puvodniPocetVsechZastupcu = mZastupceArrOrig.size();
             nenauceniZastupci = PracticeActivity.sNenauceniZastupci;
             pocetVsechZastupcu = nenauceniZastupci.size();
-        }
-
-        zastupciProPriste = new int[puvodniPocetVsechZastupcu];
-        for (int i = 0; i < zastupciProPriste.length; i++) {
-            zastupciProPriste[i] = 0;
         }
     }
 

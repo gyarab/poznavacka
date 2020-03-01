@@ -21,11 +21,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Random;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -37,7 +34,7 @@ public class PracticeActivity extends AppCompatActivity {
 
     TextView mTextView;
     Button mButtonAll;
-    Button mButtonNotMemorized;
+    Button mButtonContinue;
 
     // Array with zastupci
     static PoznavackaInfo sLoadedPoznavacka;
@@ -91,16 +88,18 @@ public class PracticeActivity extends AppCompatActivity {
         if(!mLoaded){
             mTextView.setText(R.string.select_list);
             mButtonAll.setEnabled(false);
-            mButtonNotMemorized.setEnabled(false);
+            mButtonAll.setText("(0)");
+            mButtonContinue.setEnabled(false);
+            mButtonContinue.setText("(0)");
         } else {
             int count = sZastupceArrOrig.size();
             if(sZastupceArrOrig.get(0).getParameter(0).equals("") || sZastupceArrOrig.get(0).getParameter(0).isEmpty()){
                 count -= 1;
             }
             mButtonAll.setText("Practice all (" + count + ")");
-            mButtonNotMemorized.setText("Practice not memorized (" + sNenauceniZastupci.size() + ")");
+            mButtonContinue.setText("Continue practicing (" + sNenauceniZastupci.size() + ")");
             if(sNenauceniZastupci.size() < 1){
-                mButtonNotMemorized.setEnabled(false);
+                mButtonContinue.setEnabled(false);
             }
         }
 
@@ -162,8 +161,8 @@ public class PracticeActivity extends AppCompatActivity {
             }
         });
 
-        mButtonNotMemorized = findViewById(R.id.buttonNotMem);
-        mButtonNotMemorized.setOnClickListener(new View.OnClickListener() {
+        mButtonContinue = findViewById(R.id.buttonNotMem);
+        mButtonContinue.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
