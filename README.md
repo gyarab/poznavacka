@@ -1,1 +1,1 @@
-# Appliaction for cognitive purposes
+# Application for cognitive purposes
