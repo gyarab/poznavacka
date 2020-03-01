@@ -15,57 +15,12 @@
         android:layout_alignParentTop="true"
         android:paddingBottom="100dp">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <RelativeLayout
-                android:id="@+id/layout_with_border"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="100dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/layout_border"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingTop="25dp"
-                android:paddingBottom="25dp">
-
-                <TextView
-                    android:id="@+id/language_text_view_hint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="30dp"
-                    android:gravity="center"
-                    android:lineSpacingMultiplier="1.2"
-                    android:text="Language for your list."
-                    android:textColor="@color/text_color"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
-
-                <Spinner
-                    android:id="@+id/languageSpinnerNew"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/language_text_view_hint"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginBottom="10dp"
-                    android:prompt="@string/language_spinner_prompt"
-                    android:spinnerMode="dropdown" />
-
-            </RelativeLayout>
-
             <RelativeLayout
                 android:id="@+id/layout_with_border1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/layout_with_border"
                 android:layout_marginStart="20dp"
-                android:layout_marginTop="30dp"
+                android:layout_marginTop="200dp"
                 android:layout_marginEnd="20dp"
                 android:background="@drawable/layout_border"
                 android:gravity="center_vertical"
@@ -103,7 +58,6 @@
 
             </RelativeLayout>
 
-        </RelativeLayout>
     </ScrollView>
 
 

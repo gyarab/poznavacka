@@ -63,4 +63,5 @@
     <string name="give_your_list_a_name">Give your list a name.</string>
     <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a simple ,</string>
     <string name="generate_text_view">Generate classification for each of your things. (optional)</string>
+    <string name="user_select_language">First, select the language for your list.</string>
 </resources>

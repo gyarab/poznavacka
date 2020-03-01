@@ -16,7 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
-public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
+public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
 
     private final String TAG = "CreateListActivity";
 
@@ -24,7 +24,6 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     public static LockableViewPager mViewPager;
 
     private String title;
-    private String rawRepresentatives;
     private ArrayList<String> representatives;
     private String languageURL;
 
@@ -59,7 +58,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         //TODO change back
         adapter.addFragment(new CreateListFragment());
 /*        adapter.addFragment(new SetTitleFragment());
-        adapter.addFragment(new SetRepresentativesFragment());
+        adapter.addFragment(new SetLanguageRepresentativesFragment());
         adapter.addFragment(new SetCreateOptionsFragment());
         adapter.addFragment(new GeneratedListFragment());*/
 
@@ -75,34 +74,32 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     public void updateTitle(String input) {
         title = input;
         Timber.d("loading into setRepresentativesFragment");
-        SetRepresentativesFragment setRepresentativesFragment = new SetRepresentativesFragment();
+        SetLanguageRepresentativesFragment setLanguageRepresentativesFragment = new SetLanguageRepresentativesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_set_title, setRepresentativesFragment);
+        fragmentTransaction.replace(R.id.fragment_set_title, setLanguageRepresentativesFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
 
     @Override
-    public void updateRepresentatives(String input) {
-        rawRepresentatives = input;
+    public void updateLanguageAndRepresentatives(String languageURL, ArrayList<String> representatives) {
+        this.representatives = representatives;
         Log.d(TAG, "loading into setCreateOptionsFragment");
-        Bundle bundle = new Bundle();
-        bundle.putString("ARG_RAWREPRESENTATIVES", rawRepresentatives);
         SetCreateOptionsFragment setCreateOptionsFragment = new SetCreateOptionsFragment();
-        setCreateOptionsFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_set_representatives, setCreateOptionsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
+
     @Override
     public void updateCreateOptions(String languageURL, ArrayList<String> representatives) {
-        this.representatives = representatives;
         this.languageURL = languageURL;
         Bundle bundle = new Bundle();
-        bundle.putString("ARG_RAWREPRESENTATIVES", rawRepresentatives);
+        bundle.putStringArrayList("ARG_REPRESENTATIVES", this.representatives);
+        bundle.putString("ARG_LANGUAGEURL", this.languageURL);
         GeneratedListFragment generatedListFragment = new GeneratedListFragment();
         generatedListFragment.setArguments(bundle);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

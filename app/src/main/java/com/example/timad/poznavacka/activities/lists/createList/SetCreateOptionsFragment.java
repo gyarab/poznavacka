@@ -2,16 +2,12 @@ package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
 import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.CompoundButton;
-import android.widget.Spinner;
 import android.widget.Switch;
 import android.widget.Toast;
 
@@ -19,32 +15,26 @@ import com.example.timad.poznavacka.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Objects;
 
 import androidx.fragment.app.Fragment;
 
 
-public class SetCreateOptionsFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class SetCreateOptionsFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_RAWREPRESENTATIVES = "param1";
 
     // TODO: Rename and change types of parameters
-    private String rawRepresentatives;
+
 
     private OnFragmentInteractionListener mListener;
 
-    private Spinner languageSpinner;
     private Switch autoImportSwitch;
     private ExtendedFloatingActionButton btnNext;
 
-    private String languageURL;
-    private boolean switchPressedOnce;
     private boolean autoImportIsChecked;
 
     private ArrayList<String> representatives;
+    private String languageURL;
 
     public SetCreateOptionsFragment() {
         // Required empty public constructor
@@ -61,7 +51,7 @@ public class SetCreateOptionsFragment extends Fragment implements AdapterView.On
     public static SetCreateOptionsFragment newInstance(String param1) {
         SetCreateOptionsFragment fragment = new SetCreateOptionsFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_RAWREPRESENTATIVES, param1);
+        //args.putString(ARG_REPRESENTATIVES, param1);
         fragment.setArguments(args);
         return fragment;
     }
@@ -70,7 +60,8 @@ public class SetCreateOptionsFragment extends Fragment implements AdapterView.On
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            rawRepresentatives = getArguments().getString(ARG_RAWREPRESENTATIVES);
+            representatives = getArguments().getStringArrayList("ARG_REPRESENTATIVES");
+            languageURL = getArguments().getString("ARG_LANGUAGEURL");
         }
     }
 
@@ -86,40 +77,16 @@ public class SetCreateOptionsFragment extends Fragment implements AdapterView.On
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (!languageURL.equals("Select Language")) {
-                    btnNext.setVisibility(View.GONE);
-                    onButtonPressed(languageURL, representatives);
-                } else {
-                    Toast.makeText(getContext(), "Select Language", Toast.LENGTH_SHORT).show();
-                }
+
             }
         });
 
-        //spinner
-        languageSpinner = getView().findViewById(R.id.languageSpinnerNew);
-        languageURL = "Select Language";
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languageSpinner.setAdapter(adapter);
-        languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
-        languageSpinner.setOnItemSelectedListener(this);
-
         //switch
-        switchPressedOnce = false;
         autoImportSwitch = getView().findViewById(R.id.generateSwitch);
         autoImportSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                    if (!languageURL.equals("Select Language")) {
-                        if (rawRepresentatives.contains(",")) {
-                            representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + "," + "\\s*")));
-                        } else {
-                            representatives = new ArrayList<>(Collections.singletonList(rawRepresentatives.trim()));
-                        }
-
-
-                        switchPressedOnce = true;
                         autoImportIsChecked = true;
                         Intent intent = new Intent(getContext(), PopActivity.class);
                         startActivity(intent);
@@ -129,99 +96,10 @@ public class SetCreateOptionsFragment extends Fragment implements AdapterView.On
                         autoImportSwitch.setChecked(false);
                         autoImportIsChecked = false;
                     }
-                } else {
-                    autoImportIsChecked = false;
-                }
             }
         });
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-        //getting the language of wiki
-        Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
-        String languageString = selectedLanguageSpinnerItem.toString();
-        boolean showButton = true;
-
-        switch (languageString) {
-            case "Select Language":
-                languageURL = "Select Language";
-                showButton = false;
-                break;
-            case "English (Latin)":
-                languageURL = "en";
-                break;
-            case "Czech":
-                languageURL = "cs";
-                break;
-            case "French":
-                languageURL = "fr";
-                break;
-            case "German":
-                languageURL = "de";
-                break;
-            case "Spanish":
-                languageURL = "es";
-                break;
-            case "Japanese":
-                languageURL = "ja";
-                break;
-            case "Russian":
-                languageURL = "ru";
-                break;
-            case "Italian":
-                languageURL = "it";
-                break;
-            case "Portuguese":
-                languageURL = "pt";
-                break;
-            case "Arabic":
-                languageURL = "ar";
-                break;
-            case "Persian":
-                languageURL = "fa";
-                break;
-            case "Polish":
-                languageURL = "pl";
-                break;
-            case "Dutch":
-                languageURL = "nl";
-                break;
-            case "Indonesian":
-                languageURL = "id";
-                break;
-            case "Ukrainian":
-                languageURL = "uk";
-                break;
-            case "Hebrew":
-                languageURL = "he";
-                break;
-            case "Swedish":
-                languageURL = "sv";
-                break;
-            case "Korean":
-                languageURL = "ko";
-                break;
-            case "Vietnamese":
-                languageURL = "vi";
-                break;
-            case "Finnish":
-                languageURL = "fi";
-                btnNext.show();
-                break;
-        }
-
-        if (showButton) {
-            btnNext.show();
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
-        Toast.makeText(getContext(), "Select language", Toast.LENGTH_SHORT).show();
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -232,9 +110,9 @@ public class SetCreateOptionsFragment extends Fragment implements AdapterView.On
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(String languageURL, ArrayList<String> representatives) {
+    public void onButtonPressed(int userParametersCount, ArrayList<String> userScientificClassification) {
         if (mListener != null) {
-            mListener.updateCreateOptions(languageURL, representatives);
+            //mListener.updateCreateOptions(userParametersCount, userScientificClassification);
         }
     }
 
