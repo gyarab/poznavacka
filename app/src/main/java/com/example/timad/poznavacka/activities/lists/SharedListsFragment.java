@@ -294,7 +294,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getId().equals(user.getUid())) {
+                if (item.getAuthorsID().equals(user.getUid())) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
