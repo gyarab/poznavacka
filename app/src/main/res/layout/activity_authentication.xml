@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:id="@+id/activity_authentication">
+    android:id="@+id/activity_authentication"
+    android:background="@color/colorPrimary">
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
