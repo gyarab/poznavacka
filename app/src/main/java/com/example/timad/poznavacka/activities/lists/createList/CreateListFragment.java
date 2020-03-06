@@ -751,7 +751,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     } else {
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
                     }
-                    Log.d(TAG, "newData size for representative= " + newData.size() + "\n\n");
+                    Log.d(TAG, "newData size for representative " + representative + "= " + newData.size() + "\n\n");
 
                 } else {
                     //add an empty only with representative
@@ -866,7 +866,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                     trsWihtoutColspan++;
                     String[] data = tr.wholeText().split("\n");
-                    Log.d(TAG, "data = " + data.toString());
+                    Log.d(TAG, "data = " + stringArrayToString(data));
                     //dataPair = tr.wholeText().split("\n", 2);
                     if (data.length == 1) { //detected wrong table
                         Log.d(TAG, "different table");
@@ -907,8 +907,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
 
                     if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
+                        //trim latin etc.
                         if (dataPair[1].contains("(")) {
-                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
+                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim(); //trims after latin
                         }
                         newData.add(dataPair[1]); //adding the specific classification
                         Log.d(TAG, "adding new data to newData = " + dataPair[1]);
@@ -931,11 +932,16 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         newData.add(dataPair[1]);
                         Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                     }
-
+                    Log.d(TAG, "currentTrsWihtoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWihtoutColspan);
                 } else if (currentTrsWihtoutColspan == trsWihtoutColspan) { //current tr is the last one with information
-                    if (newData.size() == (userParametersCount - 2)) { //the last parameter was not detected
-                        Log.d(TAG, "last parameter not detected");
+                    Log.d(TAG, "Current tr is the last one with information.");
+                    //if (newData.size() <= (userParametersCount - 2)) {
+                    for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
+                        Log.d(TAG, "one of last parameters not detected");
                         newData.add("");
+                        //}
+                        /*Log.d(TAG, "last parameter not detected");
+                        newData.add("");*/
                         break;
                     }
                 }
@@ -1136,6 +1142,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             representative = representative.substring(0, 1).toUpperCase(locale) + representative.substring(1).toLowerCase();
         }
         return representative;
+    }
+
+    private String stringArrayToString(String[] array) {
+        StringBuilder sb = new StringBuilder();
+        for (String s : array) {
+            sb.append(s);
+        }
+        return sb.toString();
     }
 }
 

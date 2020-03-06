@@ -20,11 +20,6 @@ import androidx.fragment.app.Fragment;
 
 
 public class SetCreateOptionsFragment extends Fragment {
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-
-    // TODO: Rename and change types of parameters
-
 
     private OnFragmentInteractionListener mListener;
 
