@@ -72,6 +72,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.reversedUserScientificClassification;
 import static com.example.timad.poznavacka.activities.lists.createList.PopActivity.userParametersCount;
@@ -852,51 +853,64 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
             //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
             Elements trs = infoBox.select("tr");
-            int trsWihtoutColspan = 0;
+            int trsWithoutColspan = 0;
             int currentTrsWihtoutColspan = 0;
+
+            //to check if all the info has been scanned through
             for (Element tr :
                     trs) {
-                if (!tr.getAllElements().hasAttr("colspan")) trsWihtoutColspan++;
+                if (!tr.getAllElements().hasAttr("colspan")) trsWithoutColspan++;
             }
+
+            //actual scanning
             for (Element tr :
                     trs) {
 
                 trCounter++;
                 Log.d(TAG, "current tr = " + trCounter);
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
-                    trsWihtoutColspan++;
-                    String[] data = tr.wholeText().split("\n");
-                    Log.d(TAG, "data = " + stringArrayToString(data));
-                    //dataPair = tr.wholeText().split("\n", 2);
-                    if (data.length == 1) { //detected wrong table
+                    currentTrsWihtoutColspan++;
+                    String[] rawData = tr.wholeText().split("\n");
+
+                    if (rawData.length == 1) { //detected wrong table
                         Log.d(TAG, "different table");
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
                         break;
                     }
-                    dataPair[0] = data[0];
-                    String values = "";
-                    for (int i = 0; i < data.length; i++) {
-                        if (!(i == 0) && !(i == 1)) {
-                            if (data[i].contains("[")) {
-                                data[i] = data[i].substring(0, data[i].indexOf("["));
-                            }
-                            if (i == 2) {
-                                values += data[i];
-                                Log.d(TAG, "adding value = " + data[i]);
-                            } else {
-                                values += ", " + data[i];
-                                Log.d(TAG, "adding value = " + ", " + data[i]);
-                                //HERE LEFT OFF, stát jágr
-                                //TODO oddelit vice values na ", "
-                            }
+
+                    //cleaning rawData to data
+                    ArrayList<String> data = new ArrayList<>();
+                    for (String piece :
+                            rawData) {
+                        if (!piece.trim().isEmpty()) data.add(piece);
+                    }
+                    Timber.d("data = %s", data.toString());
+
+                    //assigning the dataPair
+                    dataPair[0] = data.get(0);
+                    StringBuilder values = new StringBuilder();
+                    for (int i = 1; i < data.size(); i++) {
+                        if (data.get(i).contains("[")) {
+                            String editedString = data.get(i).substring(0, data.get(i).indexOf("[")).trim();
+                            data.set(i, editedString);
                         }
+                        if (i == 1) {
+                            values.append(data.get(i));
+                            Timber.d("adding value = %s", data.get(i));
+                        } else {
+                            values.append(", ").append(data.get(i));
+                            Timber.d("adding value = " + ", " + data.get(i));
+                        }
+
                     }
-                    dataPair[1] = values;
-                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                    dataPair[1] = values.toString();
+
+/*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                        Timber.d("first line is empty");
                         dataPair = dataPair.clone()[1].split("\n");
-                    }
+                }*/
                     for (int i = 0; i < 2; i++) {
                         dataPair[i] = dataPair[i].trim();
                         Log.d(TAG, "found " + dataPair[i]);
@@ -932,8 +946,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         newData.add(dataPair[1]);
                         Log.d(TAG, "adding new data to newData = " + dataPair[1]);
                     }
-                    Log.d(TAG, "currentTrsWihtoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWihtoutColspan);
-                } else if (currentTrsWihtoutColspan == trsWihtoutColspan) { //current tr is the last one with information
+                    Timber.d("currentTrsWithoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWithoutColspan);
+                } else if (currentTrsWihtoutColspan == trsWithoutColspan) { //current tr is the last one with information
                     Log.d(TAG, "Current tr is the last one with information.");
                     //if (newData.size() <= (userParametersCount - 2)) {
                     for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
@@ -1146,8 +1160,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
     private String stringArrayToString(String[] array) {
         StringBuilder sb = new StringBuilder();
-        for (String s : array) {
-            sb.append(s);
+        for (int i = 0; i < array.length; i++) {
+            if (i == 0) {
+                sb.append(array[i]);
+            } else {
+                sb.append(", ").append(array[i]);
+            }
         }
         return sb.toString();
     }

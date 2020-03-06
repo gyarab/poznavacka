@@ -13,12 +13,12 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 public class WelcomeActivity extends AppCompatActivity {
-    private static int SPLASH_TIME_OUT = 1000;
 
     @Override
     protected void onStart() {
         super.onStart();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        int SPLASH_TIME_OUT = 700;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
