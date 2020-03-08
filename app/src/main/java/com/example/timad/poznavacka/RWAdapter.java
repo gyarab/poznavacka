@@ -9,6 +9,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -122,6 +124,13 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
 
         Drawable d = MyListsFragment.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+         if(!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+             holder.shareImg.setEnabled(false);
+         }else{
+             holder.shareImg.setImageResource(R.drawable.ic_file_upload_black_24dp);
+         }
+
 
         if(MyListsFragment.sPositionOfActivePoznavackaInfo == position){
             holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));

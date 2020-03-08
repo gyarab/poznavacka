@@ -87,7 +87,6 @@ public class SharedListsFragment extends Fragment {
         return view;
     }
 
-
     private void buildSharedListFragment(View view){
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -252,7 +251,7 @@ public class SharedListsFragment extends Fragment {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName")));
+                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName"),document.getString("authorsID")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -294,7 +293,6 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getAuthorsID().equals(user.getUid())) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -311,10 +309,6 @@ public class SharedListsFragment extends Fragment {
 
                                 }
                             });
-
-                } else {
-                    Toast.makeText(getActivity(), "ur user name doesnt match creator " + item.getAuthorsName() + ", " + usersName, Toast.LENGTH_LONG).show();
-                }
             }
         });
 
@@ -328,7 +322,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName()));
+                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName(),data.getAuthorsID()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }
