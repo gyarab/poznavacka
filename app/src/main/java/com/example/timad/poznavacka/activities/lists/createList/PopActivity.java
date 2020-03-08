@@ -1,6 +1,7 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -17,6 +18,7 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.BuildConfig;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
@@ -40,7 +42,9 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 
-import static com.example.timad.poznavacka.activities.lists.createList.CreateListFragment.languageURL;
+import timber.log.Timber;
+
+import static com.example.timad.poznavacka.activities.lists.createList.CreateListActivity.languageURL;
 
 public class PopActivity extends Activity {
 
@@ -53,10 +57,10 @@ public class PopActivity extends Activity {
     ViewGroup viewGroup;
     ScrollView sv;
 
-    public static ArrayList<String> userScientificClassification;
-    public static ArrayList<String> reversedUserScientificClassification;
+    public ArrayList<String> userScientificClassification;
+    public ArrayList<String> reversedUserScientificClassification;
 
-    public static int userParametersCount = 1;
+    public int userParametersCount = 1;
 
     Integer responseCode = null;
     String responseMessage = "";
@@ -64,6 +68,9 @@ public class PopActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
         setContentView(R.layout.activity_pop);
         DONEButton = findViewById(R.id.PopDONEButton);
         progressBar = findViewById(R.id.progressBar2);
@@ -107,7 +114,8 @@ public class PopActivity extends Activity {
         DONEButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                finish();
+                Timber.d("DONE Clicked");
+                Log.d(TAG, "Log DONE Clicked");
                 userParametersCount = 1;
                 for (int i = 0; i < layout1.getChildCount(); i++) {
                     View nextChild = layout1.getChildAt(i);
@@ -116,7 +124,7 @@ public class PopActivity extends Activity {
 
                         CheckBox check = (CheckBox) nextChild;
                         if (check.isChecked()) {
-                            Log.d(TAG, "checbox text to be added = " + check.getText().toString());
+                            Timber.d("checbox text to be added = " + check.getText().toString());
                             userScientificClassification.add(check.getText().toString());
                             userParametersCount++;
                         }
@@ -125,6 +133,15 @@ public class PopActivity extends Activity {
                 reversedUserScientificClassification.addAll(userScientificClassification);
                 Collections.reverse(reversedUserScientificClassification);
                 reversedUserScientificClassification.add(0, "");
+
+                Intent returnIntent = new Intent();
+                returnIntent.putExtra("userParametersCount", userParametersCount);
+                returnIntent.putExtra("userScientificClassification", userScientificClassification);
+                returnIntent.putExtra("reversedUserScientificClassification", reversedUserScientificClassification);
+                setResult(Activity.RESULT_OK, returnIntent);
+                Timber.d("passing PopValues");
+
+                finish();
             }
         });
     }
@@ -201,7 +218,12 @@ public class PopActivity extends Activity {
         @Override
         protected Void doInBackground(Void... voids) {
             PopActivity fragment = fragmentWeakReference.get();
-            ArrayList<String> representatives = CreateListFragment.representatives;
+
+            //old Create
+            //ArrayList<String> representatives = CreateListFragment.representatives;
+
+            ArrayList<String> representatives = CreateListActivity.representatives;
+            Timber.d("PopRepresentatives are %s", representatives.toString());
 
             allRepresentatives:
             for (String representative :
@@ -235,7 +257,8 @@ public class PopActivity extends Activity {
                         break allRepresentatives;
                     }
 
-                    Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+                    Timber.d("Http response code =" + responseCode + " message=" + responseMessage);
+                    Timber.d("Current PopRepresentative is %s", representative);
 
                     try {
                         if (responseCode != null && responseCode == 200) {
@@ -243,7 +266,7 @@ public class PopActivity extends Activity {
                             StringBuilder sb = new StringBuilder();
                             String line;
                             while ((line = rd.readLine()) != null) {
-                                sb.append(line + "\n");
+                                sb.append(line).append("\n");
                             }
                             rd.close();
                             conn.disconnect();
@@ -267,30 +290,36 @@ public class PopActivity extends Activity {
                     Gson gson = new Gson();
                     try {
                         GoogleSearchObject googleSearchObject = gson.fromJson(result, GoogleSearchObject.class);
-                        Log.d(TAG, googleSearchObject.toString());
+                        Timber.d(googleSearchObject.toString());
                         GoogleItemObject myGoogleSearchObject = googleSearchObject.getItems().get(0);
                         String wikipeidaURL = myGoogleSearchObject.getFormattedUrl();
-                        Log.d(TAG, "google test is = " + wikipeidaURL);
+                        Timber.d("google test is = %s", wikipeidaURL);
                         searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
                     } catch (Exception e) {
-                        //auto correction
+                        //no results
                         e.printStackTrace();
                         searchSuccessful = false;
                         GoogleSearchObjectAutoCorrect googleSearchObjectAutoCorrect = gson.fromJson(result, GoogleSearchObjectAutoCorrect.class);
-                        Log.d(TAG, googleSearchObjectAutoCorrect.toString());
-                        Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
-                        googleSearchRepresentative = spelling.getCorrectedQuery();
+                        Timber.d(googleSearchObjectAutoCorrect.toString());
+                        //if corrects spelling
+                        if (googleSearchObjectAutoCorrect.getSpelling() != null) {
+                            Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
+                            googleSearchRepresentative = spelling.getCorrectedQuery();
+                        } else {
+                            continue allRepresentatives;
+                            //LEFT OFF HERE, if no spell correction, go for next representative
+                        }
                     }
                 }
 
                 Document doc = null;
                 try {
-                    Log.d(TAG, "connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText /*URLEncoder.encode(searchText, "UTF-8")*/ + "?redirect=true");
+                    Timber.d("connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText /*URLEncoder.encode(searchText, "UTF-8")*/ + "?redirect=true");
                     doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
                     e.printStackTrace();
-                    Log.d(TAG, "Classification - no wiki for " + representative);
+                    Timber.d("Classification - no wiki for %s", representative);
                     continue;
                 }
 

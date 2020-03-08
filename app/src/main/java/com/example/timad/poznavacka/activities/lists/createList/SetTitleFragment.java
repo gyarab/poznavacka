@@ -12,7 +12,10 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.util.Objects;
 
 import androidx.fragment.app.Fragment;
 
@@ -110,10 +113,15 @@ public class SetTitleFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_set_title, container, false);
+        final View view;
+        if (!SharedListsFragment.checkInternet(Objects.requireNonNull(getContext()))) {
+            view = inflater.inflate(R.layout.fragment_not_connected_to_internet, container, false);
+        } else {
+            view = inflater.inflate(R.layout.fragment_set_title, container, false);
+        }
+        return view;
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String input) {
         if (mListener != null) {
             mListener.updateTitle(input);

@@ -2,11 +2,11 @@ package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.example.timad.poznavacka.LockableViewPager;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
+import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
 
 import java.util.ArrayList;
@@ -24,8 +24,9 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     public static LockableViewPager mViewPager;
 
     private String title;
-    private ArrayList<String> representatives;
-    private String languageURL;
+    public static ArrayList<String> representatives;
+    public static String languageURL;
+    private ArrayList<Zastupce> mZastupceArr;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,11 +57,11 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
 
         //TODO change back
-        adapter.addFragment(new CreateListFragment());
-/*        adapter.addFragment(new SetTitleFragment());
+        //adapter.addFragment(new CreateListFragment());
+        adapter.addFragment(new SetTitleFragment());
         adapter.addFragment(new SetLanguageRepresentativesFragment());
         adapter.addFragment(new SetCreateOptionsFragment());
-        adapter.addFragment(new GeneratedListFragment());*/
+        adapter.addFragment(new GeneratedListFragment());
 
         viewPager.setAdapter(adapter);
         viewPager.setSwipeable(false);
@@ -84,24 +85,19 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     @Override
     public void updateLanguageAndRepresentatives(String languageURL, ArrayList<String> representatives) {
-        this.representatives = representatives;
-        Log.d(TAG, "loading into setCreateOptionsFragment");
-        SetCreateOptionsFragment setCreateOptionsFragment = new SetCreateOptionsFragment();
+        CreateListActivity.representatives = representatives;
+        CreateListActivity.languageURL = languageURL;
+        Timber.d("loading into setCreateOptionsFragment");
+        SetCreateOptionsFragment setCreateOptionsFragment = SetCreateOptionsFragment.newInstance(languageURL, representatives);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_set_representatives, setCreateOptionsFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
-
     @Override
-    public void updateCreateOptions(String languageURL, ArrayList<String> representatives) {
-        this.languageURL = languageURL;
-        Bundle bundle = new Bundle();
-        bundle.putStringArrayList("ARG_REPRESENTATIVES", this.representatives);
-        bundle.putString("ARG_LANGUAGEURL", this.languageURL);
-        GeneratedListFragment generatedListFragment = new GeneratedListFragment();
-        generatedListFragment.setArguments(bundle);
+    public void updateCreateOptions(boolean autoImportIsChecked, int userParametersCount, ArrayList<String> userScientificClassification, ArrayList<String> reversedUserScientificClassification) {
+        GeneratedListFragment generatedListFragment = GeneratedListFragment.newInstance(representatives, autoImportIsChecked, userParametersCount, userScientificClassification, reversedUserScientificClassification, languageURL);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_set_create_options, generatedListFragment);
         fragmentTransaction.addToBackStack(null);
@@ -109,7 +105,12 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     }
 
     @Override
-    public void onSave() {
+    public void onSave(ArrayList<Zastupce> mZastupceArr) {
+        this.mZastupceArr = mZastupceArr;
+        saveCreatedList();
+    }
+
+    private void saveCreatedList() {
 
     }
 }

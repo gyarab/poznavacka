@@ -39,13 +39,12 @@
         <activity android:name=".FirestoreImpl" />
         <activity android:name=".activities.AccountActivity" />
         <activity android:name=".activities.lists.MyListsFragment" />
-        <activity
-            android:name=".activities.lists.createList.CreateListFragment"
-            android:windowSoftInputMode="adjustResize" />
+        <!--        <activity
+                    android:name=".activities.lists.createList.CreateListFragment"
+                    android:windowSoftInputMode="adjustResize" />-->
         <activity
             android:name=".activities.lists.createList.GeneratedListFragment"
-            android:screenOrientation="landscape"
-            android:configChanges="orientation|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden" />
         <activity android:name=".activities.AuthenticationActivity" />
         <activity android:name=".activities.WelcomeActivity">
             <intent-filter>
@@ -55,7 +54,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.lists.createList.CreateListActivity" />
+        <activity
+            android:name=".activities.lists.createList.CreateListActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
 
     </application>
 

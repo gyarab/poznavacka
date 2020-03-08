@@ -11,15 +11,20 @@ import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.BuildConfig;
 import com.example.timad.poznavacka.R;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import timber.log.Timber;
 
 
 public class SetCreateOptionsFragment extends Fragment {
+    private String TAG = "SetCreateOptionsFragment";
 
     private OnFragmentInteractionListener mListener;
 
@@ -31,6 +36,10 @@ public class SetCreateOptionsFragment extends Fragment {
     private ArrayList<String> representatives;
     private String languageURL;
 
+    private ArrayList<String> userScientificClassification = new ArrayList<>();
+    private ArrayList<String> reversedUserScientificClassification = new ArrayList<>();
+    private int userParametersCount = 1;
+
     public SetCreateOptionsFragment() {
         // Required empty public constructor
     }
@@ -39,14 +48,16 @@ public class SetCreateOptionsFragment extends Fragment {
      * Use this factory method to create a new instance of
      * this fragment using the provided parameters.
      *
-     * @param param1 Parameter 1.
+     * @param languageURL     Parameter 1.
+     * @param representatives Parameter 2.
      * @return A new instance of fragment SetTitleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SetCreateOptionsFragment newInstance(String param1) {
+    public static SetCreateOptionsFragment newInstance(String languageURL, ArrayList<String> representatives) {
         SetCreateOptionsFragment fragment = new SetCreateOptionsFragment();
         Bundle args = new Bundle();
-        //args.putString(ARG_REPRESENTATIVES, param1);
+        args.putString("ARG_LANGUAGEURL", languageURL);
+        args.putStringArrayList("ARG_REPRESENTATIVES", representatives);
         fragment.setArguments(args);
         return fragment;
     }
@@ -54,25 +65,34 @@ public class SetCreateOptionsFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (BuildConfig.DEBUG) {
+            Timber.plant(new Timber.DebugTree());
+        }
         if (getArguments() != null) {
-            representatives = getArguments().getStringArrayList("ARG_REPRESENTATIVES");
             languageURL = getArguments().getString("ARG_LANGUAGEURL");
+            representatives = getArguments().getStringArrayList("ARG_REPRESENTATIVES");
         }
     }
 
-    //the actual fragment operations
+    //the actual in-fragment operations
     @Override
     public void onStart() {
         super.onStart();
 
+        Timber.d(TAG + " userParametersCount = " + userParametersCount);
+        /*userScientificClassification = new ArrayList<>();
+        reversedUserScientificClassification = new ArrayList<>();*/
+
         //button
-        btnNext = getView().findViewById(R.id.button_create_new);
-        btnNext.hide();
+        btnNext = Objects.requireNonNull(getView()).findViewById(R.id.button_create_new);
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                Timber.d(TAG + " btnNext userParametersCount = " + userParametersCount);
+                Timber.d(TAG + " btnNext userScientificClassification = " + userScientificClassification.toString());
+                btnNext.setVisibility(View.GONE);
+                onButtonPressed(autoImportIsChecked, userParametersCount, userScientificClassification, reversedUserScientificClassification);
             }
         });
 
@@ -82,19 +102,26 @@ public class SetCreateOptionsFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
                 if (isChecked) {
-                        autoImportIsChecked = true;
-                        Intent intent = new Intent(getContext(), PopActivity.class);
-                        startActivity(intent);
-
-                    } else {
-                        Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
-                        autoImportSwitch.setChecked(false);
-                        autoImportIsChecked = false;
-                    }
+                    autoImportIsChecked = true;
+                    Intent intent = new Intent(getContext(), PopActivity.class);
+                    //startActivity(intent);
+                    startActivityForResult(intent, 1);
+                } else {
+                    Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
+                    autoImportSwitch.setChecked(false);
+                    autoImportIsChecked = false;
+                }
             }
         });
     }
 
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Timber.d("onActivityResult");
+        userParametersCount = data.getIntExtra("userParametersCount", 1);
+        userScientificClassification = data.getStringArrayListExtra("userScientificClassification");
+        reversedUserScientificClassification = data.getStringArrayListExtra("reversedUserScientificClassification");
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -105,9 +132,9 @@ public class SetCreateOptionsFragment extends Fragment {
     }
 
     // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(int userParametersCount, ArrayList<String> userScientificClassification) {
+    public void onButtonPressed(boolean autoImportIsChecked, int userParametersCount, ArrayList<String> userScientificClassification, ArrayList<String> reversedUserScientificClassification) {
         if (mListener != null) {
-            //mListener.updateCreateOptions(userParametersCount, userScientificClassification);
+            mListener.updateCreateOptions(autoImportIsChecked, userParametersCount, userScientificClassification, reversedUserScientificClassification);
         }
     }
 
@@ -140,7 +167,7 @@ public class SetCreateOptionsFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void updateCreateOptions(String languageURL, ArrayList<String> representatives);
+        void updateCreateOptions(boolean autoImportIsChecked, int userParametersCount, ArrayList<String> userScientificClassification, ArrayList<String> reversedUserScientificClassification);
     }
 
 

@@ -127,7 +127,7 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
                 imgr.hideSoftInputFromWindow(getView().getWindowToken(), 0);
                 btnNext.setVisibility(View.GONE);
 
-                ArrayList<String> representatives = new ArrayList<>(Arrays.asList(representativesInput.toString().split("\\s*" + "," + "\\s*")));
+                ArrayList<String> representatives = new ArrayList<>(Arrays.asList(representativesInput.getText().toString().split("\\s*" + "," + "\\s*")));
 
                 onButtonPressed(languageURL, representatives);
             }
@@ -239,7 +239,6 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         return inflater.inflate(R.layout.fragment_set_language_representatives, container, false);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(String languageURL, ArrayList<String> representatives) {
         if (mListener != null) {
             mListener.updateLanguageAndRepresentatives(languageURL, representatives);

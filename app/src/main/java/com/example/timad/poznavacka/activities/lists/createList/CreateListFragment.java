@@ -1,3 +1,4 @@
+/*
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
@@ -82,12 +83,6 @@ import static com.example.timad.poznavacka.activities.lists.createList.PopActivi
 public class CreateListFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     private static final String TAG = "CreateListFragment";
 
-    private static final String KEY_TITLE = "title";
-    private static final String KEY_RAD = "rad";
-    private static final String KEY_DRUH = "druh";
-    private static final String KEY_ZASTUPCE = "poznavackaInfo";
-    private static final String KEY_IMGREF = "imageRef";
-
     private Button btnCREATE;
     private Button btnSAVE;
     private ProgressBar progressBar;
@@ -119,12 +114,6 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
 
-    private int parameters;
-
-    Integer responseCode = null;
-    String responseMessage = "";
-
-
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -152,7 +141,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
 
 
-            /* RecyclerView */
+            */
+/* RecyclerView *//*
+
             HorizontalScrollView scrollV = (HorizontalScrollView) mRecyclerView.getParent();
 
             DisplayMetrics displayMetrics = new DisplayMetrics();
@@ -165,9 +156,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             params.height = height;
             scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
-        /*NestedScrollView.LayoutParams params2 = (NestedScrollView.LayoutParams) scrollV.getChildAt(0).getLayoutParams();
+        */
+/*NestedScrollView.LayoutParams params2 = (NestedScrollView.LayoutParams) scrollV.getChildAt(0).getLayoutParams();
         params2.width = width;
-        scrollV.getChildAt(0).setLayoutParams(new NestedScrollView.LayoutParams(params2));*/
+        scrollV.getChildAt(0).setLayoutParams(new NestedScrollView.LayoutParams(params2));*//*
+
 
             mZastupceArr = new ArrayList<>();
 
@@ -191,7 +184,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         if (!(title.isEmpty() || rawRepresentatives.isEmpty() || languageURL.equals("Select Language"))) {
 
                             representatives = new ArrayList<>(Arrays.asList(rawRepresentatives.split("\\s*" + (",") + "\\s*")));
-                       /* if (dividingString.isEmpty()) { //single
+                       */
+/* if (dividingString.isEmpty()) { //single
                             exampleRepresentative = rawRepresentatives.trim();
                         } else { //multiple
                             if (rawRepresentatives.contains(dividingString)) {
@@ -199,7 +193,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             } else {  //single, but dividing string was entered
                                 exampleRepresentative = rawRepresentatives.trim();
                             }
-                        }*/
+                        }*//*
+
 
                             //exampleRepresentative = capitalize(exampleRepresentative, languageURL);
                             switchPressedOnce = true;
@@ -239,11 +234,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                         if (autoImportIsChecked) {
                             mAdapter = new ZastupceAdapter(mZastupceArr, userParametersCount);
-                            parameters = userParametersCount;
                             loadingRepresentative = false;
                         } else {
                             mAdapter = new ZastupceAdapter(mZastupceArr, 1);
-                            parameters = 1;
                             loadingRepresentative = true;
                         }
                         mRecyclerView.setLayoutManager(mLManager);
@@ -294,9 +287,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             } else {
                                 // TODO exception for first thing
 
-                            /*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
+                            */
+/*Toast.makeText(getActivity(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                             deletePoznavacka(dir);
-                            return;*/
+                            return;*//*
+
                             }
                             z.setImage(null);
                         }
@@ -340,7 +335,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         Toast.makeText(getActivity(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
 
                         // Deletes everything base in folder
-                /*File[] files = c.getFilesDir().listFiles();
+                */
+/*File[] files = c.getFilesDir().listFiles();
                 for (int i = 0; i < files.length; i++)
                 {
                     if(files[i].isDirectory()){
@@ -352,9 +348,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     }
                     //files[i].delete();
                 }
-                Log.d("Files", "Deleted "+ files.length + " files");*/
+                Log.d("Files", "Deleted "+ files.length + " files");*//*
 
-                /*for (int i = 0; i < representatives.size(); i++) {
+
+ */
+/*for (int i = 0; i < representatives.size(); i++) {
 
                     // Uploading poznavacka
                     Map<String, Object> representativeInfo = new HashMap<>();
@@ -367,7 +365,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
 
-                }*/
+                }*//*
+
                     } else {
                         Toast.makeText(getContext(), "Create list first", Toast.LENGTH_SHORT).show();
                     }
@@ -473,7 +472,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
             if (!fragment.loadingRepresentative) {
                 fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-                Log.d(TAG, "Classification added");
+                Timber.d("Classification added");
                 fragment.loadingRepresentative = true;
                 publishProgress("");
             }
@@ -488,8 +487,9 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 boolean searchSuccessful = false;
                 while (!searchSuccessful) {
                     searchSuccessful = true;
-                    Log.d(TAG, "------------------------------");
-                    Log.d(TAG, "current representative = " + representative);
+                    Timber.d("------------------------------");
+                    Timber.d("current representative = " + representative);
+                    Timber.d("");
 
                     //Google search
                     String result = "";
@@ -499,7 +499,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         url = new URL(urlString);
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
-                        Log.d(TAG, "no wiki");
+                        Timber.d("no wiki");
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
@@ -509,24 +509,26 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         conn = (HttpURLConnection) url.openConnection();
                     } catch (IOException e) {
                         e.printStackTrace();
-                        Log.d(TAG, "no wiki");
+                        Timber.d("no wiki");
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
                     }
+                    Integer responseCode = null;
+                    String responseMessage = "";
                     try {
                         responseCode = conn.getResponseCode();
                         responseMessage = conn.getResponseMessage();
                     } catch (IOException e) {
                         Log.e(TAG, "Http getting response code ERROR " + e.toString());
-                        Log.d(TAG, "no wiki");
+                        Timber.d("no wiki");
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
 
                     }
 
-                    Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+                    Timber.d("Http response code =" + responseCode + " message=" + responseMessage);
 
                     try {
                         if (responseCode != null && responseCode == 200) {
@@ -539,13 +541,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             rd.close();
                             conn.disconnect();
                             result = sb.toString();
-                            Log.d(TAG, "result=" + result);
+                            Timber.d("result=" + result);
                         } else {
                             //response problem
 
                             String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
                             Log.e(TAG, errorMsg);
-                            Log.d(TAG, "no wiki");
+                            Timber.d("no wiki");
                             fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                             publishProgress(representative);
                             continue;
@@ -554,7 +556,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                     } catch (IOException e) {
                         Log.e(TAG, "Http Response ERROR " + e.toString());
-                        Log.d(TAG, "no wiki");
+                        Timber.d("no wiki");
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
@@ -567,16 +569,21 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     try {
                         googleItemObject = googleSearchObject.getItems().get(0);
                     } catch (Exception e) {
-                        //redirect, auto-correct
+                        //no results
                         e.printStackTrace();
                         searchSuccessful = false;
                         GoogleSearchObjectAutoCorrect googleSearchObjectAutoCorrect = gson.fromJson(result, GoogleSearchObjectAutoCorrect.class);
-                        Log.d(TAG, googleSearchObjectAutoCorrect.toString());
-                        Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
-                        googleSearchRepresentative = spelling.getCorrectedQuery();
+                        Timber.d(googleSearchObjectAutoCorrect.toString());
+                        //if corrects spelling
+                        if (googleSearchObjectAutoCorrect.getSpelling() != null) {
+                            Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
+                            googleSearchRepresentative = spelling.getCorrectedQuery();
+                        } else {
+                            continue allRepresentatives;
+                        }
                     }
                     String wikipeidaURL = googleItemObject.getFormattedUrl();
-                    Log.d(TAG, "google test is = " + wikipeidaURL);
+                    Timber.d("google test is = " + wikipeidaURL);
                     try {
                         imageURL = googleItemObject.getPagemap().getCse_image().get(0).getSrc();
                     } catch (Exception e) {
@@ -601,7 +608,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         } catch (IOException ex) {
                             ex.printStackTrace();
                         }
-                        Log.d(TAG, "Http response code =" + responseCode + " message=" + responseMessage);
+                        Timber.d("Http response code =" + responseCode + " message=" + responseMessage);
                         try {
                             if (responseCode != null && responseCode == 200) {
                                 BufferedReader rd = new BufferedReader(new InputStreamReader(imgconn.getInputStream()));
@@ -613,12 +620,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 rd.close();
                                 imgconn.disconnect();
                                 imgResult = sb.toString();
-                                Log.d(TAG, "result=" + imgResult);
+                                Timber.d("result=" + imgResult);
                             } else {
                                 //response problem
                                 String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
                                 Log.e(TAG, errorMsg);
-                                Log.d(TAG, "no wiki");
+                                Timber.d("no wiki");
                                 continue;
                             }
                         } catch (Exception ee) {
@@ -641,12 +648,14 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 
                 Document doc = null;
                 try {
-                    Log.d(TAG, "connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText /*URLEncoder.encode(searchText, "UTF-8")*/ + "?redirect=true");
+                    Timber.d("connecting after google to = " + "https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + searchText */
+/*URLEncoder.encode(searchText, "UTF-8")*//*
+ + "?redirect=true");
                     doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(searchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
                 } catch (IOException e) {
                     //not connected to internet
                     e.printStackTrace();
-                    Log.d(TAG, "no wiki");
+                    Timber.d("no wiki");
                     fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
                     publishProgress(representative);
                     continue;
@@ -668,12 +677,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 rawTables) {
                             if (languageURL.equals("en") || languageURL.equals("cs")) {
                                 if (table.id().contains("info")) {
-                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    Timber.d("does contain id info = " + table.id());
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
                                 } else if (table.attr("class").contains("info")) {
-                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    Timber.d("does contain class info = " + table.attr("class"));
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
@@ -682,12 +691,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             } else if (languageURL.equals("de")) {
 
                                 if (table.id().contains("taxo") || table.id().contains("Taxo")) {
-                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    Timber.d("does contain id info = " + table.id());
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
                                 } else if (table.attr("class").contains("taxo")) {
-                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    Timber.d("does contain class info = " + table.attr("class"));
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
@@ -721,8 +730,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         ArrayList harvestedInfoBox = harvestInfo(infoBox);
                         newData = (ArrayList<String>) harvestedInfoBox.get(0);
                         classificationPointer = (int) harvestedInfoBox.get(1);
-                            /*img = (Drawable) harvestedInfoBox.get(2);
-                            imageURL = (String) harvestedInfoBox.get(3);*/
+                            */
+/*img = (Drawable) harvestedInfoBox.get(2);
+                            imageURL = (String) harvestedInfoBox.get(3);*//*
+
                     }
 
                     String displayNameOfRepresentative = doc.title();
@@ -752,12 +763,12 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     } else {
                         fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
                     }
-                    Log.d(TAG, "newData size for representative " + representative + "= " + newData.size() + "\n\n");
+                    Timber.d("newData size for representative " + representative + "= " + newData.size() + "\n\n");
 
                 } else {
                     //add an empty only with representative
                     fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
-                    Log.d(TAG, "Wiki for " + representative + " doesn't exist or you might have misspelled");
+                    Timber.d("Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
                 publishProgress("");
             }
@@ -770,7 +781,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             Element infoBox = null;
             CreateListFragment fragment = fragmentWeakReference.get();
 
-            Log.d(TAG, "ROZCESTNÍK");
+            Timber.d("ROZCESTNÍK");
             Elements linkElements = doc.getElementsByAttributeValue("rel", "mw:WikiLink");
             boolean newSiteFound = false;
             for (Element linkElement :
@@ -781,7 +792,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     String newWikipediaURLsuffix = linkElement.attr("href");
                     String newSearchText = newWikipediaURLsuffix.substring(2);
                     try {
-                        Log.d(TAG, "redirected and connecting to new wikipedia for " + newSearchText);
+                        Timber.d("redirected and connecting to new wikipedia for " + newSearchText);
                         doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(newSearchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
 
                         try {
@@ -791,11 +802,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 //cz and en infoTable
                                 if (languageURL.equals("en") || languageURL.equals("cs")) {
                                     if (table.id().contains("info")) {
-                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        Timber.d("does contain id info = " + table.id());
                                         infoBox = table.selectFirst("tbody");
                                         break;
                                     } else if (table.attr("class").contains("info")) {
-                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        Timber.d("does contain class info = " + table.attr("class"));
                                         infoBox = table.selectFirst("tbody");
                                         break;
                                     }
@@ -803,11 +814,11 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                                 } else if (languageURL.equals("de")) {
 
                                     if (table.id().contains("taxo") || table.id().contains("Taxo")) {
-                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        Timber.d("does contain id info = " + table.id());
                                         infoBox = table.selectFirst("tbody");
                                         break;
                                     } else if (table.attr("class").contains("taxo")) {
-                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        Timber.d("does contain class info = " + table.attr("class"));
                                         infoBox = table.selectFirst("tbody");
                                         break;
                                     }
@@ -818,13 +829,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                         } catch (NullPointerException e) {
                             //rozcestník
                             e.printStackTrace();
-                            Log.d(TAG, "no wiki (redirect)");
+                            Timber.d("no wiki (redirect)");
                         }
 
                     } catch (IOException er) {
                         //this probably won't happen
                         er.printStackTrace();
-                        Log.d(TAG, "no wiki (redirect)");
+                        Timber.d("no wiki (redirect)");
                         newSiteFound = false;
                     }
                     break;
@@ -841,8 +852,10 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             ArrayList returnList = new ArrayList();
 
             ArrayList<String> newData = new ArrayList<>();
-           /* Drawable img = null;
-            String imageURL = "";*/
+           */
+/* Drawable img = null;
+            String imageURL = "";*//*
+
             int classificationPointer = 0;
 
             String[] dataPair = new String[2];
@@ -867,13 +880,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     trs) {
 
                 trCounter++;
-                Log.d(TAG, "current tr = " + trCounter);
+                Timber.d("current tr = %s", trCounter);
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                     currentTrsWihtoutColspan++;
                     String[] rawData = tr.wholeText().split("\n");
 
                     if (rawData.length == 1) { //detected wrong table
-                        Log.d(TAG, "different table");
+                        Timber.d("different table");
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
@@ -907,18 +920,20 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                     }
                     dataPair[1] = values.toString();
 
+*/
 /*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
                         Timber.d("first line is empty");
                         dataPair = dataPair.clone()[1].split("\n");
-                }*/
+                }*//*
+
                     for (int i = 0; i < 2; i++) {
                         dataPair[i] = dataPair[i].trim();
-                        Log.d(TAG, "found " + dataPair[i]);
+                        Timber.d("found " + dataPair[i]);
                     }
 
-                    Log.d(TAG, "classPointer = " + classificationPointer);
-                    Log.d(TAG, userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
-                    Log.d(TAG, "userSciClass[0] = " + userScientificClassification.get(0));
+                    Timber.d("classPointer = " + classificationPointer);
+                    Timber.d(userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
+                    Timber.d("userSciClass[0] = " + userScientificClassification.get(0));
 
                     if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
                         //trim latin etc.
@@ -926,16 +941,16 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim(); //trims after latin
                         }
                         newData.add(dataPair[1]); //adding the specific classification
-                        Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                        Timber.d("adding new data to newData = " + dataPair[1]);
                         classificationPointer++;
 
                     } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
-                        Log.d(TAG, "userScientificClassification contains " + dataPair[0]);
+                        Timber.d("userScientificClassification contains " + dataPair[0]);
                         int tempPointer = classificationPointer;
                         classificationPointer = userScientificClassification.indexOf(dataPair[0]);
                         for (; tempPointer < classificationPointer; tempPointer++) {
                             newData.add("");
-                            Log.d(TAG, "adding new data to newData = empty (not detected)");
+                            Timber.d("adding new data to newData = empty (not detected)");
                         }
 
 
@@ -944,34 +959,41 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                             dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
                         }
                         newData.add(dataPair[1]);
-                        Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                        Timber.d("adding new data to newData = " + dataPair[1]);
                     }
                     Timber.d("currentTrsWithoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWithoutColspan);
                 } else if (currentTrsWihtoutColspan == trsWithoutColspan) { //current tr is the last one with information
-                    Log.d(TAG, "Current tr is the last one with information.");
+                    Timber.d("Current tr is the last one with information.");
                     //if (newData.size() <= (userParametersCount - 2)) {
                     for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
-                        Log.d(TAG, "one of last parameters not detected");
+                        Timber.d("one of last parameters not detected");
                         newData.add("");
                         //}
-                        /*Log.d(TAG, "last parameter not detected");
-                        newData.add("");*/
+                        */
+/*Timber.d("last parameter not detected");
+                        newData.add("");*//*
+
                         break;
                     }
                 }
 
 
-                /*//get the image
+                */
+/*//*
+/get the image
                 else if (img == null) {
                     ArrayList imgAndUrl = getImageFromTr(tr);
                     img = (Drawable) imgAndUrl.get(0);
                     imageURL = (String) imgAndUrl.get(1);
-                }*/
+                }*//*
+
             }
             returnList.add(newData);
             returnList.add(classificationPointer);
-            /*returnList.add(img);
-            returnList.add(imageURL);*/
+            */
+/*returnList.add(img);
+            returnList.add(imageURL);*//*
+
             return returnList;
         }
 
@@ -983,7 +1005,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 Element imgElement = doc.getElementsByAttributeValueContaining("typeof", "Image/Thumb").first().getElementsByAttributeValue("data-file-type", "bitmap").first();
                 if (imgElement != null) {
                     imageURL = imgElement.absUrl("src");
-                    Log.d(TAG, "getting only image - URL = " + imageURL);
+                    Timber.d("getting only image - URL = " + imageURL);
                     try {
                         img = drawable_from_url(imageURL);
                     } catch (IOException e) {
@@ -1014,13 +1036,13 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
                 Elements imgElement = tr.getElementsByAttribute("data-file-type");
                 if (imgElement.attr("data-file-type").equals("bitmap")) {
                     imageURL = tr.selectFirst("img").absUrl("src");
-                    Log.d(TAG, "IMAGEURL  ===   " + imageURL);
+                    Timber.d("IMAGEURL  ===   " + imageURL);
                     try {
                         img = drawable_from_url(imageURL);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
-                    Log.d(TAG, "image downloaded");
+                    Timber.d("image downloaded");
                     //imageDetected = true;
                 }
             }
@@ -1092,6 +1114,7 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             return new BitmapDrawable(Objects.requireNonNull(fragment.getContext()).getResources(), bitmap);
         }
 
+*/
 /*        public boolean isInternetAvailable() {
             try {
                 InetAddress ipAddr = InetAddress.getByName("google.com");
@@ -1101,7 +1124,8 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
             } catch (Exception e) {
                 return false;
             }
-        }*/
+        }*//*
+
     }
 
     public ArrayList<String> capitalize(ArrayList<String> representatives, String languageURL) {
@@ -1172,3 +1196,4 @@ public class CreateListFragment extends Fragment implements AdapterView.OnItemSe
 }
 
 
+*/
