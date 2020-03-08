@@ -67,7 +67,7 @@ public class SharedListsFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
-    public static FirebaseUser user;
+    private FirebaseUser user;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
     private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
@@ -251,7 +251,7 @@ public class SharedListsFragment extends Fragment {
                             try {
                                 for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName")));
+                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName"),document.getString("authorsID")));
                                 }
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
@@ -322,7 +322,7 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentReference documentReference) {
                 String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName()));
+                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName(),data.getAuthorsID()));
                 mSharedListAdapter.notifyDataSetChanged();
                 //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
             }

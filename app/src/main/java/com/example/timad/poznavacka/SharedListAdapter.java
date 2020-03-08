@@ -7,6 +7,7 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -14,6 +15,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.squareup.picasso.Picasso;
 
 public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> implements Filterable {
@@ -92,10 +95,11 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         PreviewPoznavacka item = arr.get(position);
         //Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Asian_Elephant_Prague_Zoo.jpg/258px-Asian_Elephant_Prague_Zoo.jpg").fit().into(holder.mImageView);
         Picasso.get().load(item.getImageRecource()).fit().error(R.drawable.ic_image).into(holder.mImageView);
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         holder.mTextView1.setText(item.getName());
         holder.mTextView2.setText(item.getAuthorsName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
-        if(item.getId()==SharedListsFragment.user.getUid()) {
+        if(item.getAuthorsUuid().equals(user.getUid())) {
             holder.mImageView3.setImageResource(R.drawable.ic_delete);
         }else{
             holder.mImageView3.setEnabled(false);
