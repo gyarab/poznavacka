@@ -67,7 +67,7 @@ public class SharedListsFragment extends Fragment {
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
-    private FirebaseUser user;
+    public static FirebaseUser user;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
     private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
@@ -86,7 +86,6 @@ public class SharedListsFragment extends Fragment {
         }
         return view;
     }
-
 
     private void buildSharedListFragment(View view){
         db = FirebaseFirestore.getInstance();
@@ -294,7 +293,6 @@ public class SharedListsFragment extends Fragment {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item.getAuthorsID().equals(user.getUid())) {
 
                     db.collection(collectionName).document(documentName)
                             .delete()
@@ -311,10 +309,6 @@ public class SharedListsFragment extends Fragment {
 
                                 }
                             });
-
-                } else {
-                    Toast.makeText(getActivity(), "ur user name doesnt match creator " + item.getAuthorsName() + ", " + usersName, Toast.LENGTH_LONG).show();
-                }
             }
         });
 

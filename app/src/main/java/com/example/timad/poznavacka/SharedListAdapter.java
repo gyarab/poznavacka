@@ -95,7 +95,11 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         holder.mTextView1.setText(item.getName());
         holder.mTextView2.setText(item.getAuthorsName());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
-        holder.mImageView3.setImageResource(R.drawable.ic_delete);
+        if(item.getId()==SharedListsFragment.user.getUid()) {
+            holder.mImageView3.setImageResource(R.drawable.ic_delete);
+        }else{
+            holder.mImageView3.setEnabled(false);
+        }
     }
 
     @Override
