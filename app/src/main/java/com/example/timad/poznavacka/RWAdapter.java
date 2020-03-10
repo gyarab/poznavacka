@@ -128,7 +128,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
          if(!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
              holder.shareImg.setEnabled(false);
          }else{
-             holder.shareImg.setImageResource(R.drawable.ic_file_upload_black_24dp);
+             holder.shareImg.setImageResource(R.drawable.ic_file_upload_white_24dp);
          }
 
 

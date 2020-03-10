@@ -845,7 +845,7 @@ public class GeneratedListFragment extends Fragment {
                         //}
                         /*Timber.d("last parameter not detected");
                         newData.add("");*/
-                        break;
+                        //break;
                     }
                 }
 

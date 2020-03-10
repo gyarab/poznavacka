@@ -3,19 +3,23 @@ package com.example.timad.poznavacka.activities.lists.createList;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.LockableViewPager;
+import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Objects;
 import java.util.UUID;
 
 import androidx.activity.OnBackPressedCallback;
@@ -33,6 +37,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     private String title;
     public static ArrayList<String> representatives;
     public static String languageURL;
+    private boolean autoImportIsChecked;
     private ArrayList<Zastupce> mZastupceArr;
 
     @Override
@@ -104,6 +109,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     @Override
     public void updateCreateOptions(boolean autoImportIsChecked, int userParametersCount, ArrayList<String> userScientificClassification, ArrayList<String> reversedUserScientificClassification) {
+        this.autoImportIsChecked = autoImportIsChecked;
         GeneratedListFragment generatedListFragment = GeneratedListFragment.newInstance(representatives, autoImportIsChecked, userParametersCount, userScientificClassification, reversedUserScientificClassification, languageURL);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.replace(R.id.fragment_set_create_options, generatedListFragment);
@@ -121,6 +127,9 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
         //changing getContext() to getApllicationContext()
         //changing getApplication() to getApplication()
+        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
 
         // Store images
         Gson gson = new Gson();
@@ -166,7 +175,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         } else {
             Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
             startActivity(intent0);
-            Objects.requireNonNull(getApplication()).finish();
+            finish();
         }
 
         // Add to database
@@ -191,6 +200,10 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
         Log.d("Files", "Saved successfully");
         Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
+        Intent intent0 = new Intent(getApplicationContext(), ListsActivity.class);
+        startActivity(intent0);
+        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+        finish();
 
         // Deletes everything base in folder
                 /*File[] files = c.getFilesDir().listFiles();
@@ -219,5 +232,5 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
                     firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
                 }*/
     }
-    }
 }
+
