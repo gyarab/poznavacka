@@ -348,8 +348,8 @@ public class GeneratedListFragment extends Fragment {
             final GeneratedListFragment fragment = fragmentWeakReference.get();
 
             if (!fragment.loadingRepresentative) {
-                /*fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-                Timber.d("Classification 1 added");*/
+                fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
+                Timber.d("Classification 1 added");
                 fragment.loadingRepresentative = true;
                 publishProgress("");
                 //HERE LEFT OFF classification not loading
@@ -361,10 +361,6 @@ public class GeneratedListFragment extends Fragment {
             allRepresentatives:
             for (String representative :
                     representatives) {
-
-                fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-                Timber.d("Classification 3 added");
-
                 String searchText = representative.trim().replace(" ", "_");
                 Drawable img = null;
                 String imageURL = "";
