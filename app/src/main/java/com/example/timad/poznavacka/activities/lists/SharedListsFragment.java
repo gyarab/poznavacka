@@ -155,7 +155,7 @@ public class SharedListsFragment extends Fragment {
                 if (MyListsFragment.sPoznavackaInfoArr == null) {
                     MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl()));
+                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
                 MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
 
                 Log.d("Files", "Saved successfully");
@@ -214,15 +214,14 @@ public class SharedListsFragment extends Fragment {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
                             String id = arrayList.get(position).getId();
-                            String usersName;
+                            String userName;
                             try {
-                                usersName = user.getDisplayName();
+                                userName = user.getDisplayName();
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), "ur not logged in" + e.toString(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
-
-                            removePoznavacka(id, collectionName, usersName, position);
+                            removePoznavacka(id, collectionName, userName, position);
                             dialog.dismiss();
                         }
                     }).setNegativeButton("no", new DialogInterface.OnClickListener() {

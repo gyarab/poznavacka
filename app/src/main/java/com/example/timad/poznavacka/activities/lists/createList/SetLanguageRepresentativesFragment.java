@@ -157,7 +157,7 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
                 languageURL = "Select Language";
                 languageSelected = false;
                 break;
-            case "English (Latin)":
+            case "English":
                 languageURL = "en";
                 break;
             case "Czech":

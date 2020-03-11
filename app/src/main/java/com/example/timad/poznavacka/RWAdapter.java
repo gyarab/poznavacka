@@ -1,6 +1,5 @@
 package com.example.timad.poznavacka;
 
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 /** Pracuje s recyclerWiev **/
@@ -37,6 +37,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     public static class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder{
         public TextView textView1;
         public TextView textView2;
+        public TextView languageURL;
         public ImageView practiceImg;
         public ImageView shareImg;
         public ImageView deleteImg;
@@ -47,6 +48,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
             super(itemView);
             textView1 = itemView.findViewById(R.id.itemText1);
             textView2 = itemView.findViewById(R.id.itemText2);
+            languageURL = itemView.findViewById(R.id.languageURL);
             practiceImg = itemView.findViewById(R.id.img_practice);
             shareImg = itemView.findViewById(R.id.img_share);
             deleteImg = itemView.findViewById(R.id.img_delete);
@@ -119,23 +121,32 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
     @Override
     public void onBindViewHolder(@NonNull PoznavackaInfoViewHolder holder, int position) {
         PoznavackaInfo currentPoznavackaInfo = mPoznavackaInfoList.get(position);
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(holder.textView1, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(holder.textView2, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         holder.textView1.setText(currentPoznavackaInfo.getName());
         holder.textView2.setText(currentPoznavackaInfo.getAuthor());
+        holder.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
 
         Drawable d = MyListsFragment.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-         if(!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+        if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
              holder.shareImg.setEnabled(false);
-         }else{
-             holder.shareImg.setImageResource(R.drawable.ic_file_upload_white_24dp);
+        } else {
+            if (currentPoznavackaInfo.isUploaded()) {
+                holder.shareImg.setImageResource(R.drawable.ic_file_upload_green_24dp);
+            } else {
+                holder.shareImg.setImageResource(R.drawable.ic_file_upload_white_24dp);
+            }
          }
 
 
         if(MyListsFragment.sPositionOfActivePoznavackaInfo == position){
-            holder.cView.setCardBackgroundColor(Color.parseColor("#7CFC00"));
+            //selected
+            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorAccent));
         }else{
-            holder.cView.setCardBackgroundColor(Color.parseColor("#FFFFFF"));
+            //not selected
+            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorPrimaryDark));
         }
     }
 

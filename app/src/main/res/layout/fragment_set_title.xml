@@ -39,12 +39,13 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="50dp"
                 android:textAlignment="center"
-                android:textSize="40sp"
+                android:textSize="30sp"
                 android:layout_centerInParent="true"
                 android:shadowColor="@color/colorAccent"
                 android:textColor="@color/text_color"
                 android:inputType="text"
-                android:maxLines="1" />
+                android:maxLines="1"
+                android:maxLength="24" />
 
         </RelativeLayout>
 

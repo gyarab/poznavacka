@@ -2,7 +2,7 @@
 <resources>
     <string-array name="language_array">
         <item>Select Language</item>
-        <item>English (Latin)</item>
+        <item>English</item>
         <item>Czech</item>
         <!--
         <item>French</item>

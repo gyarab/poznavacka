@@ -8,20 +8,24 @@ public class PoznavackaInfo {
     private String authorsID;
     private String prewievImageLocation;
     private String prewievImageUrl;
+    private String languageURL;
+    private boolean uploaded;
 
-    public PoznavackaInfo(String name, String id, String author){
+/*    public PoznavackaInfo(String name, String id, String author){
         this.name = name;
         this.id = id;
         this.author = author;
-    }
+    }*/
 
-    public PoznavackaInfo(String name, String id, String author, String authorsID, String prewievImageLocation, String prewievImageUrl){
+    public PoznavackaInfo(String name, String id, String author, String authorsID, String prewievImageLocation, String prewievImageUrl, String languageURL, boolean uploaded) {
         this.name = name;
         this.id = id;
         this.author = author;
         this.authorsID = authorsID;
         this.prewievImageLocation = prewievImageLocation;
         this.prewievImageUrl = prewievImageUrl;
+        this.languageURL = languageURL;
+        this.uploaded = uploaded;
     }
 
     public String getName(){
@@ -50,5 +54,17 @@ public class PoznavackaInfo {
 
     public String getPrewievImageUrl(){
         return prewievImageUrl;
+    }
+
+    public String getLanguageURL() {
+        return languageURL;
+    }
+
+    public boolean isUploaded() {
+        return uploaded;
+    }
+
+    public void setUploaded(boolean uploaded) {
+        this.uploaded = uploaded;
     }
 }

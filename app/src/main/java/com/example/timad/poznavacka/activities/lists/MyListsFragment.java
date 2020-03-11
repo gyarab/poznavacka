@@ -52,9 +52,12 @@ public class MyListsFragment extends Fragment {
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         View view = inflater.inflate(R.layout.fragment_mylists, container, false);
 
+        //initialization
         if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
             String s = getSMC(getContext()).readFile("poznavacka.txt", true);
+
+            //LEFT OFF, vytvorit poznavacky adresar pro uzivatele
 
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -114,40 +117,48 @@ public class MyListsFragment extends Fragment {
 
             @Override
             public void onShareClick(final int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                builder.setTitle(R.string.app_name);
-                builder.setIcon(R.drawable.ic_share_black_24dp);
-                builder.setMessage("Do you want to share " + sPoznavackaInfoArr.get(position).getName() + "?");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        // Sharing of poznavacka
-                        if (SharedListsFragment.checkInternet(getContext())) {
-                            String s = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
-                            SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), s, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(),sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation()));
-                            Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
-                            toast.show();
-                        } else {
-                            Toast.makeText(getContext(), "ur not connected, connect plis!", Toast.LENGTH_SHORT).show();
+
+                boolean poznavackaIsUploaded = sPoznavackaInfoArr.get(position).isUploaded();
+
+                if (!poznavackaIsUploaded) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_share_black_24dp);
+                    builder.setMessage("Do you want to share " + sPoznavackaInfoArr.get(position).getName() + "?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Sharing of poznavacka
+                            if (SharedListsFragment.checkInternet(getContext())) {
+                                String content = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                                SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL()));
+                                Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
+                                toast.show();
+                                sPoznavackaInfoArr.get(position).setUploaded(true);
+                            } else {
+                                Toast.makeText(getContext(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            dialog.dismiss();
                         }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
 
-                        dialog.dismiss();
-                    }
-                });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
+                    Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
+                    Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
 
-                Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
-                Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-                LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
-                layoutParams.weight = 20;
-                btnPositive.setLayoutParams(layoutParams);
-                btnNegative.setLayoutParams(layoutParams);
+                    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
+                    layoutParams.weight = 20;
+                    btnPositive.setLayoutParams(layoutParams);
+                    btnNegative.setLayoutParams(layoutParams);
+                } else {
+                    Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

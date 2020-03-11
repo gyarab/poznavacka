@@ -1,15 +1,16 @@
 package com.example.timad.poznavacka.activities.lists;
 
 public class PoznavackaDbObject {
-    String name;
-    String id;
-    String content;
-    String authorsName;
-    String authorsID;
-    String headImageUrl;
-    String headImagePath;
+    private String name;
+    private String id;
+    private String content;
+    private String authorsName;
+    private String authorsID;
+    private String headImageUrl;
+    private String headImagePath;
+    private String languageURL;
 
-    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID,String headImageUrl, String headImagePath) {
+    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL) {
         this.name = name;
         this.id = id;
         this.content = content;
@@ -17,10 +18,13 @@ public class PoznavackaDbObject {
         this.authorsID = authorsID;
         this.headImageUrl = headImageUrl;
         this.headImagePath = headImagePath;
+        this.languageURL = languageURL;
     }
 
     public PoznavackaDbObject() {
+
     }
+
 
     public String getName() {
         return name;
@@ -76,5 +80,9 @@ public class PoznavackaDbObject {
 
     public void setHeadImagePath(String headImagePath) {
         this.headImagePath = headImagePath;
+    }
+
+    public String getLanguageURL() {
+        return languageURL;
     }
 }

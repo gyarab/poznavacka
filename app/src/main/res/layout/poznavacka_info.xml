@@ -8,8 +8,7 @@
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
     android:layout_marginTop="7dp"
-    android:layout_marginBottom="7dp"
-    android:backgroundTint="@color/colorPrimaryDark">
+    android:layout_marginBottom="7dp">
     <!--android:background="@drawable/poznavacko_info_cardview_background"-->
 
 
@@ -21,28 +20,39 @@
 
         <TextView
             android:id="@+id/itemText1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
             android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/img_prewiew"
             android:text="Title"
             android:textColor="@color/text_color"
-            android:textSize="30sp"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/itemText2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="28dp"
             android:layout_below="@id/itemText1"
-            android:layout_toEndOf="@+id/img_prewiew"
             android:layout_alignStart="@id/itemText1"
+            android:layout_alignEnd="@+id/itemText1"
+            android:layout_toEndOf="@+id/img_prewiew"
             android:text="User Name"
             android:textColor="@color/text_color"
-            android:textSize="20sp"
-            android:textStyle="bold" />
+            android:textStyle="normal" />
+
+        <TextView
+            android:id="@+id/languageURL"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/itemText1"
+            android:layout_marginStart="3dp"
+            android:layout_toEndOf="@+id/itemText1"
+            android:text="lang"
+            android:textColor="@color/text_color"
+            android:textSize="12sp"
+            android:textStyle="italic" />
 
         <ImageView
             android:id="@+id/img_practice"
@@ -79,6 +89,7 @@
             android:layout_marginStart="25dp"
             app:srcCompat="@drawable/ic_image"
             android:layout_centerVertical="true" />
+
 
     </RelativeLayout>
 
