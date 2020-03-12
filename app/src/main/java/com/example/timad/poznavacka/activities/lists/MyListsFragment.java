@@ -15,9 +15,12 @@ import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
+import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -56,8 +59,6 @@ public class MyListsFragment extends Fragment {
         if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
             String s = getSMC(getContext()).readFile("poznavacka.txt", true);
-
-            //LEFT OFF, vytvorit poznavacky adresar pro uzivatele
 
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -129,11 +130,24 @@ public class MyListsFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
                             if (SharedListsFragment.checkInternet(getContext())) {
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                                //remote upload
                                 String content = MyListsFragment.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
-                                SharedListsFragment.addToFireStore("Poznavacka", new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL()));
+                                if (!(user.getUid() == null)) {
+                                    SharedListsFragment.addToFireStore(user.getUid(), new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL()));
+                                } else {
+                                    Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
+                                    startActivity(intent0);
+                                    getActivity().finish();
+                                }
+
+                                //local change
+                                sPoznavackaInfoArr.get(position).setUploaded(true);
+                                getSMC(getContext()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+
                                 Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
                                 toast.show();
-                                sPoznavackaInfoArr.get(position).setUploaded(true);
                             } else {
                                 Toast.makeText(getContext(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
                             }

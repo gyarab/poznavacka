@@ -10,8 +10,8 @@ public class PreviewPoznavacka {
     public PreviewPoznavacka() {
     }
 
-    public PreviewPoznavacka(String imageRecource, String name, String id, String authorsName, String authorsUuid) {
-        this.imageRecource = imageRecource;
+    public PreviewPoznavacka(String imageResource, String name, String id, String authorsName, String authorsUuid) {
+        this.imageRecource = imageResource;
         this.name = name;
         this.id = id;
         this.authorsName = authorsName;

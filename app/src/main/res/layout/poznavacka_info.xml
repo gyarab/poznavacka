@@ -20,9 +20,10 @@
 
         <TextView
             android:id="@+id/itemText1"
-            android:layout_width="150dp"
-            android:layout_height="40dp"
+            android:layout_width="140dp"
+            android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:layout_above="@+id/itemText2"
             android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/img_prewiew"
@@ -32,11 +33,10 @@
 
         <TextView
             android:id="@+id/itemText2"
-            android:layout_width="match_parent"
+            android:layout_width="150dp"
             android:layout_height="28dp"
-            android:layout_below="@id/itemText1"
+            android:layout_above="@+id/img_delete"
             android:layout_alignStart="@id/itemText1"
-            android:layout_alignEnd="@+id/itemText1"
             android:layout_toEndOf="@+id/img_prewiew"
             android:text="User Name"
             android:textColor="@color/text_color"

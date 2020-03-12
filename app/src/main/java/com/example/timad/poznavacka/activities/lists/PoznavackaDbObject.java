@@ -85,4 +85,8 @@ public class PoznavackaDbObject {
     public String getLanguageURL() {
         return languageURL;
     }
+
+    public void setLanguageURL(String languageURL) {
+        this.languageURL = languageURL;
+    }
 }

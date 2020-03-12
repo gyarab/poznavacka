@@ -517,7 +517,12 @@ public class GeneratedListFragment extends Fragment {
                         GoogleItemObject imggoogleItemObject = imggoogleSearchObject.getItems().get(0);
                         imageURL = imggoogleItemObject.getLink();
                     }
-                    searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
+                    try {
+                        searchText = wikipeidaURL.substring(wikipeidaURL.indexOf("/wiki/") + 6);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                        continue allRepresentatives;
+                    }
                 }
 
                 try {

@@ -24,17 +24,18 @@ import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -47,6 +48,9 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -55,6 +59,7 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import timber.log.Timber;
 
 
 public class SharedListsFragment extends Fragment {
@@ -78,21 +83,21 @@ public class SharedListsFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
-
-        if(checkInternet(getContext())) {
-          buildSharedListFragment(view);
-        }else {
-            Toast.makeText(getContext(),"ur not connected,restart app and connect plis!",Toast.LENGTH_SHORT).show();
+        Timber.plant(new Timber.DebugTree());
+        if (checkInternet(getContext())) {
+            buildSharedListFragment(view);
+        } else {
+            Toast.makeText(getContext(), "ur not connected,restart app and connect plis!", Toast.LENGTH_SHORT).show();
         }
         return view;
     }
 
-    private void buildSharedListFragment(View view){
+    private void buildSharedListFragment(View view) {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         //vyt vori array prida do arraye vytvori recykler view
         createArr();
-        displayFirestore("Poznavacka", view);
+        displayFirestore(view);
         searchView = view.findViewById(R.id.search_view);
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -101,12 +106,12 @@ public class SharedListsFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if(checkInternet(getContext())) {
+                if (checkInternet(getContext())) {
                     if (mSharedListAdapter != null) {
                         mSharedListAdapter.getFilter().filter(s);
                     }
-                }else{
-                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -121,12 +126,18 @@ public class SharedListsFragment extends Fragment {
         arrayList = new ArrayList<>();
     }
 
-    private void pickDocument(final String documentId, String collectionName) {
-        DocumentReference docRef = db.collection(collectionName).document(documentId);
+    private void pickDocument(final String userID, String docID) {
+        DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(docID);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                if (item == null) {
+                    Timber.d("Item documentSnapshot docID=" + documentSnapshot.getId());
+                    Timber.d("Item documentSnapshot id=" + documentSnapshot.getString("id"));
+                    Timber.d("Item documentSnapshot name=" + documentSnapshot.getString("name"));
+                    Timber.d("Item " + documentSnapshot.getString("name") + " is null");
+                }
 
                 // Store images
                 Context context = getContext();
@@ -166,7 +177,7 @@ public class SharedListsFragment extends Fragment {
     }
 
 
-    private void buildRecyclerView(View view, final String collectionName) {
+    private void buildRecyclerView(View view) {
         mRecyclerView = view.findViewById(R.id.downloadView);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getContext());
@@ -177,35 +188,51 @@ public class SharedListsFragment extends Fragment {
 
             @Override
             public void onDownloadClick(final int position) {
-                if(checkInternet(getContext())) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-                    builder.setTitle(R.string.app_name);
-                    builder.setIcon(R.drawable.ic_file_download);
-                    builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
-                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String id = arrayList.get(position).getId();
-                            pickDocument(id, collectionName);
-                            dialog.dismiss();
+                if (checkInternet(getContext())) {
+                    //checks if user doesn't already have the poznavacka downloaded
+                    String docID = arrayList.get(position).getId();
+                    String userID = arrayList.get(position).getAuthorsUuid();
+                    boolean download = true;
+                    for (PoznavackaInfo info :
+                            MyListsFragment.sPoznavackaInfoArr) {
+                        Timber.d("Download - " + info.getName() + ", id=" + info.getId() + "?equals - " + arrayList.get(position).getName() + ", id=" + docID);
+                        if (info.getId().equals(docID)) {
+                            download = false;
+                            Timber.d("Do not download");
+                            break;
                         }
-                    }).setNegativeButton("no", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog alert = builder.create();
-                    alert.show();
+                    }
+                    if (download) {
+                        pickDocument(userID, docID);
 
-                }else{
-                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle(R.string.app_name);
+                        builder.setIcon(R.drawable.ic_file_download);
+                        builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
+                        builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+                    }
+                } else {
+                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onDeleteClick(final int position) {
-                if(checkInternet(getContext())) {
+                if (checkInternet(getContext())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_delete);
@@ -213,15 +240,20 @@ public class SharedListsFragment extends Fragment {
                     builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            String id = arrayList.get(position).getId();
-                            String userName;
+                            String documentID = arrayList.get(position).getId();
+                            String userID;
                             try {
-                                userName = user.getDisplayName();
+                                userID = user.getUid();
                             } catch (Exception e) {
                                 Toast.makeText(getActivity(), "ur not logged in" + e.toString(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
-                            removePoznavacka(id, collectionName, userName, position);
+                            removePoznavacka(userID, documentID, position);
+
+                            //local change
+                            MyListsFragment.sPoznavackaInfoArr.get(position).setUploaded(false);
+                            MyListsFragment.getSMC(getContext()).updatePoznavackaFile("poznavacka.txt", MyListsFragment.sPoznavackaInfoArr);
+
                             dialog.dismiss();
                         }
                     }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -233,35 +265,88 @@ public class SharedListsFragment extends Fragment {
                     AlertDialog alert = builder.create();
                     alert.show();
 
-                }else {
-                    Toast.makeText(getContext(),"reconnect!",Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void displayFirestore(final String collectionName, final View view) {
-        db.collection(collectionName)
+    private void displayFirestore(final View view) {
+        Timber.d("DisplayFirestore");
+        db.collection("Users")
                 .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                .continueWithTask(new Continuation<QuerySnapshot, Task<List<QuerySnapshot>>>() {
+                    @Override
+                    public Task<List<QuerySnapshot>> then(@NonNull Task<QuerySnapshot> task) {
+                        List<Task<QuerySnapshot>> tasks = new ArrayList<Task<QuerySnapshot>>();
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            tasks.add(ds.getReference().collection("Poznavacky").get());
+                        }
+
+                        return Tasks.whenAllSuccess(tasks);
+                    }
+                })
+
+                .addOnCompleteListener(new OnCompleteListener<List<QuerySnapshot>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<QuerySnapshot>> task) {
+                        if (task.isSuccessful()) {
+                            List<QuerySnapshot> list = task.getResult();
+                            for (QuerySnapshot qs : list) {
+                                for (DocumentSnapshot ds : qs) {
+                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID")));
+                                }
+                            }
+                        }
+                        buildRecyclerView(view);
+                    }
+                });
+
+
+
+
+
+
+/*                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
-                            try {
-                                for (QueryDocumentSnapshot document : task.getResult()) {
 
-                                    arrayList.add(new PreviewPoznavacka(document.getString("headImageUrl"), document.getString("name"), document.getId(), document.getString("authorsName"),document.getString("authorsID")));
-                                }
-                            } catch (Exception e) {
-                                Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_SHORT).show();
+                            for (QueryDocumentSnapshot queryDocumentSnapshot :
+                                    Objects.requireNonNull(task.getResult())) {
+                                Timber.d("DisplayFirestore queryDocumentSnapshot = %s", queryDocumentSnapshot);
                             }
+
+
+                            Timber.d("DisplayFirestore successfully connected");
+                            if (task.getResult() == null) {
+                                Log.d(TAG, "DisplayFirestore null log");
+                                Timber.d("DisplayFirestore null Result");
+                            } else {
+                                Log.d(TAG, "DisplayFirestore result coming.. log");
+                                Timber.d("DisplayFirestore result coming..");
+                                //LEFT OFF, getDocuments() nevraci nic
+                                Timber.d("DisplayFirestore result = %s", task.getResult().size());
+                                for (DocumentSnapshot document : task.getResult().getDocuments()) {
+                                    Timber.d("DisplayFirestore Current doc = %s", document.getId());
+                                    QuerySnapshot querySnapshot = document.getReference().collection("Poznavacky").get().getResult();
+                                    if (querySnapshot != null) { //if user has created any poznavacka
+                                        for (QueryDocumentSnapshot doc :
+                                                querySnapshot) {
+                                            arrayList.add(new PreviewPoznavacka(doc.getString("headImageUrl"), doc.getString("name"), doc.getId(), doc.getString("authorsName"), doc.getString("authorsID")));
+                                        }
+                                    }
+                                }
+                            }
+
                         } else {
-                            Toast.makeText(getActivity(), "error", Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getActivity(), "error displaying", Toast.LENGTH_SHORT).show();
                         }
-                        buildRecyclerView(view, collectionName);
+                        buildRecyclerView(view);
 
                     }
-                });
+                });*/
     }
 
     //nedodelane
@@ -286,62 +371,64 @@ public class SharedListsFragment extends Fragment {
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
     // nedodelane
-    public void removePoznavacka(final String documentName, final String collectionName, final String usersName, final int position) {
-        DocumentReference docRef = db.collection(collectionName).document(documentName);
+    public void removePoznavacka(final String userID, final String documentName, final int position) {
+        final DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(documentName);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
                 PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
 
-                    db.collection(collectionName).document(documentName)
-                            .delete()
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                    arrayList.remove(position);
-                                    mSharedListAdapter.notifyDataSetChanged();
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
+                docRef
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                arrayList.remove(position);
+                                mSharedListAdapter.notifyDataSetChanged();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
 
-                                }
-                            });
+                            }
+                        });
             }
         });
 
 
     }
 
-     public static void addToFireStore(String CollectionName, final PoznavackaDbObject data) {
-        CollectionReference dbPoznavacka = FirebaseFirestore.getInstance().collection(CollectionName);
+    public static void addToFireStore(String userID, final PoznavackaDbObject data) {
+        CollectionReference dbPoznavacka = FirebaseFirestore.getInstance().collection("Users");
+        final DocumentReference dbUser = dbPoznavacka.document(userID);
+        CollectionReference dbPoznavacky = dbUser.collection("Poznavacky");
 
-        dbPoznavacka.add(data).addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+        dbPoznavacky.document(data.getId()).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
-            public void onSuccess(DocumentReference documentReference) {
-                String docRef = documentReference.getId();
-                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), docRef, data.getAuthorsName(),data.getAuthorsID()));
+            public void onSuccess(Void aVoid) {
+
+                //so the userDocument is not abstract and can be accessed later
+                Map<String, String> dummyDataNeededforAccess = new HashMap<>();
+                dummyDataNeededforAccess.put("dummy", "neededToFunction");
+                dbUser.set(dummyDataNeededforAccess);
+
+                //adding locally
+                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), data.getId(), data.getAuthorsName(), data.getAuthorsID()));
                 mSharedListAdapter.notifyDataSetChanged();
-                //   Toast.makeText(getActivity(),"added!",Toast.LENGTH_SHORT).show();
-            }
-        }).addOnFailureListener(new OnFailureListener() {
-            @Override
-            public void onFailure(@NonNull Exception e) {
-                //Toast.makeText(getActivity(),e.toString(),Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    public static boolean checkInternet(Context context){
+    public static boolean checkInternet(Context context) {
         boolean connected = false;
-        ConnectivityManager connectivityManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED || connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        if (connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED || connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
             connected = true;
         } else {
             connected = false;
         }
-        return  connected;
+        return connected;
     }
 
 
@@ -382,12 +469,12 @@ public class SharedListsFragment extends Fragment {
             SharedListsFragment fragment = fragmentWeakReference.get();
             String path = item.getId() + "/";
             Gson gson = new Gson();
-            Type cType = new TypeToken<ArrayList<Zastupce>>() {}.getType();
+            Type cType = new TypeToken<ArrayList<Zastupce>>() {
+            }.getType();
             zastupceArr = gson.fromJson(item.getContent(), cType);
             for (Zastupce z : zastupceArr) {
                 Drawable returnDrawable = null;
-                if (!(z.getImageURL() == null || z.getImageURL().isEmpty()))
-                {
+                if (!(z.getImageURL() == null || z.getImageURL().isEmpty())) {
                     try {
                         returnDrawable = drawable_from_url(z.getImageURL());
                     } catch (IOException e) {
