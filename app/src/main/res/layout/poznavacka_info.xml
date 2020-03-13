@@ -1,10 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/cardView1"
     android:layout_width="match_parent"
+    android:theme="@style/Theme.MaterialComponents"
     android:layout_height="wrap_content"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     app:cardCornerRadius="20dp"
+    app:strokeColor="@color/black"
+    app:strokeWidth="2dp"
     android:layout_marginStart="5dp"
     android:layout_marginEnd="5dp"
     android:layout_marginTop="7dp"
@@ -28,18 +31,18 @@
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/img_prewiew"
             android:text="Title"
-            android:textColor="@color/text_color"
+            android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold" />
 
         <TextView
             android:id="@+id/itemText2"
             android:layout_width="150dp"
-            android:layout_height="28dp"
+            android:layout_height="25dp"
             android:layout_above="@+id/img_delete"
             android:layout_alignStart="@id/itemText1"
             android:layout_toEndOf="@+id/img_prewiew"
             android:text="User Name"
-            android:textColor="@color/text_color"
+            android:textColor="@color/colorPrimaryDark"
             android:textStyle="normal" />
 
         <TextView
@@ -50,7 +53,7 @@
             android:layout_marginStart="3dp"
             android:layout_toEndOf="@+id/itemText1"
             android:text="lang"
-            android:textColor="@color/text_color"
+            android:textColor="@color/colorPrimaryDark"
             android:textSize="12sp"
             android:textStyle="italic" />
 
@@ -61,7 +64,7 @@
             android:layout_alignStart="@id/itemText1"
             android:layout_alignParentBottom="true"
             android:layout_marginBottom="10dp"
-            app:srcCompat="@drawable/ic_school_white_24dp" />
+            app:srcCompat="@drawable/ic_school_dark_purple_24dp" />
 
         <ImageView
             android:id="@+id/img_share"
@@ -80,17 +83,32 @@
             android:layout_alignTop="@+id/img_practice"
             android:layout_alignParentEnd="true"
             android:layout_alignBottom="@id/img_practice"
-            app:srcCompat="@drawable/ic_delete_white_24dp" />
+            app:srcCompat="@drawable/ic_delete_dark_purple_24dp" />
 
-        <ImageView
+        <!--        <ImageView
+                    android:id="@+id/img_prewiew"
+                    android:layout_width="140dp"
+                    android:layout_height="140dp"
+                    android:layout_marginStart="25dp"
+                    app:srcCompat="@drawable/ic_image"
+                    android:layout_centerVertical="true" />-->
+
+        <com.makeramen.roundedimageview.RoundedImageView
             android:id="@+id/img_prewiew"
             android:layout_width="140dp"
             android:layout_height="140dp"
             android:layout_marginStart="25dp"
-            app:srcCompat="@drawable/ic_image"
-            android:layout_centerVertical="true" />
+            android:src="@drawable/ic_image"
+            android:layout_centerVertical="true"
+            android:scaleType="fitCenter"
+
+            app:riv_border_color="#333333"
+            app:riv_border_width="1dip"
+            app:riv_corner_radius="5dip"
+            app:riv_mutate_background="true"
+            app:riv_tile_mode="clamp" />
 
 
     </RelativeLayout>
 
-</androidx.cardview.widget.CardView>
+</com.google.android.material.card.MaterialCardView>

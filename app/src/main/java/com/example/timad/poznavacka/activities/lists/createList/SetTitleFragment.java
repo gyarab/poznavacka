@@ -12,7 +12,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
+import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
@@ -114,7 +114,7 @@ public class SetTitleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view;
-        if (!SharedListsFragment.checkInternet(Objects.requireNonNull(getContext()))) {
+        if (!SharedListsActivity.checkInternet(Objects.requireNonNull(getContext()))) {
             view = inflater.inflate(R.layout.fragment_not_connected_to_internet, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_set_title, container, false);

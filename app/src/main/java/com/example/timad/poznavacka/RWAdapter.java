@@ -7,7 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -127,26 +127,26 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         holder.textView2.setText(currentPoznavackaInfo.getAuthor());
         holder.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
 
-        Drawable d = MyListsFragment.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
+        Drawable d = MyListsActivity.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
              holder.shareImg.setEnabled(false);
         } else {
             if (currentPoznavackaInfo.isUploaded()) {
-                holder.shareImg.setImageResource(R.drawable.ic_file_upload_green_24dp);
+                holder.shareImg.setImageResource(R.drawable.ic_file_upload_blue_24dp);
             } else {
-                holder.shareImg.setImageResource(R.drawable.ic_file_upload_white_24dp);
+                holder.shareImg.setImageResource(R.drawable.ic_file_upload_dark_purple_24dp);
             }
          }
 
 
-        if(MyListsFragment.sPositionOfActivePoznavackaInfo == position){
+        if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
             //selected
-            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorAccent));
+            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
         }else{
             //not selected
-            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorPrimaryDark));
+            holder.cView.setCardBackgroundColor(holder.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
         }
     }
 

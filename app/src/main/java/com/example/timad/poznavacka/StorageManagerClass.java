@@ -5,12 +5,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.example.timad.poznavacka.PoznavackaInfo;
-import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.gson.Gson;
 
 import java.io.BufferedReader;
@@ -91,9 +87,9 @@ public class StorageManagerClass {
             e.printStackTrace();
         }
 
-        if(MyListsFragment.mAdapter != null){
-            synchronized (MyListsFragment.mAdapter) {
-                MyListsFragment.mAdapter.notifyDataSetChanged();
+        if (MyListsActivity.mAdapter != null) {
+            synchronized (MyListsActivity.mAdapter) {
+                MyListsActivity.mAdapter.notifyDataSetChanged();
             }
         }
     }

@@ -11,7 +11,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -176,7 +176,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
             getApplicationContext().startActivity(intent0);
             finish();
         } else {
-            Intent intent0 = new Intent(AuthenticationActivity.this, ListsActivity.class);
+            Intent intent0 = new Intent(AuthenticationActivity.this, MyListsActivity.class);
             startActivity(intent0);
             finish();
         }

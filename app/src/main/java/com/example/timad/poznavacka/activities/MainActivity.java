@@ -7,11 +7,10 @@ import android.view.MenuItem;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -45,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_lists:
-                        Intent intent1 = new Intent(MainActivity.this, ListsActivity.class);
+                        Intent intent1 = new Intent(MainActivity.this, MyListsActivity.class);
                         startActivity(intent1);
                         break;
 

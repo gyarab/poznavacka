@@ -12,8 +12,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
-import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
@@ -48,7 +47,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
-                Intent intent = new Intent(getApplicationContext(), ListsActivity.class);
+                Intent intent = new Intent(getApplicationContext(), MyListsActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
@@ -150,7 +149,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         // Saves images locally
         for (Zastupce z : mZastupceArr) {
             if (z.getImage() != null) {
-                if (!MyListsFragment.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
+                if (!MyListsActivity.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
                     Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -182,25 +181,25 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
         //SharedListsFragment.addToFireStore("Poznavacka", item);
         //Log.d("Files", json);
-        if (!MyListsFragment.getSMC(context).createAndWriteToFile(path, uuid, json)) {
+        if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
             Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
             return;
         }
 
         String pathPoznavacka = "poznavacka.txt";
-        if (MyListsFragment.sPoznavackaInfoArr == null) {
-            MyListsFragment.getSMC(context).readFile(pathPoznavacka, true);
+        if (MyListsActivity.sPoznavackaInfoArr == null) {
+            MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
         }
         if (autoImportIsChecked) {
-            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL(), languageURL, false));
+            MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL(), languageURL, false));
         } else {
-            MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
+            MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
         }
-        MyListsFragment.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+        MyListsActivity.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
         Log.d("Files", "Saved successfully");
         Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
-        Intent intent0 = new Intent(getApplicationContext(), ListsActivity.class);
+        Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
         startActivity(intent0);
         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
         finish();

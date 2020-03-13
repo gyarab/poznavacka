@@ -182,19 +182,12 @@ public class GeneratedListFragment extends Fragment {
         params.height = height;
         scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
 
-        /*NestedScrollView.LayoutParams params2 = (NestedScrollView.LayoutParams) scrollV.getChildAt(0).getLayoutParams();
-        params2.width = width;
-        scrollV.getChildAt(0).setLayoutParams(new NestedScrollView.LayoutParams(params2));*/
 
         mZastupceArr = new ArrayList<>();
         mLManager = new LinearLayoutManager(getContext());
 
-        /* generation */
-        final GeneratedListFragment.WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(GeneratedListFragment.this)};
-
         //new generation?..
         listCreated = false;
-        WikiSearchRepresentatives[0].cancel(true);
 
         Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
 
@@ -209,13 +202,10 @@ public class GeneratedListFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
 
+        /* generation */
+        final GeneratedListFragment.WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(GeneratedListFragment.this)};
         WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(GeneratedListFragment.this);
         WikiSearchRepresentatives[0].execute();
-        /*try {
-            WikiSearchRepresentatives[0].execute().wait();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }*/
 
     }
 

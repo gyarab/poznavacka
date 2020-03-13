@@ -1,14 +1,10 @@
-/*
 package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -19,6 +15,7 @@ import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
+import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -28,18 +25,20 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
-import androidx.fragment.app.Fragment;
+import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 
 
-public class MyListsFragment extends Fragment {
-    private static final String TAG = "ListsFragment";
+public class MyListsActivity extends AppCompatActivity {
+
+    private static final String TAG = "myListsActivity";
+
     public static StorageManagerClass sSMC;
 
     public static PoznavackaInfo sActivePoznavacka = null;
@@ -52,16 +51,24 @@ public class MyListsFragment extends Fragment {
 
     private FabSpeedDial newListBTN;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        MultiDex.install(this);
+    }
+
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_lists);
+
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
-        View view = inflater.inflate(R.layout.fragment_mylists, container, false);
+
 
         //initialization
         if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
-            String s = getSMC(getContext()).readFile("poznavacka.txt", true);
+            String s = getSMC(getApplication()).readFile("poznavacka.txt", true);
 
             if (s != null) {
                 if (!s.isEmpty()) {
@@ -80,11 +87,8 @@ public class MyListsFragment extends Fragment {
             }
         }
 
-        */
-/* Add new button *//*
-
- */
-/*newListBTN = view.findViewById(R.id.new_list_btn);
+        /* Add new button */
+        /*newListBTN = view.findViewById(R.id.new_list_btn);
         newListBTN.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,9 +97,8 @@ public class MyListsFragment extends Fragment {
                 getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                 getActivity().finish();
             }
-        });*//*
-
-        newListBTN = view.findViewById(R.id.fabSpeedDial);
+        });*/
+        newListBTN = findViewById(R.id.fabSpeedDial);
         newListBTN.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
@@ -104,16 +107,28 @@ public class MyListsFragment extends Fragment {
 
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
-                return super.onMenuItemSelected(menuItem);
+                switch (menuItem.getItemId()) {
+                    case (R.id.action_download):
+                        Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
+                        startActivity(intent0);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        finish();
+                        break;
+                    case (R.id.action_create):
+                        Intent intent1 = new Intent(getApplication(), CreateListActivity.class);
+                        startActivity(intent1);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        finish();
+                        break;
+                }
+                return true;
             }
         });
 
-        */
-/* RecyclerView *//*
-
-        mRecyclerView = view.findViewById(R.id.recyclerViewL);
+        /* RecyclerView */
+        mRecyclerView = findViewById(R.id.recyclerViewL);
         mRecyclerView.setHasFixedSize(true);
-        mLManager = new LinearLayoutManager(getContext());
+        mLManager = new LinearLayoutManager(getApplication());
         mAdapter = new RWAdapter(sPoznavackaInfoArr);
 
         mRecyclerView.setLayoutManager(mLManager);
@@ -132,9 +147,8 @@ public class MyListsFragment extends Fragment {
                 sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
 
-                Context context = getContext();
-                Intent myIntent = new Intent(context, PracticeActivity.class);
-                context.startActivity(myIntent);
+                Intent myIntent = new Intent(getApplication(), PracticeActivity.class);
+                startActivity(myIntent);
             }
 
             @Override
@@ -143,34 +157,34 @@ public class MyListsFragment extends Fragment {
                 boolean poznavackaIsUploaded = sPoznavackaInfoArr.get(position).isUploaded();
 
                 if (!poznavackaIsUploaded) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
                     builder.setMessage("Do you want to share " + sPoznavackaInfoArr.get(position).getName() + "?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
-                            if (SharedListsFragment.checkInternet(getContext())) {
+                            if (SharedListsActivity.checkInternet(getApplication())) {
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                                 //remote upload
-                                String content = MyListsActivity.getSMC(getContext()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                                String content = getSMC(getApplication()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
                                 if (!(user.getUid() == null)) {
-                                    SharedListsFragment.addToFireStore(user.getUid(), new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL()));
+                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL()));
                                 } else {
-                                    Intent intent0 = new Intent(getActivity(), AuthenticationActivity.class);
+                                    Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
                                     startActivity(intent0);
-                                    getActivity().finish();
+                                    finish();
                                 }
 
                                 //local change
                                 sPoznavackaInfoArr.get(position).setUploaded(true);
-                                getSMC(getContext()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+                                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
-                                Toast toast = Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT);
+                                Toast toast = Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT);
                                 toast.show();
                             } else {
-                                Toast.makeText(getContext(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplication(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
                             }
 
                             dialog.dismiss();
@@ -192,19 +206,19 @@ public class MyListsFragment extends Fragment {
                     btnPositive.setLayoutParams(layoutParams);
                     btnNegative.setLayoutParams(layoutParams);
                 } else {
-                    Toast.makeText(getContext(), "Shared", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onDeleteClick(final int position) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                 builder.setTitle(R.string.app_name);
                 builder.setIcon(R.drawable.ic_delete);
                 builder.setMessage("Do you really want to delete " + sPoznavackaInfoArr.get(position).getName() + "?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        Context context = getContext();
+                        Context context = getApplication();
                         getSMC(context).deletePoznavacka(sPoznavackaInfoArr.get(position).getId() + "/");
 
                         sPoznavackaInfoArr.remove(position);
@@ -242,8 +256,6 @@ public class MyListsFragment extends Fragment {
                 btnNegative.setLayoutParams(layoutParams);
             }
         });
-
-        return view;
     }
 
     public static StorageManagerClass getSMC(Context context) {
@@ -253,5 +265,86 @@ public class MyListsFragment extends Fragment {
 
         return sSMC;
     }
+}
 
-}*/
+
+
+
+
+
+
+
+/*        //fragments navigation
+        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
+        mViewPager = (ViewPager) findViewById(R.id.container);
+        setupViewPager(mViewPager);
+
+        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.setupWithViewPager(mViewPager);
+
+
+        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_list_black_24dp);
+        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_file_download);
+//        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_add_circle_black_24dp);
+
+
+
+
+
+
+        //navigation
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(1);
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_practice:
+                        Intent intent0 = new Intent(ListsActivity.this, PracticeActivity.class);
+                        startActivity(intent0);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                        break;
+
+                    case R.id.nav_lists:
+                        *//*Intent intent1 = new Intent(ListsActivity.this, ListsActivity.class);
+                        startActivity(intent1);*//*
+                        break;
+
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(ListsActivity.this, TestActivity.class);
+                        startActivity(intent3);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                    case R.id.nav_account:
+                        Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
+                        startActivity(intent4);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                }
+
+
+                return false;
+            }
+        });*/
+
+
+
+/*    private void setupViewPager(ViewPager viewPager) {
+        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
+        adapter.addFragment(new MyListsFragment());
+        adapter.addFragment(new SharedListsFragment());
+        //adapter.addFragment(new CreateListFragment());
+        viewPager.setAdapter(adapter);
+    }
+
+    public void setViewPager(int fragmentNumber) {
+        mViewPager.setCurrentItem(fragmentNumber);
+    }*/
+
+

@@ -11,7 +11,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.activities.AccountActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import androidx.annotation.NonNull;
@@ -53,7 +53,7 @@ public class TestActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_lists:
-                        Intent intent1 = new Intent(TestActivity.this, ListsActivity.class);
+                        Intent intent1 = new Intent(TestActivity.this, MyListsActivity.class);
                         startActivity(intent1);
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;

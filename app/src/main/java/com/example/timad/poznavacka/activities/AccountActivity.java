@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -73,7 +73,7 @@ public class AccountActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_lists:
-                        Intent intent1 = new Intent(AccountActivity.this, ListsActivity.class);
+                        Intent intent1 = new Intent(AccountActivity.this, MyListsActivity.class);
                         startActivity(intent1);
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;

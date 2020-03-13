@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
-import com.example.timad.poznavacka.activities.lists.MyListsFragment;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import java.util.Collections;
 import java.util.Random;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.TextViewCompat;
 
 public class PracticeActivity2 extends AppCompatActivity {
 
@@ -28,6 +29,10 @@ public class PracticeActivity2 extends AppCompatActivity {
     FloatingActionButton fab_checked;
     FloatingActionButton fab_restart;
     View sceneView;
+
+    TextView fab_checked_text;
+    TextView fab_crossed_text;
+    boolean firstShown;
 
     // Array with zastupci
     PoznavackaInfo mLoadedPoznavacka;
@@ -98,7 +103,7 @@ public class PracticeActivity2 extends AppCompatActivity {
 
                     nenauceniZastupci.removeAll(Collections.singleton(currentZastupce));
                     PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
-                    MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
+                    MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
                 }
             }
         });
@@ -125,7 +130,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         // Save state when leaving this activity before learning all
         if(nenauceniZastupci.size() > 0){
             PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
-            MyListsFragment.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
+            MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
         }
     }
 
@@ -151,6 +156,8 @@ public class PracticeActivity2 extends AppCompatActivity {
         imageView = findViewById(R.id.imageView);
         imageView_classic = findViewById(R.id.imageView_classic);
         sceneView = findViewById(R.id.sceneView);
+        fab_checked_text = findViewById(R.id.floatingActionButton_checked_text);
+        fab_crossed_text = findViewById(R.id.floatingActionButton_crossed_text);
     }
 
     private void updateScene(int i) {
@@ -176,17 +183,25 @@ public class PracticeActivity2 extends AppCompatActivity {
         textView.setVisibility(View.VISIBLE);
         fab_checked.show();
         fab_crossed.show();
+        if (!firstShown) {
+            fab_checked_text.setVisibility(View.VISIBLE);
+            fab_crossed_text.setVisibility(View.VISIBLE);
+        }
+        firstShown = true;
     }
 
     private void hideScene() {
         textView.setVisibility(View.INVISIBLE);
         fab_checked.hide();
         fab_crossed.hide();
+        fab_checked_text.setVisibility(View.INVISIBLE);
+        fab_crossed_text.setVisibility(View.INVISIBLE);
     }
 
     private void initValues() {
         res = getResources();
 
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(textView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         mZastupceArrOrig = PracticeActivity.sZastupceArrOrig;
         puvodniPocetVsechZastupcu = mZastupceArrOrig.size();
         parameterCount = mZastupceArrOrig.get(0).getParameters();

@@ -2,6 +2,7 @@ package com.example.timad.poznavacka.activities.lists;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -13,9 +14,6 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -56,13 +54,13 @@ import java.util.Objects;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
-import androidx.fragment.app.Fragment;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
 
-public class SharedListsFragment extends Fragment {
+public class SharedListsActivity extends AppCompatActivity {
     private static final String TAG = "SharedFragment";
 
     // shared list starts here
@@ -79,26 +77,34 @@ public class SharedListsFragment extends Fragment {
     private static ArrayList<Zastupce> zastupceArr = new ArrayList<>();
     private static PoznavackaDbObject item;
 
-    @Nullable
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_sharedlists, container, false);
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sharedlists);
         Timber.plant(new Timber.DebugTree());
-        if (checkInternet(getContext())) {
-            buildSharedListFragment(view);
+
+        if (checkInternet(this)) {
+            buildSharedListFragment();
         } else {
-            Toast.makeText(getContext(), "ur not connected,restart app and connect plis!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), "ur not connected,restart app and connect plis!", Toast.LENGTH_SHORT).show();
         }
-        return view;
     }
 
-    private void buildSharedListFragment(View view) {
+    @Override
+    public void onBackPressed() {
+        Intent intent1 = new Intent(getApplication(), MyListsActivity.class);
+        startActivity(intent1);
+        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+        finish();
+    }
+
+    private void buildSharedListFragment() {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
         //vyt vori array prida do arraye vytvori recykler view
         createArr();
-        displayFirestore(view);
-        searchView = view.findViewById(R.id.search_view);
+        displayFirestore();
+        searchView = findViewById(R.id.search_view);
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -106,12 +112,12 @@ public class SharedListsFragment extends Fragment {
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                if (checkInternet(getContext())) {
+                if (checkInternet(getApplication())) {
                     if (mSharedListAdapter != null) {
                         mSharedListAdapter.getFilter().filter(s);
                     }
                 } else {
-                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -140,7 +146,7 @@ public class SharedListsFragment extends Fragment {
                 }
 
                 // Store images
-                Context context = getContext();
+                Context context = getApplication();
                 String path = item.getId() + "/";
                 File dir = new File(context.getFilesDir().getPath() + "/" + path);
 
@@ -148,39 +154,39 @@ public class SharedListsFragment extends Fragment {
                 try {
                     dir.mkdir();
                 } catch (Exception e) {
-                    Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                     return;
                 }
 
-                if (!MyListsFragment.getSMC(getContext()).createAndWriteToFile(path, item.getId(), item.getContent())) {
-                    Toast.makeText(getActivity(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
+                    Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                     return;
                 } else {
 
-                    new DrawableFromUrlAsync(SharedListsFragment.this).execute();  //viz Async metoda dole
+                    new DrawableFromUrlAsync(SharedListsActivity.this).execute();  //viz Async metoda dole
 
                 }
 
                 String pathPoznavacka = "poznavacka.txt";
-                if (MyListsFragment.sPoznavackaInfoArr == null) {
-                    MyListsFragment.getSMC(getContext()).readFile(pathPoznavacka, true);
+                if (MyListsActivity.sPoznavackaInfoArr == null) {
+                    MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
                 }
-                MyListsFragment.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
-                MyListsFragment.getSMC(getContext()).updatePoznavackaFile(pathPoznavacka, MyListsFragment.sPoznavackaInfoArr);
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
                 Log.d("Files", "Saved successfully");
-                Toast.makeText(getActivity(), "Successfully saved " + item.getName(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplication(), "Successfully saved " + item.getName(), Toast.LENGTH_SHORT).show();
             }
         });
 
     }
 
 
-    private void buildRecyclerView(View view) {
-        mRecyclerView = view.findViewById(R.id.downloadView);
+    private void buildRecyclerView() {
+        mRecyclerView = findViewById(R.id.downloadView);
         mRecyclerView.setHasFixedSize(false);
-        mLayoutManager = new LinearLayoutManager(getContext());
+        mLayoutManager = new LinearLayoutManager(getApplication());
         mSharedListAdapter = new SharedListAdapter(arrayList);
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mSharedListAdapter);
@@ -188,13 +194,13 @@ public class SharedListsFragment extends Fragment {
 
             @Override
             public void onDownloadClick(final int position) {
-                if (checkInternet(getContext())) {
+                if (checkInternet(getApplication())) {
                     //checks if user doesn't already have the poznavacka downloaded
                     String docID = arrayList.get(position).getId();
                     String userID = arrayList.get(position).getAuthorsUuid();
                     boolean download = true;
                     for (PoznavackaInfo info :
-                            MyListsFragment.sPoznavackaInfoArr) {
+                            MyListsActivity.sPoznavackaInfoArr) {
                         Timber.d("Download - " + info.getName() + ", id=" + info.getId() + "?equals - " + arrayList.get(position).getName() + ", id=" + docID);
                         if (info.getId().equals(docID)) {
                             download = false;
@@ -205,7 +211,7 @@ public class SharedListsFragment extends Fragment {
                     if (download) {
                         pickDocument(userID, docID);
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        AlertDialog.Builder builder = new AlertDialog.Builder(SharedListsActivity.this);
                         builder.setTitle(R.string.app_name);
                         builder.setIcon(R.drawable.ic_file_download);
                         builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
@@ -226,14 +232,14 @@ public class SharedListsFragment extends Fragment {
                         alert.show();
                     }
                 } else {
-                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
             public void onDeleteClick(final int position) {
-                if (checkInternet(getContext())) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                if (checkInternet(getApplication())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(SharedListsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_delete);
                     builder.setMessage("Do you really want to delete " + arrayList.get(position).getName() + "?");
@@ -245,14 +251,14 @@ public class SharedListsFragment extends Fragment {
                             try {
                                 userID = user.getUid();
                             } catch (Exception e) {
-                                Toast.makeText(getActivity(), "ur not logged in" + e.toString(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplication(), "ur not logged in" + e.toString(), Toast.LENGTH_SHORT).show();
                                 return;
                             }
                             removePoznavacka(userID, documentID, position);
 
                             //local change
-                            MyListsFragment.sPoznavackaInfoArr.get(position).setUploaded(false);
-                            MyListsFragment.getSMC(getContext()).updatePoznavackaFile("poznavacka.txt", MyListsFragment.sPoznavackaInfoArr);
+                            MyListsActivity.sPoznavackaInfoArr.get(position).setUploaded(false);
+                            MyListsActivity.getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", MyListsActivity.sPoznavackaInfoArr);
 
                             dialog.dismiss();
                         }
@@ -266,13 +272,13 @@ public class SharedListsFragment extends Fragment {
                     alert.show();
 
                 } else {
-                    Toast.makeText(getContext(), "reconnect!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
             }
         });
     }
 
-    private void displayFirestore(final View view) {
+    private void displayFirestore() {
         Timber.d("DisplayFirestore");
         db.collection("Users")
                 .get()
@@ -295,58 +301,13 @@ public class SharedListsFragment extends Fragment {
                             List<QuerySnapshot> list = task.getResult();
                             for (QuerySnapshot qs : list) {
                                 for (DocumentSnapshot ds : qs) {
-                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID")));
+                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
                                 }
                             }
                         }
-                        buildRecyclerView(view);
+                        buildRecyclerView();
                     }
                 });
-
-
-
-
-
-
-/*                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        if (task.isSuccessful()) {
-
-                            for (QueryDocumentSnapshot queryDocumentSnapshot :
-                                    Objects.requireNonNull(task.getResult())) {
-                                Timber.d("DisplayFirestore queryDocumentSnapshot = %s", queryDocumentSnapshot);
-                            }
-
-
-                            Timber.d("DisplayFirestore successfully connected");
-                            if (task.getResult() == null) {
-                                Log.d(TAG, "DisplayFirestore null log");
-                                Timber.d("DisplayFirestore null Result");
-                            } else {
-                                Log.d(TAG, "DisplayFirestore result coming.. log");
-                                Timber.d("DisplayFirestore result coming..");
-                                //LEFT OFF, getDocuments() nevraci nic
-                                Timber.d("DisplayFirestore result = %s", task.getResult().size());
-                                for (DocumentSnapshot document : task.getResult().getDocuments()) {
-                                    Timber.d("DisplayFirestore Current doc = %s", document.getId());
-                                    QuerySnapshot querySnapshot = document.getReference().collection("Poznavacky").get().getResult();
-                                    if (querySnapshot != null) { //if user has created any poznavacka
-                                        for (QueryDocumentSnapshot doc :
-                                                querySnapshot) {
-                                            arrayList.add(new PreviewPoznavacka(doc.getString("headImageUrl"), doc.getString("name"), doc.getId(), doc.getString("authorsName"), doc.getString("authorsID")));
-                                        }
-                                    }
-                                }
-                            }
-
-                        } else {
-                            Toast.makeText(getActivity(), "error displaying", Toast.LENGTH_SHORT).show();
-                        }
-                        buildRecyclerView(view);
-
-                    }
-                });*/
     }
 
     //nedodelane
@@ -359,14 +320,13 @@ public class SharedListsFragment extends Fragment {
                 addToFireStore(collecionShareName, item);
 
                 try {
-                    Toast.makeText(getActivity(), documentSnapshot.get("name").toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplication(), documentSnapshot.get("name").toString(), Toast.LENGTH_LONG).show();
 
                 } catch (Exception e) {
-                    Toast.makeText(getActivity(), e.toString(), Toast.LENGTH_LONG).show();
+                    Toast.makeText(getApplication(), e.toString(), Toast.LENGTH_LONG).show();
                 }
             }
         });
-
     }
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
@@ -414,7 +374,7 @@ public class SharedListsFragment extends Fragment {
                 dbUser.set(dummyDataNeededforAccess);
 
                 //adding locally
-                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), data.getId(), data.getAuthorsName(), data.getAuthorsID()));
+                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), data.getId(), data.getAuthorsName(), data.getAuthorsID(), data.getLanguageURL()));
                 mSharedListAdapter.notifyDataSetChanged();
             }
         });
@@ -458,15 +418,15 @@ public class SharedListsFragment extends Fragment {
 
     private class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
 
-        private WeakReference<SharedListsFragment> fragmentWeakReference;
+        private WeakReference<SharedListsActivity> fragmentWeakReference;
 
-        DrawableFromUrlAsync(SharedListsFragment context) {
+        DrawableFromUrlAsync(SharedListsActivity context) {
             fragmentWeakReference = new WeakReference<>(context);
         }
 
         @Override
         protected Drawable doInBackground(Void... voids) {
-            SharedListsFragment fragment = fragmentWeakReference.get();
+            SharedListsActivity fragment = fragmentWeakReference.get();
             String path = item.getId() + "/";
             Gson gson = new Gson();
             Type cType = new TypeToken<ArrayList<Zastupce>>() {
@@ -481,7 +441,7 @@ public class SharedListsFragment extends Fragment {
                         Log.d("Obrazek", "Obrazek nestahnut");
                         e.printStackTrace();
                     }
-                    MyListsFragment.getSMC(fragment.getContext()).saveDrawable(returnDrawable, path, z.getParameter(0));
+                    MyListsActivity.getSMC(fragment.getApplication()).saveDrawable(returnDrawable, path, z.getParameter(0));
                 }
             }
             return null;
@@ -497,7 +457,7 @@ public class SharedListsFragment extends Fragment {
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
             Log.d("Obrazek", "Obrazek stahnut");
-            return new BitmapDrawable(Objects.requireNonNull(getContext()).getResources(), bitmap);
+            return new BitmapDrawable(Objects.requireNonNull(getApplication()).getResources(), bitmap);
         }
     }
 }

@@ -7,12 +7,6 @@
     android:background="@color/colorPrimary"
     tools:context=".activities.PracticeActivity2">
 
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
-
-
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
@@ -24,22 +18,20 @@
                 <TextView
                     android:id="@+id/textName"
                     style="@style/ShadowText"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="84dp"
-                    android:layout_marginTop="30dp"
-                    android:layout_marginEnd="84dp"
-                    android:gravity="center_horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="220dp"
+                    android:layout_marginTop="60dp"
+                    android:gravity="center"
+                    android:lineSpacingMultiplier="1.2"
                     android:text="@string/app_name"
                     android:textColor="#ffffff"
                     android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:typeface="serif"
-                    android:lineSpacingMultiplier="1.2"
+                    android:textStyle="normal"
+
+                    app:layout_constraintBottom_toTopOf="@+id/imageView"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintVertical_chainStyle="spread" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/imageView_classic"
@@ -64,7 +56,7 @@
                     android:layout_marginTop="150dp"
                     android:layout_marginStart="50dp"
                     android:layout_marginEnd="50dp"
-                    android:layout_marginBottom="150dp"
+                    android:layout_marginBottom="100dp"
                     android:scaleType="fitCenter"
 
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -107,6 +99,18 @@
                     app:rippleColor="@android:color/white"
                     app:srcCompat="@drawable/check" />
 
+                <TextView
+                    android:id="@+id/floatingActionButton_checked_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Knew it"
+                    android:textColor="@color/text_color"
+                    android:textSize="20sp"
+
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintEnd_toEndOf="@id/floatingActionButton_checked"
+                    app:layout_constraintTop_toBottomOf="@id/floatingActionButton_checked" />
+
                 <com.google.android.material.floatingactionbutton.FloatingActionButton
                     android:id="@+id/floatingActionButton_crossed"
                     android:layout_width="wrap_content"
@@ -120,6 +124,18 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:srcCompat="@drawable/cross" />
+
+                <TextView
+                    android:id="@+id/floatingActionButton_crossed_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Didn't know"
+                    android:textColor="@color/text_color"
+                    android:textSize="20sp"
+
+                    android:layout_marginTop="5dp"
+                    app:layout_constraintStart_toStartOf="@id/floatingActionButton_crossed"
+                    app:layout_constraintTop_toBottomOf="@id/floatingActionButton_crossed" />
 
                 <View
                     android:id="@+id/sceneView"
@@ -150,7 +166,6 @@
 
         </RelativeLayout>
 
-    </RelativeLayout>
 
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

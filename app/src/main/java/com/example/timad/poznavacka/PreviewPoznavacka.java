@@ -5,17 +5,27 @@ public class PreviewPoznavacka {
     private String name;
     private String id;
     private String authorsName;
-    private  String authorsUuid;
+    private String authorsUuid;
+    private String languageURL;
 
     public PreviewPoznavacka() {
     }
 
-    public PreviewPoznavacka(String imageResource, String name, String id, String authorsName, String authorsUuid) {
+    public PreviewPoznavacka(String imageResource, String name, String id, String authorsName, String authorsUuid, String languageURL) {
         this.imageRecource = imageResource;
         this.name = name;
         this.id = id;
         this.authorsName = authorsName;
         this.authorsUuid = authorsUuid;
+        this.languageURL = languageURL;
+    }
+
+    public String getLanguageURL() {
+        return languageURL;
+    }
+
+    public void setLanguageURL(String languageURL) {
+        this.languageURL = languageURL;
     }
 
     public String getImageRecource() {

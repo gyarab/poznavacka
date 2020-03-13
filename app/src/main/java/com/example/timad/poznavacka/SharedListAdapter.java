@@ -7,17 +7,16 @@ import android.widget.Filter;
 import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
+import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.example.timad.poznavacka.activities.lists.SharedListsFragment;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.squareup.picasso.Picasso;
 
 public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.downloadViewHolder> implements Filterable {
     private ArrayList<PreviewPoznavacka> arr;
@@ -37,6 +36,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         public ImageView mImageView;
         public TextView mTextView1;
         public TextView mTextView2;
+        public TextView mLangTextView;
         public ImageView mImageView2;
         public ImageView mImageView3;
 
@@ -45,6 +45,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
             mImageView = itemView.findViewById(R.id.imgView);
             mTextView1 = itemView.findViewById(R.id.textView);
             mTextView2 = itemView.findViewById(R.id.textView2);
+            mLangTextView = itemView.findViewById(R.id.shared_lang_textView);
             mImageView2 = itemView.findViewById(R.id.imgView2);
             mImageView3 = itemView.findViewById(R.id.imgView3);
 
@@ -96,8 +97,10 @@ public class SharedListAdapter extends RecyclerView.Adapter<SharedListAdapter.do
         //Picasso.get().load("https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Asian_Elephant_Prague_Zoo.jpg/258px-Asian_Elephant_Prague_Zoo.jpg").fit().into(holder.mImageView);
         Picasso.get().load(item.getImageRecource()).fit().error(R.drawable.ic_image).into(holder.mImageView);
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        TextViewCompat.setAutoSizeTextTypeWithDefaults(holder.mTextView1, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         holder.mTextView1.setText(item.getName());
         holder.mTextView2.setText(item.getAuthorsName());
+        holder.mLangTextView.setText(item.getLanguageURL());
         holder.mImageView2.setImageResource(R.drawable.ic_file_download);
         if(item.getAuthorsUuid().equals(user.getUid())) {
             holder.mImageView3.setImageResource(R.drawable.ic_delete);

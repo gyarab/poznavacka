@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.os.Handler;
 
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.activities.lists.ListsActivity;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -18,7 +18,7 @@ public class WelcomeActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        int SPLASH_TIME_OUT = 700;
+        int SPLASH_TIME_OUT = 300;
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -34,7 +34,7 @@ public class WelcomeActivity extends AppCompatActivity {
             startActivity(intent0);
             finish();
         } else {
-            Intent intent0 = new Intent(WelcomeActivity.this, ListsActivity.class);
+            Intent intent0 = new Intent(WelcomeActivity.this, MyListsActivity.class);
             startActivity(intent0);
             finish();
         }
