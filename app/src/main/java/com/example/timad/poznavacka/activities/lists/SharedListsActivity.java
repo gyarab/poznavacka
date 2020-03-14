@@ -22,18 +22,17 @@ import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
-import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -51,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import Interface.LoadMore;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
@@ -71,6 +71,11 @@ public class SharedListsActivity extends AppCompatActivity {
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
     private FirebaseUser user;
+
+    private final int DOCUMENTS_PAGINATE_COUNT = 10;
+    private List<DocumentSnapshot> poznavackyDocs = null;
+    private DocumentSnapshot poznavackaSnapshot;
+    private boolean firstQueryFetched;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
     private static ArrayList<Drawable> imgDrawables = new ArrayList<>();
@@ -103,7 +108,10 @@ public class SharedListsActivity extends AppCompatActivity {
         user = FirebaseAuth.getInstance().getCurrentUser();
         //vyt vori array prida do arraye vytvori recykler view
         createArr();
-        displayFirestore();
+        //buildFirestoreSnapshots();
+        buildRecyclerView();
+        //displayWholeFirestore();
+
         searchView = findViewById(R.id.search_view);
         searchView.addTextChangedListener(new TextWatcher() {
             @Override
@@ -125,6 +133,54 @@ public class SharedListsActivity extends AppCompatActivity {
             public void afterTextChanged(Editable s) {
             }
         });
+    }
+
+    private void buildFirestoreSnapshots() {
+        Timber.d("Buidling Firestore snapshots");
+
+
+
+
+
+/*        usersQuery = db.collection("Users")
+                .orderBy("timeUpdated")
+                .limit(1);
+
+        usersQuery
+                .get()
+                .continueWithTask(new Continuation<QuerySnapshot, Task<List<QuerySnapshot>>>() {
+                    @Override
+                    public Task<List<QuerySnapshot>> then(@NonNull Task<QuerySnapshot> task) {
+                        List<Task<QuerySnapshot>> tasks = new ArrayList<Task<QuerySnapshot>>();
+                        for (DocumentSnapshot ds : task.getResult()) {
+                            tasks.add(ds.getReference().collection("Poznavacky").orderBy("timeUploaded").limit(1).get());
+
+                            userSnapshot = ds;
+
+                        }
+                        return Tasks.whenAllSuccess(tasks);
+                    }
+                })
+
+                .addOnCompleteListener(new OnCompleteListener<List<QuerySnapshot>>() {
+                    @Override
+                    public void onComplete(@NonNull Task<List<QuerySnapshot>> task) {
+                        if (task.isSuccessful()) {
+                            List<QuerySnapshot> list = task.getResult();
+                            for (QuerySnapshot qs : list) {
+                                for (DocumentSnapshot ds : qs) {
+                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+
+                                    poznavackaSnapshot = ds;
+                                    currentDocumentsPaginate++;
+                                }
+                            }
+                            buildRecyclerView();
+                        }
+                    }
+                });*/
+
+        //fetchFirestore();
     }
 
     //vytvori arraylist
@@ -184,12 +240,34 @@ public class SharedListsActivity extends AppCompatActivity {
 
 
     private void buildRecyclerView() {
+        Timber.d("Building recycler view");
         mRecyclerView = findViewById(R.id.downloadView);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getApplication());
-        mSharedListAdapter = new SharedListAdapter(arrayList);
         mRecyclerView.setLayoutManager(mLayoutManager);
+        mSharedListAdapter = new SharedListAdapter(mRecyclerView, arrayList, this);
         mRecyclerView.setAdapter(mSharedListAdapter);
+
+        arrayList.add(null);
+        mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
+        //LEFT OFF, fetching not working
+        fetchFirstFirestore();
+
+        //load more
+        mSharedListAdapter.setLoadMore(new LoadMore() {
+            @Override
+            public void onLoadMore() {
+                Timber.d("Load more");
+
+                arrayList.add(null);
+                mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
+//LEFT OFF, fetching not working
+                fetchFirestore();
+
+            }
+        });
+
+
         mSharedListAdapter.setOnItemClickListener(new SharedListAdapter.OnItemClickListener() {
 
             @Override
@@ -278,36 +356,106 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
-    private void displayFirestore() {
-        Timber.d("DisplayFirestore");
-        db.collection("Users")
-                .get()
-                .continueWithTask(new Continuation<QuerySnapshot, Task<List<QuerySnapshot>>>() {
-                    @Override
-                    public Task<List<QuerySnapshot>> then(@NonNull Task<QuerySnapshot> task) {
-                        List<Task<QuerySnapshot>> tasks = new ArrayList<Task<QuerySnapshot>>();
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            tasks.add(ds.getReference().collection("Poznavacky").get());
+    private void fetchFirstFirestore() {
+        Timber.d("Fetching first Firestore");
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("timeUploaded", Query.Direction.DESCENDING).limit(DOCUMENTS_PAGINATE_COUNT);
+
+        //first query (setting up snapshot)
+        //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
+        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    Timber.d("Fetching first Firestore task successful");
+                    poznavackyDocs = task.getResult().getDocuments();
+                    addDocsToScene();
+                }
+            }
+        });
+    }
+
+    private void fetchFirestore() {
+
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("timeUploaded", Query.Direction.DESCENDING).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
+
+        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    poznavackyDocs = task.getResult().getDocuments();
+                    addDocsToScene();
+                }
+            }
+        });
+
+
+
+/*        while (currentDocumentsPaginate < DOCUMENTS_PAGINATE_COUNT) {
+            usersQuery
+                    .startAt(userSnapshot)
+                    .get()
+                    .continueWithTask(new Continuation<QuerySnapshot, Task<List<QuerySnapshot>>>() {
+                        @Override
+                        public Task<List<QuerySnapshot>> then(@NonNull Task<QuerySnapshot> task) {
+                            List<Task<QuerySnapshot>> tasks = new ArrayList<Task<QuerySnapshot>>();
+                            for (DocumentSnapshot ds : task.getResult()) {
+                                tasks.add(ds.getReference().collection("Poznavacky").orderBy("timeUploaded").limit(1).get());
+                            }
+
+                            return Tasks.whenAllSuccess(tasks);
                         }
+                    })
 
-                        return Tasks.whenAllSuccess(tasks);
-                    }
-                })
 
-                .addOnCompleteListener(new OnCompleteListener<List<QuerySnapshot>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<QuerySnapshot>> task) {
-                        if (task.isSuccessful()) {
-                            List<QuerySnapshot> list = task.getResult();
-                            for (QuerySnapshot qs : list) {
-                                for (DocumentSnapshot ds : qs) {
-                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+                    .addOnCompleteListener(new OnCompleteListener<List<QuerySnapshot>>() {
+                        @Override
+                        public void onComplete(@NonNull Task<List<QuerySnapshot>> task) {
+                            if (task.isSuccessful()) {
+                                if (!nextUser) {
+                                    arrayList.remove(arrayList.size() - 1);
+                                    //mSharedListAdapter.notifyItemRemoved(arrayList.size());
+                                }
+                                List<QuerySnapshot> list = task.getResult();
+                                for (QuerySnapshot qs : list) {
+                                    for (DocumentSnapshot ds : qs) {
+                                        arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+                                        currentDocumentsPaginate++;
+                                        if (currentDocumentsPaginate == DOCUMENTS_PAGINATE_COUNT) {
+                                            nextUser();
+                                            break;
+                                        }
+                                    }
                                 }
                             }
+                            //buildRecyclerView();
+
                         }
-                        buildRecyclerView();
-                    }
-                });
+                    });
+        }
+        nextUser = false;
+        currentDocumentsPaginate = 0;
+        mSharedListAdapter.notifyDataSetChanged();
+        mSharedListAdapter.setLoaded();
+    }
+
+    private void nextUser() {
+        nextUser = true;
+        Task<QuerySnapshot> task = usersQuery.startAfter(userSnapshot).get();
+        for (DocumentSnapshot document : task.getResult()) {
+            userSnapshot = document;
+        }*/
+    }
+
+    private void addDocsToScene() {
+        poznavackaSnapshot = poznavackyDocs.get(poznavackyDocs.size() - 1);
+        arrayList.remove(arrayList.size() - 1);
+        mSharedListAdapter.notifyItemRemoved(arrayList.size());
+        for (DocumentSnapshot ds :
+                poznavackyDocs) {
+            arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+        }
+        mSharedListAdapter.notifyDataSetChanged();
+        mSharedListAdapter.setLoaded();
     }
 
     //nedodelane
@@ -360,22 +508,23 @@ public class SharedListsActivity extends AppCompatActivity {
     }
 
     public static void addToFireStore(String userID, final PoznavackaDbObject data) {
-        CollectionReference dbPoznavacka = FirebaseFirestore.getInstance().collection("Users");
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        CollectionReference dbPoznavacka = db.collection("Users");
         final DocumentReference dbUser = dbPoznavacka.document(userID);
         CollectionReference dbPoznavacky = dbUser.collection("Poznavacky");
+
+        //timestamp
+        Map<String, Long> timeUpdated = new HashMap<>();
+        timeUpdated.put("timeUpdated", data.getTimeUploaded());
+        dbUser.set(timeUpdated);
 
         dbPoznavacky.document(data.getId()).set(data).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
 
-                //so the userDocument is not abstract and can be accessed later
-                Map<String, String> dummyDataNeededforAccess = new HashMap<>();
-                dummyDataNeededforAccess.put("dummy", "neededToFunction");
-                dbUser.set(dummyDataNeededforAccess);
-
                 //adding locally
-                arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), data.getId(), data.getAuthorsName(), data.getAuthorsID(), data.getLanguageURL()));
-                mSharedListAdapter.notifyDataSetChanged();
+                /*arrayList.add(new PreviewPoznavacka(data.getHeadImageUrl(), data.getName(), data.getId(), data.getAuthorsName(), data.getAuthorsID(), data.getLanguageURL()));
+                mSharedListAdapter.notifyDataSetChanged();*/
             }
         });
     }

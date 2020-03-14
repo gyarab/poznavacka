@@ -9,8 +9,9 @@ public class PoznavackaDbObject {
     private String headImageUrl;
     private String headImagePath;
     private String languageURL;
+    private long timeUploaded;
 
-    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL) {
+    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL, long timeUploaded) {
         this.name = name;
         this.id = id;
         this.content = content;
@@ -19,6 +20,15 @@ public class PoznavackaDbObject {
         this.headImageUrl = headImageUrl;
         this.headImagePath = headImagePath;
         this.languageURL = languageURL;
+        this.timeUploaded = timeUploaded;
+    }
+
+    public long getTimeUploaded() {
+        return timeUploaded;
+    }
+
+    public void setTimeUploaded(long timeUploaded) {
+        this.timeUploaded = timeUploaded;
     }
 
     public PoznavackaDbObject() {
@@ -89,4 +99,6 @@ public class PoznavackaDbObject {
     public void setLanguageURL(String languageURL) {
         this.languageURL = languageURL;
     }
+
+
 }

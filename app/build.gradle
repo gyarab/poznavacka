@@ -6,10 +6,10 @@ android {
             keyAlias = 'release'
             keyPassword 'android'
             storePassword 'android'
-            storeFile file('C:\\Users\\Lucian\\.android\\release.keystore')
+            storeFile file('C:\\Users\\timad\\.android\\release.keystore')
         }
         debug {
-            storeFile file('C:\\Users\\Lucian\\.android\\debug.keystore')
+            storeFile file('C:\\Users\\timad\\.android\\debug.keystore')
             storePassword 'android'
             keyAlias = 'AndroidDebugKey'
             keyPassword 'android'
@@ -18,7 +18,7 @@ android {
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.example.timad.poznavacka"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode 2
         versionName "1.2"
@@ -60,7 +60,7 @@ dependencies {
     implementation 'androidx.constraintlayout:constraintlayout:1.1.3'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.google.firebase:firebase-auth:19.2.0'
-    implementation 'com.google.firebase:firebase-firestore:21.4.0'
+    implementation 'com.google.firebase:firebase-firestore:21.4.1'
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.preference:preference:1.1.0'
     testImplementation 'junit:junit:4.13'
@@ -76,7 +76,7 @@ dependencies {
     implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'com.google.android.gms:play-services-auth:17.0.0'
     implementation 'com.squareup.picasso:picasso:2.71828'
-
+    implementation 'io.github.yavski:fab-speed-dial:1.0.6'
 }
 
 apply plugin: 'com.google.gms.google-services'
