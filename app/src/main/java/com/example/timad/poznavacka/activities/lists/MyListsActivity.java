@@ -4,18 +4,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
+import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
+import com.example.timad.poznavacka.activities.AccountActivity;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
+import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -25,12 +31,14 @@ import com.google.gson.reflect.TypeToken;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
@@ -258,6 +266,46 @@ public class MyListsActivity extends AppCompatActivity {
                 btnNegative.setLayoutParams(layoutParams);
             }
         });
+        //navigation
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(1);
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_practice:
+                        Intent intent0 = new Intent(MyListsActivity.this, PracticeActivity.class);
+                        startActivity(intent0);
+                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                        break;
+
+                    case R.id.nav_lists:
+                        /*Intent intent1 = new Intent(ListsActivity.this, ListsActivity.class);
+                startActivity(intent1);*/
+                        break;
+
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(MyListsActivity.this, TestActivity.class);
+                        startActivity(intent3);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                    case R.id.nav_account:
+                        Intent intent4 = new Intent(MyListsActivity.this, AccountActivity.class);
+                        startActivity(intent4);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                }
+
+
+                return false;
+            }
+        });
     }
 
     public static StorageManagerClass getSMC(Context context) {
@@ -267,7 +315,7 @@ public class MyListsActivity extends AppCompatActivity {
 
         return sSMC;
     }
-}
+
 
 
 
@@ -288,56 +336,13 @@ public class MyListsActivity extends AppCompatActivity {
         Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_list_black_24dp);
         Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_file_download);
 //        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_add_circle_black_24dp);
+*/
 
 
 
 
-
-
-        //navigation
-        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
-        Menu menu = bottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(1);
-        menuItem.setChecked(true);
-
-        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
-            @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                switch (item.getItemId()) {
-                    case R.id.nav_practice:
-                        Intent intent0 = new Intent(ListsActivity.this, PracticeActivity.class);
-                        startActivity(intent0);
-                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                        break;
-
-                    case R.id.nav_lists:
-                        *//*Intent intent1 = new Intent(ListsActivity.this, ListsActivity.class);
-                        startActivity(intent1);*//*
-                        break;
-
-                    case R.id.nav_test:
-                        Intent intent3 = new Intent(ListsActivity.this, TestActivity.class);
-                        startActivity(intent3);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        break;
-
-                    case R.id.nav_account:
-                        Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
-                        startActivity(intent4);
-                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        break;
-
-                }
-
-
-                return false;
-            }
-        });*/
-
-
-
-/*    private void setupViewPager(ViewPager viewPager) {
+/*
+    private void setupViewPager(ViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
         adapter.addFragment(new MyListsFragment());
         adapter.addFragment(new SharedListsFragment());
@@ -349,4 +354,4 @@ public class MyListsActivity extends AppCompatActivity {
         mViewPager.setCurrentItem(fragmentNumber);
     }*/
 
-
+}

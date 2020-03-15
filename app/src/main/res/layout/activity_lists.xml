@@ -5,9 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.MyListsActivity"
-    android:theme="@style/Theme.AppCompat">
-
+    android:theme="@style/Theme.AppCompat"
+    tools:context=".activities.lists.MyListsActivity">
 
 
     <RelativeLayout
@@ -15,9 +14,9 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
+            android:id="@+id/topBar"
             android:layout_width="match_parent"
-            android:layout_height="50dp"
-            android:id="@+id/topBar">
+            android:layout_height="50dp">
 
             <com.google.android.material.appbar.AppBarLayout
                 android:layout_width="match_parent"
@@ -27,18 +26,18 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:paddingStart="20dp"
+                    android:paddingTop="7dp"
                     android:text="Cognitive"
                     android:textColor="@color/text_color"
                     android:textSize="20sp"
-                    android:paddingTop="7dp"
-                    android:paddingStart="20dp"
 
                     />
 
                 <com.google.android.material.tabs.TabLayout
+                    android:id="@+id/tabs"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/tabs"
                     android:background="@drawable/navigation_border_bottom"
                     app:tabIconTint="@color/colorWhite">
 
@@ -51,10 +50,10 @@
 
 
         <RelativeLayout
-            android:layout_below="@+id/topBar"
-            android:layout_above="@+id/bottomBar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:layout_above="@+id/bottomBar"
+            android:layout_below="@+id/topBar">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewL"
@@ -71,10 +70,10 @@
                 android:layout_alignParentBottom="true"
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="20dp"
-                app:fabGravity="bottom_end"
-                app:fabMenu="@menu/add_poznavacka_menu"
                 app:fabBackgroundTint="@color/colorAccent"
-                app:fabDrawableTint="@color/text_color" />
+                app:fabDrawableTint="@color/text_color"
+                app:fabGravity="bottom_end"
+                app:fabMenu="@menu/add_poznavacka_menu" />
 
             <!--            <androidx.viewpager.widget.ViewPager
                             android:layout_width="match_parent"
@@ -87,24 +86,24 @@
         </RelativeLayout>
 
 
-        <!--        <RelativeLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="50dp"
-                    android:id="@+id/bottomBar"
-                    android:layout_alignParentBottom="true">
+        <RelativeLayout
+            android:id="@+id/bottomBar"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_alignParentBottom="true">
 
-                    <com.google.android.material.bottomnavigation.BottomNavigationView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:id="@+id/bottomNavView_Bar"
-                        android:background="@drawable/navigation_border_top"
-                        app:itemIconTint="@color/bnv_tab_item_foreground"
-                        app:itemTextColor="@color/bnv_tab_item_foreground"
-                        app:menu="@menu/bottom_navigation_menu">
+            <com.google.android.material.bottomnavigation.BottomNavigationView
+                android:id="@+id/bottomNavView_Bar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/navigation_border_top"
+                app:itemIconTint="@color/bnv_tab_item_foreground"
+                app:itemTextColor="@color/bnv_tab_item_foreground"
+                app:menu="@menu/bottom_navigation_menu">
 
 
-                    </com.google.android.material.bottomnavigation.BottomNavigationView>
-                </RelativeLayout>-->
+            </com.google.android.material.bottomnavigation.BottomNavigationView>
+        </RelativeLayout>
 
 
     </RelativeLayout>

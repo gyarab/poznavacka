@@ -253,6 +253,7 @@ public class SharedListsActivity extends AppCompatActivity {
         //LEFT OFF, fetching not working
         fetchFirstFirestore();
 
+/*
         //load more
         mSharedListAdapter.setLoadMore(new LoadMore() {
             @Override
@@ -266,6 +267,7 @@ public class SharedListsActivity extends AppCompatActivity {
 
             }
         });
+*/
 
 
         mSharedListAdapter.setOnItemClickListener(new SharedListAdapter.OnItemClickListener() {
@@ -362,7 +364,9 @@ public class SharedListsActivity extends AppCompatActivity {
 
         //first query (setting up snapshot)
         //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
-        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+/*        poznavackaQuery
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
@@ -371,22 +375,45 @@ public class SharedListsActivity extends AppCompatActivity {
                     addDocsToScene();
                 }
             }
-        });
+        });*/
+
+        poznavackaQuery
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        Timber.d("Fetching first Firestore task successful onSuccess");
+                        poznavackyDocs = queryDocumentSnapshots.getDocuments();
+                        addDocsToScene();
+                    }
+                });
+
     }
 
     private void fetchFirestore() {
 
         Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("timeUploaded", Query.Direction.DESCENDING).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
 
-        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+/*        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+            public void onComplete(@NonNull Ta  sk<QuerySnapshot> task) {
                 if (task.isSuccessful()) {
                     poznavackyDocs = task.getResult().getDocuments();
                     addDocsToScene();
                 }
             }
-        });
+        });*/
+
+        poznavackaQuery
+                .get()
+                .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                    @Override
+                    public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                        Timber.d("Fetching first Firestore task successful onSuccess");
+                        poznavackyDocs = queryDocumentSnapshots.getDocuments();
+                        addDocsToScene();
+                    }
+                });
 
 
 
