@@ -14,7 +14,12 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.PoznavackaInfo;
@@ -66,7 +71,7 @@ public class SharedListsActivity extends AppCompatActivity {
     // shared list starts here
     private EditText searchView;
     private RecyclerView mRecyclerView;
-    static private SharedListAdapter mSharedListAdapter;
+    private SharedListAdapter mSharedListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewPoznavacka> arrayList;
     private FirebaseFirestore db;
@@ -74,7 +79,7 @@ public class SharedListsActivity extends AppCompatActivity {
 
     private final int DOCUMENTS_PAGINATE_COUNT = 10;
     private List<DocumentSnapshot> poznavackyDocs = null;
-    private DocumentSnapshot poznavackaSnapshot;
+    private DocumentSnapshot poznavackaSnapshot = null;
     private boolean firstQueryFetched;
 
     private static ArrayList<String> imgUrls = new ArrayList<>();
@@ -113,7 +118,25 @@ public class SharedListsActivity extends AppCompatActivity {
         //displayWholeFirestore();
 
         searchView = findViewById(R.id.search_view);
-        searchView.addTextChangedListener(new TextWatcher() {
+        searchView.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                boolean handled = false;
+                if (i == EditorInfo.IME_ACTION_SEARCH) {
+                    fetchFirstFirestoreSearch(textView.getText().toString());
+                    Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    View view = getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                        searchView.clearFocus();
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                    handled = true;
+                }
+                return handled;
+            }
+        });
+        /*searchView.addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {
             }
@@ -131,56 +154,57 @@ public class SharedListsActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                Toast.makeText(getApplication(), "Search " + s.toString(), Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
     }
 
-    private void buildFirestoreSnapshots() {
-        Timber.d("Buidling Firestore snapshots");
+    private void fetchFirstFirestoreSearch(final String searchText) {
+        //HERE LEFT OFF, search not working
+        //deactivateLoadMore();
+        arrayList.clear();
+        mSharedListAdapter.notifyDataSetChanged();
+        arrayList.add(null);
+        mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
 
+        Timber.d("Fetching first Firestore search for = %s", searchText);
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).limit(DOCUMENTS_PAGINATE_COUNT);
 
-
-
-
-/*        usersQuery = db.collection("Users")
-                .orderBy("timeUpdated")
-                .limit(1);
-
-        usersQuery
+        //first query (setting up snapshot)
+        //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
+        poznavackaQuery
                 .get()
-                .continueWithTask(new Continuation<QuerySnapshot, Task<List<QuerySnapshot>>>() {
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
-                    public Task<List<QuerySnapshot>> then(@NonNull Task<QuerySnapshot> task) {
-                        List<Task<QuerySnapshot>> tasks = new ArrayList<Task<QuerySnapshot>>();
-                        for (DocumentSnapshot ds : task.getResult()) {
-                            tasks.add(ds.getReference().collection("Poznavacky").orderBy("timeUploaded").limit(1).get());
-
-                            userSnapshot = ds;
-
-                        }
-                        return Tasks.whenAllSuccess(tasks);
-                    }
-                })
-
-                .addOnCompleteListener(new OnCompleteListener<List<QuerySnapshot>>() {
-                    @Override
-                    public void onComplete(@NonNull Task<List<QuerySnapshot>> task) {
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Timber.d("query completed");
                         if (task.isSuccessful()) {
-                            List<QuerySnapshot> list = task.getResult();
-                            for (QuerySnapshot qs : list) {
-                                for (DocumentSnapshot ds : qs) {
-                                    arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
-
-                                    poznavackaSnapshot = ds;
-                                    currentDocumentsPaginate++;
-                                }
-                            }
-                            buildRecyclerView();
+                            Timber.d("query successful");
+                            poznavackyDocs = task.getResult().getDocuments();
+                            Timber.d("poznavackyDocs size = %s", poznavackyDocs.size());
+                            addDocsToScene();
+                            activateLoadMore(searchText);
                         }
                     }
-                });*/
+                });
+    }
 
-        //fetchFirestore();
+    private void fetchFirestoreSearch(final String searchText) {
+        Timber.d("Fetching firestore search");
+
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
+
+        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                Timber.d("query completed");
+                if (task.isSuccessful()) {
+                    Timber.d("query successful");
+                    poznavackyDocs = task.getResult().getDocuments();
+                    addDocsToScene();
+                }
+            }
+        });
     }
 
     //vytvori arraylist
@@ -250,24 +274,8 @@ public class SharedListsActivity extends AppCompatActivity {
 
         arrayList.add(null);
         mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
-        //LEFT OFF, fetching not working
         fetchFirstFirestore();
-
-/*
-        //load more
-        mSharedListAdapter.setLoadMore(new LoadMore() {
-            @Override
-            public void onLoadMore() {
-                Timber.d("Load more");
-
-                arrayList.add(null);
-                mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
-//LEFT OFF, fetching not working
-                fetchFirestore();
-
-            }
-        });
-*/
+        //fetchFirstFirestoreSearch("h");
 
 
         mSharedListAdapter.setOnItemClickListener(new SharedListAdapter.OnItemClickListener() {
@@ -364,20 +372,23 @@ public class SharedListsActivity extends AppCompatActivity {
 
         //first query (setting up snapshot)
         //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
-/*        poznavackaQuery
+        poznavackaQuery
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                if (task.isSuccessful()) {
-                    Timber.d("Fetching first Firestore task successful");
-                    poznavackyDocs = task.getResult().getDocuments();
-                    addDocsToScene();
-                }
-            }
-        });*/
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        Timber.d("query completed");
+                        if (task.isSuccessful()) {
+                            Timber.d("query successful");
+                            poznavackyDocs = task.getResult().getDocuments();
+                            Timber.d("poznavackyDocs size = %s", poznavackyDocs.size());
+                            addDocsToScene();
+                            activateLoadMore();
+                        }
+                    }
+                });
 
-        poznavackaQuery
+/*        poznavackaQuery
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -386,25 +397,28 @@ public class SharedListsActivity extends AppCompatActivity {
                         poznavackyDocs = queryDocumentSnapshots.getDocuments();
                         addDocsToScene();
                     }
-                });
+                });*/
 
     }
 
     private void fetchFirestore() {
+        Timber.d("Fetching firestore");
 
         Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("timeUploaded", Query.Direction.DESCENDING).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
 
-/*        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+        poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
-            public void onComplete(@NonNull Ta  sk<QuerySnapshot> task) {
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                Timber.d("query completed");
                 if (task.isSuccessful()) {
+                    Timber.d("query successful");
                     poznavackyDocs = task.getResult().getDocuments();
                     addDocsToScene();
                 }
             }
-        });*/
+        });
 
-        poznavackaQuery
+/*        poznavackaQuery
                 .get()
                 .addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
                     @Override
@@ -413,7 +427,7 @@ public class SharedListsActivity extends AppCompatActivity {
                         poznavackyDocs = queryDocumentSnapshots.getDocuments();
                         addDocsToScene();
                     }
-                });
+                });*/
 
 
 
@@ -473,13 +487,54 @@ public class SharedListsActivity extends AppCompatActivity {
         }*/
     }
 
+    private void activateLoadMore(final String searchText) {
+        //load more
+        mSharedListAdapter.setLoadMore(new LoadMore() {
+            @Override
+            public void onLoadMore() {
+                fetchFirestoreSearch(searchText);
+                Timber.d("Load more of = %s", searchText);
+
+                arrayList.add(null);
+                mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
+            }
+        });
+    }
+
+    private void activateLoadMore() {
+        //load more
+        mSharedListAdapter.setLoadMore(new LoadMore() {
+            @Override
+            public void onLoadMore() {
+                fetchFirestore();
+                Timber.d("Load more");
+
+                arrayList.add(null);
+                mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
+            }
+        });
+    }
+
+    private void deactivateLoadMore() {
+        mSharedListAdapter.setLoadMore(new LoadMore() {
+            @Override
+            public void onLoadMore() {
+                Timber.d("Don't load more");
+                mSharedListAdapter.setLoaded();
+            }
+        });
+    }
+
     private void addDocsToScene() {
-        poznavackaSnapshot = poznavackyDocs.get(poznavackyDocs.size() - 1);
+        Timber.d("Adding docs to scene");
         arrayList.remove(arrayList.size() - 1);
         mSharedListAdapter.notifyItemRemoved(arrayList.size());
-        for (DocumentSnapshot ds :
-                poznavackyDocs) {
-            arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+        if (poznavackyDocs.size() != 0) {
+            poznavackaSnapshot = poznavackyDocs.get(poznavackyDocs.size() - 1);
+            for (DocumentSnapshot ds :
+                    poznavackyDocs) {
+                arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+            }
         }
         mSharedListAdapter.notifyDataSetChanged();
         mSharedListAdapter.setLoaded();

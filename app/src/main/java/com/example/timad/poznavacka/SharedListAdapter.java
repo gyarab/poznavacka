@@ -65,7 +65,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     LoadMore loadMore;
     boolean isLoading;
     Activity activity;
-    private int visibleThreshold = 20;
+    //private int visibleThreshold = 1;
     int lastVisibleItem;
     int totalItemCount;
 
@@ -80,8 +80,8 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 totalItemCount = linearLayoutManager.getItemCount();
-                lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
+                //lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
+                if (!isLoading) {
                     if (loadMore != null) {
                         loadMore.onLoadMore();
                         isLoading = true;

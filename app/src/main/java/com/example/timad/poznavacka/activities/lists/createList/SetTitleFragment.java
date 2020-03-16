@@ -70,9 +70,11 @@ public class SetTitleFragment extends Fragment {
         super.onStart();
         titleInput = getView().findViewById(R.id.title_input);
         btnNext = getView().findViewById(R.id.button_next);
-        titleInput.requestFocus();
+
+        showSoftKeyboard(titleInput);
+     /*   titleInput.requestFocus();
         InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);*/
 
         //btnNext.setVisibility(View.INVISIBLE);
         btnNext.hide();
@@ -107,6 +109,14 @@ public class SetTitleFragment extends Fragment {
             }
         });
 
+    }
+
+    private void showSoftKeyboard(View view) {
+        if (view.requestFocus()) {
+            InputMethodManager imm = (InputMethodManager)
+                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        }
     }
 
     @Override

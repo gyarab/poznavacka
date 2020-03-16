@@ -124,7 +124,11 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                imgr.hideSoftInputFromWindow(getView().getWindowToken(), 0);
+                View view = getActivity().getCurrentFocus();
+                if (view != null) {
+                    representativesInput.clearFocus();
+                    imgr.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                }
                 btnNext.setVisibility(View.GONE);
 
                 ArrayList<String> representatives = new ArrayList<>(Arrays.asList(representativesInput.getText().toString().split("\\s*" + "," + "\\s*")));
