@@ -123,7 +123,13 @@ public class SharedListsActivity extends AppCompatActivity {
             public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
                 boolean handled = false;
                 if (i == EditorInfo.IME_ACTION_SEARCH) {
-                    fetchFirstFirestoreSearch(textView.getText().toString());
+                    String searchText = textView.getText().toString();
+                    if (searchText.isEmpty()) {
+                        fetchFirstFirestore();
+                    } else {
+                        fetchFirstFirestoreSearch(searchText);
+                    }
+
                     Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
                     View view = getCurrentFocus();
                     if (view != null) {
@@ -160,15 +166,14 @@ public class SharedListsActivity extends AppCompatActivity {
     }
 
     private void fetchFirstFirestoreSearch(final String searchText) {
-        //HERE LEFT OFF, search not working
-        //deactivateLoadMore();
+        deactivateLoadMore();
         arrayList.clear();
         mSharedListAdapter.notifyDataSetChanged();
         arrayList.add(null);
         mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
 
         Timber.d("Fetching first Firestore search for = %s", searchText);
-        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).limit(DOCUMENTS_PAGINATE_COUNT);
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).orderBy("name").limit(DOCUMENTS_PAGINATE_COUNT);
 
         //first query (setting up snapshot)
         //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
@@ -177,13 +182,15 @@ public class SharedListsActivity extends AppCompatActivity {
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        Timber.d("query completed");
+                        Timber.d("first search query completed");
                         if (task.isSuccessful()) {
-                            Timber.d("query successful");
+                            Timber.d("first searcb query successful");
                             poznavackyDocs = task.getResult().getDocuments();
-                            Timber.d("poznavackyDocs size = %s", poznavackyDocs.size());
+                            Timber.d("first search poznavackyDocs size = %s", poznavackyDocs.size());
                             addDocsToScene();
-                            activateLoadMore(searchText);
+                            if (poznavackyDocs.size() == 0) {
+                                activateLoadMore(searchText);
+                            }
                         }
                     }
                 });
@@ -201,6 +208,9 @@ public class SharedListsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Timber.d("query successful");
                     poznavackyDocs = task.getResult().getDocuments();
+                    if (poznavackyDocs.size() == 0) {
+                        deactivateLoadMore();
+                    }
                     addDocsToScene();
                 }
             }
@@ -367,6 +377,12 @@ public class SharedListsActivity extends AppCompatActivity {
     }
 
     private void fetchFirstFirestore() {
+        deactivateLoadMore();
+        arrayList.clear();
+        mSharedListAdapter.notifyDataSetChanged();
+        arrayList.add(null);
+        mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
+
         Timber.d("Fetching first Firestore");
         Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("timeUploaded", Query.Direction.DESCENDING).limit(DOCUMENTS_PAGINATE_COUNT);
 
@@ -515,7 +531,8 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
-    private void deactivateLoadMore() {
+    private void
+    deactivateLoadMore() {
         mSharedListAdapter.setLoadMore(new LoadMore() {
             @Override
             public void onLoadMore() {

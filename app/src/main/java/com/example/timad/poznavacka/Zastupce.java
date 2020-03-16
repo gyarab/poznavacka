@@ -26,7 +26,7 @@ public class Zastupce {
     }
 
     //pridani classification
-    public Zastupce(int parameters, ArrayList<String> args) { //parameters v konstruktoru nejsou potreba?
+    public Zastupce(int parameters, ArrayList<String> args) {
         infoArr = new ArrayList<>();
         this.parameters = parameters;
         infoArr.addAll(args);
