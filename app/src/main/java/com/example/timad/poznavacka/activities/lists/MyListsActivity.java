@@ -117,6 +117,12 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+                    case (R.id.action_test):
+                        Intent intent2 = new Intent(getApplication(),MyTestActivity.class);
+                        startActivity(intent2);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        finish();
+                        break;
                     case (R.id.action_download):
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
@@ -129,6 +135,8 @@ public class MyListsActivity extends AppCompatActivity {
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                         finish();
                         break;
+
+
                 }
                 return true;
             }

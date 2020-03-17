@@ -42,6 +42,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         public ImageView shareImg;
         public ImageView deleteImg;
         public ImageView prewiewImg;
+        public ImageView testImg;
         public CardView cView;
 
         public PoznavackaInfoViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
@@ -53,6 +54,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
             shareImg = itemView.findViewById(R.id.img_share);
             deleteImg = itemView.findViewById(R.id.img_delete);
             prewiewImg = itemView.findViewById(R.id.img_prewiew);
+            testImg = itemView.findViewById(R.id.img_test);
             cView = itemView.findViewById(R.id.cardView1);
 
 
@@ -126,6 +128,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         holder.textView1.setText(currentPoznavackaInfo.getName());
         holder.textView2.setText(currentPoznavackaInfo.getAuthor());
         holder.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
+        holder.testImg.setImageResource(R.drawable.ic_test);
 
         Drawable d = MyListsActivity.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);
