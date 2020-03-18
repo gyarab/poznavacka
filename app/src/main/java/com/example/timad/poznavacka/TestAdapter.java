@@ -9,13 +9,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.ArrayList;
 
-public class TestAdpater extends RecyclerView.Adapter<TestAdpater.TestViewHolder>  {
-    private ArrayList<TestObject> mTestList;
-    private TestAdpater.OnItemClickListener mListener;
+public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder>  {
+    private ArrayList<PreviewTestObject> mTestList;
+    private TestAdapter.OnItemClickListener mListener;
 
-    public void setOnItemClickListener(TestAdpater.OnItemClickListener listener){
+    public void setOnItemClickListener(TestAdapter.OnItemClickListener listener){
         mListener = listener;
     }
 
@@ -27,8 +29,8 @@ public class TestAdpater extends RecyclerView.Adapter<TestAdpater.TestViewHolder
     public static class TestViewHolder extends RecyclerView.ViewHolder{
 
         private TextView textView1;
-        private ImageView prewiewImg1;
-        private ImageView resutltImg1;
+        private ImageView previewImg1;
+        private ImageView resultImg1;
         private ImageView stop_startImg1;
         private ImageView deleteImg1;
 
@@ -38,16 +40,16 @@ public class TestAdpater extends RecyclerView.Adapter<TestAdpater.TestViewHolder
             super(itemView);
 
             textView1=itemView.findViewById(R.id.testName2);
-            prewiewImg1=itemView.findViewById(R.id.img_prewiew2);
+            previewImg1 =itemView.findViewById(R.id.img_prewiew2);
             stop_startImg1=itemView.findViewById(R.id.img_start_end2);
             deleteImg1 = itemView.findViewById(R.id.img_delete2);
-            resutltImg1 = itemView.findViewById(R.id.img_results2);
+            resultImg1 = itemView.findViewById(R.id.img_results2);
 
 
         }
     }
-    public TestAdpater(ArrayList<TestObject> mTestList){
-        mTestList = mTestList;
+    public TestAdapter(ArrayList<PreviewTestObject> mTestList){
+        this.mTestList = mTestList;
     }
 
     @NonNull
@@ -60,6 +62,12 @@ public class TestAdpater extends RecyclerView.Adapter<TestAdpater.TestViewHolder
 
     @Override
     public void onBindViewHolder(@NonNull TestViewHolder holder, int position) {
+        PreviewTestObject item = mTestList.get(position);
+        holder.textView1.setText(item.getName());
+        holder.resultImg1.setImageResource(R.drawable.ic_result);
+        holder.deleteImg1.setImageResource(R.drawable.ic_delete);
+        holder.stop_startImg1.setImageResource(R.drawable.ic_list_play_black_24dp);
+        Picasso.get().load(item.getPreviewImgUrl()).fit().error(R.drawable.ic_image).into(holder.previewImg1);
 
     }
 

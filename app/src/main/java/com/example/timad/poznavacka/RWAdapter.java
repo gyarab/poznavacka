@@ -28,6 +28,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         void onPracticeClick(int position);
         void onShareClick(int position);
         void onDeleteClick(int position);
+        void onTestClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener){
@@ -101,6 +102,18 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
                         int position = getAdapterPosition();
                         if(position != RecyclerView.NO_POSITION){
                             listener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+
+            testImg.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(listener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            listener.onTestClick(position);
                         }
                     }
                 }
