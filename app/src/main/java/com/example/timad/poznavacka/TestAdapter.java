@@ -23,6 +23,9 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
 
 
     public interface OnItemClickListener {
+        void onDeleteClick(int position);
+        void onResultsClick(int position);
+        void onStart_EndClick(int position);
     }
 
 
@@ -36,15 +39,48 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
 
 
 
-        public TestViewHolder(@NonNull View itemView, OnItemClickListener mListener) {
+        public TestViewHolder(@NonNull View itemView, final OnItemClickListener mListener) {
             super(itemView);
 
             textView1=itemView.findViewById(R.id.testName2);
-            previewImg1 =itemView.findViewById(R.id.img_prewiew2);
+            previewImg1 =itemView.findViewById(R.id.img_preview2);
             stop_startImg1=itemView.findViewById(R.id.img_start_end2);
             deleteImg1 = itemView.findViewById(R.id.img_delete2);
             resultImg1 = itemView.findViewById(R.id.img_results2);
 
+            deleteImg1.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(mListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            mListener.onDeleteClick(position);
+                        }
+                    }
+                }
+            });
+            stop_startImg1.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(mListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            mListener.onStart_EndClick(position);
+                        }
+                    }
+                }
+            });
+            resultImg1.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View V){
+                    if(mListener != null){
+                        int position = getAdapterPosition();
+                        if(position != RecyclerView.NO_POSITION){
+                            mListener.onResultsClick(position);
+                        }
+                    }
+                }
+            });
 
         }
     }

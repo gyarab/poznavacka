@@ -18,11 +18,12 @@
             android:text="title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@+id/img_prewiew2"
+            android:layout_toEndOf="@+id/img_preview2"
+            android:textColor="@color/black"
             />
 
         <ImageView
-            android:id="@+id/img_prewiew2"
+            android:id="@+id/img_preview2"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_alignParentStart="true"

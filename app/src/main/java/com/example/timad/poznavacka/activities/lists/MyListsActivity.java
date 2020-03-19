@@ -291,7 +291,8 @@ public class MyListsActivity extends AppCompatActivity {
                             String name = sPoznavackaInfoArr.get(position).getName();
                             boolean started = false;
                             String previewImgUrl = sPoznavackaInfoArr.get(position).getPrewievImageUrl();
-                            DBTestObject data= new DBTestObject(name,content,userID,previewImgUrl,started);
+                            boolean finished = false;
+                            DBTestObject data= new DBTestObject(name,content,userID,previewImgUrl,started,finished);
                             MyTestActivity.addToTests(userID,data);
                         //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
 

@@ -1,16 +1,19 @@
 package com.example.timad.poznavacka.activities.lists;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.TestAdapter;
 import com.example.timad.poznavacka.PreviewTestObject;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -19,6 +22,7 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -38,7 +42,7 @@ public class MyTestActivity extends AppCompatActivity {
         setContentView(R.layout.activity_my_test);
 
         String  userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        //TODO recycler view doesnt work yet, will work soon
+
         if(SharedListsActivity.checkInternet(getApplicationContext())){
             try {
                 buildTestActivity(userID);
@@ -49,13 +53,80 @@ public class MyTestActivity extends AppCompatActivity {
         }
     }
     //current focus
-    private void buildRecyclerView(ArrayList<PreviewTestObject> previewTestObjectArrayList1){
+    private void buildRecyclerView(final ArrayList<PreviewTestObject> previewTestObjectArrayList1){
         mRecyclerView = findViewById(R.id.testView);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getApplication());
         mRecyclerView.setLayoutManager(mLayoutManager);
         mTestAdapter = new TestAdapter(previewTestObjectArrayList1);
         mRecyclerView.setAdapter(mTestAdapter);
+
+        mTestAdapter.notifyDataSetChanged();
+        mTestAdapter.setOnItemClickListener(new TestAdapter.OnItemClickListener() {
+            @Override
+            public void onDeleteClick(final int position) {
+                if (SharedListsActivity.checkInternet(getApplication())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_delete);
+                    builder.setMessage("Do you really want to delete " + previewTestObjectArrayList1.get(position).getName() + " from tests?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            removeTest(FirebaseAuth.getInstance().getCurrentUser().getUid(),previewTestObjectArrayList1.get(position).getDatabaseID(),position);
+
+
+                            dialog.dismiss();
+                    }
+                }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+
+            } else {
+                Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+
+
+            @Override
+            public void onResultsClick(int position) {
+                if (SharedListsActivity.checkInternet(getApplication())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_result);
+                    builder.setMessage("Do you really want to check results of test " + previewTestObjectArrayList1.get(position).getName() +"?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            dialog.dismiss();
+                        }
+                    }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                } else {
+                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onStart_EndClick(int position) {
+
+            }
+        });
 
     }
     private  void createArrayList(){
@@ -70,12 +141,25 @@ public class MyTestActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
-                                PreviewTestObject test =new PreviewTestObject(document.getString("name"),document.getBoolean("started"),document.getString("previewImageUrl"),document.getId(),document.getString("userID"),document.getString("content"));
-                                String x = test.toString();
-                                Toast.makeText(getApplicationContext(),x,Toast.LENGTH_LONG).show();
+
+                               String content = document.getString("content");
+                               boolean started = document.getBoolean("started");
+                               String previewImageUrl = document.getString("previewImageUrl");
+                               String databaseID = document.getId();
+                               String userID = document.getString("userID");
+                               String name = document.getString("name");
+                               boolean finished = document.getBoolean("finished");
+                               // String name = "lev";
+                              //  boolean started = false;
+                              //  String previewImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1200px-Lion_waiting_in_Namibia.jpg";
+                              //  String databaseID = document.getId();
+                              //  String content = "xd";
+                              //  String userID= "xd";
+                                PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished);
                                 previewTestObjectArrayList.add(test);
 
                             }
+                            buildRecyclerView(previewTestObjectArrayList);
                         }
 
                     }
@@ -86,11 +170,26 @@ public class MyTestActivity extends AppCompatActivity {
 
     private void buildTestActivity(String userID) {
               createArrayList();
-             // int i = testObjectArrayList.size();
-
-              //Toast.makeText(this,i+"",Toast.LENGTH_LONG).show();
               fetchTests(userID);
-              buildRecyclerView(previewTestObjectArrayList);
+    }
+
+    private void setFinished(String userID,String documentName,int position){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference docRef = db.collection(userID).document(documentName);
+      docRef.update(
+              "finished", previewTestObjectArrayList.get(position).isStarted()
+      );
+
+    }
+    private void SetStarted_end(String userID,String documentName,int position){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        DocumentReference docRef = db.collection(userID).document(documentName);
+        docRef.update(
+                "started", previewTestObjectArrayList.get(position).isFinished()
+        );
+
     }
 
 
@@ -132,7 +231,7 @@ public class MyTestActivity extends AppCompatActivity {
 
 
     }
-    private void removeTest(final String userID, final String documentName) {
+    private void removeTest(final String userID, final String documentName, final int position) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         db.collection(userID).document(documentName)
@@ -140,6 +239,7 @@ public class MyTestActivity extends AppCompatActivity {
                 .addOnSuccessListener(new OnSuccessListener<Void>() {
                     @Override
                     public void onSuccess(Void aVoid) {
+                           previewTestObjectArrayList.remove(position);
                             mTestAdapter.notifyDataSetChanged();
                     }
                 })

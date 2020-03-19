@@ -7,17 +7,19 @@ public class PreviewTestObject {
     private String databaseID;
     private String userID;
     private String content;
+    private boolean finished;
 
     public PreviewTestObject() {
     }
 
-    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content) {
+    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished) {
         this.name = name;
         this.started = started;
         this.previewImgUrl = previewImgUrl;
         this.databaseID = databaseID;
         this.userID = userID;
         this.content = content;
+        this.finished = finished;
     }
 
     public String getName() {
@@ -68,15 +70,11 @@ public class PreviewTestObject {
         this.content = content;
     }
 
-    @Override
-    public String toString() {
-        return "PreviewTestObject{" +
-                "name='" + name + '\'' +
-                ", started=" + started +
-                ", previewImgUrl='" + previewImgUrl + '\'' +
-                ", databaseID='" + databaseID + '\'' +
-                ", userID='" + userID + '\'' +
-                ", content='" + content + '\'' +
-                '}';
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }

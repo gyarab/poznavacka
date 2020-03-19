@@ -6,17 +6,20 @@ public class DBTestObject {
     private String userID;
     private String previewImageUrl;
     private boolean started;
+    private boolean finished;
 
     public DBTestObject() {
     }
 
-    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started) {
+    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished) {
         this.name = name;
         this.content = content;
         this.userID = userID;
         this.previewImageUrl = previewImageUrl;
         this.started = started;
+        this.finished = finished;
     }
+
 
     public String getName() {
         return name;
@@ -56,5 +59,13 @@ public class DBTestObject {
 
     public void setStarted(boolean started) {
         this.started = started;
+    }
+
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
     }
 }
