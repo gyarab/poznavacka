@@ -294,8 +294,8 @@ public class SharedListsActivity extends AppCompatActivity {
             public void onDownloadClick(final int position) {
                 if (checkInternet(getApplication())) {
                     //checks if user doesn't already have the poznavacka downloaded
-                    String docID = arrayList.get(position).getId();
-                    String userID = arrayList.get(position).getAuthorsUuid();
+                    final String docID = arrayList.get(position).getId();
+                    final String userID = arrayList.get(position).getAuthorsUuid();
                     boolean download = true;
                     for (PoznavackaInfo info :
                             MyListsActivity.sPoznavackaInfoArr) {
@@ -308,20 +308,30 @@ public class SharedListsActivity extends AppCompatActivity {
                         }
                     }
                     if (download) {
-                        pickDocument(userID, docID);
-
                         AlertDialog.Builder builder = new AlertDialog.Builder(SharedListsActivity.this);
                         builder.setTitle(R.string.app_name);
                         builder.setIcon(R.drawable.ic_file_download);
                         builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
-                        builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        builder
+                                .setPositiveButton("yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-
-
+                                //pickDocument(userID, docID);
                                 dialog.dismiss();
+
+                                MyListsActivity.savingDownloadedList = true;
+                                Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
+
+                                intent0.putExtra("TITLE", arrayList.get(position).getName());
+                                intent0.putExtra("USERID", userID);
+                                intent0.putExtra("DOCID", docID);
+
+                                startActivity(intent0);
+                                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                finish();
                             }
-                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                                })
+                                .setNegativeButton("no", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();

@@ -3,6 +3,10 @@ package com.example.timad.poznavacka.activities.lists;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -28,16 +32,26 @@ import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Objects;
 import java.util.UUID;
 
 import androidx.annotation.NonNull;
@@ -64,6 +78,13 @@ public class MyListsActivity extends AppCompatActivity {
     private String path;
     private String uuid;
     private String languageURL;
+
+    public static boolean savingDownloadedList;
+    private String userID;
+    private String docID;
+
+    private PoznavackaDbObject item;
+
 
     public static StorageManagerClass sSMC;
 
@@ -105,6 +126,18 @@ public class MyListsActivity extends AppCompatActivity {
             languageURL = newListIntent.getStringExtra("LANGUAGEURL");
             SaveCreatedListAsync saveCreatedListAsync = new SaveCreatedListAsync();
             saveCreatedListAsync.execute();
+
+        } else if (savingDownloadedList) {
+            newListBTNProgressBar.setVisibility(View.VISIBLE);
+            newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+
+            Intent newDownloadedListIntent = getIntent();
+            title = newDownloadedListIntent.getStringExtra("TITLE");
+            userID = newDownloadedListIntent.getStringExtra("USERID");
+            docID = newDownloadedListIntent.getStringExtra("DOCID");
+
+            SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
+            saveDownloadedListAsync.execute();
         }
 
         //initialization
@@ -398,7 +431,7 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
 
-    private class SaveCreatedListAsync extends AsyncTask<Void, Void, String> {
+    private class SaveCreatedListAsync extends AsyncTask<Void, Void, Void> {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -406,8 +439,9 @@ public class MyListsActivity extends AppCompatActivity {
         }
 
         @Override
-        protected void onPostExecute(String pathPoznavacka) {
-            super.onPostExecute(pathPoznavacka);
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
             Log.d("Files", "Saved successfully");
@@ -419,7 +453,7 @@ public class MyListsActivity extends AppCompatActivity {
         }
 
         @Override
-        protected String doInBackground(Void... voids) {
+        protected Void doInBackground(Void... voids) {
 
             //changing getContext() to getApllicationContext()
             //changing getApplication() to getApplication()
@@ -510,7 +544,126 @@ public class MyListsActivity extends AppCompatActivity {
                 }
                 Log.d("Files", "Deleted "+ files.length + " files");*/
 
-            return pathPoznavacka;
+            return null;
+        }
+    }
+
+    private class SaveDownloadedListAsync extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            FirebaseFirestore db = FirebaseFirestore.getInstance();
+            DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(docID);
+            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                    if (item == null) {
+                        Timber.d("Item documentSnapshot docID=" + documentSnapshot.getId());
+                        Timber.d("Item documentSnapshot id=" + documentSnapshot.getString("id"));
+                        Timber.d("Item documentSnapshot name=" + documentSnapshot.getString("name"));
+                        Timber.d("Item " + documentSnapshot.getString("name") + " is null");
+                    }
+
+                    // Store images
+                    Context context = getApplication();
+                    String path = item.getId() + "/";
+                    File dir = new File(context.getFilesDir().getPath() + "/" + path);
+
+                    // Create folder
+                    try {
+                        dir.mkdir();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
+                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+                        //images download
+                        new DrawableFromUrlAsync().execute();  //viz Async metoda dole
+                    }
+
+                    String pathPoznavacka = "poznavacka.txt";
+                    if (MyListsActivity.sPoznavackaInfoArr == null) {
+                        MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
+                    }
+                    MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                    MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+
+                    Log.d("Files", "Saved successfully");
+                }
+            });
+
+
+            return null;
+        }
+    }
+
+    private class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
+
+        @Override
+        protected void onPostExecute(Drawable drawable) {
+            super.onPostExecute(drawable);
+            String pathPoznavacka = "poznavacka.txt";
+            MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+
+            Log.d("Files", "Saved successfully");
+            Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
+
+            savingDownloadedList = false;
+            newListBTNProgressBar.setVisibility(View.GONE);
+            newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+        }
+
+        @Override
+        protected Drawable doInBackground(Void... voids) {
+            String path = item.getId() + "/";
+            Gson gson = new Gson();
+            Type cType = new TypeToken<ArrayList<Zastupce>>() {
+            }
+                    .getType();
+            ArrayList<Zastupce> zastupceArr = gson.fromJson(item.getContent(), cType);
+            for (Zastupce z : zastupceArr) {
+                Drawable returnDrawable = null;
+                if (!(z.getImageURL() == null || z.getImageURL().isEmpty())) {
+                    try {
+                        returnDrawable = drawable_from_url(z.getImageURL());
+                    } catch (IOException e) {
+                        Log.d("Obrazek", "Obrazek nestahnut");
+                        e.printStackTrace();
+                    }
+                    MyListsActivity.getSMC(getApplication()).saveDrawable(returnDrawable, path, z.getParameter(0));
+                }
+            }
+            return null;
+        }
+
+
+        public Drawable drawable_from_url(String url) throws java.io.IOException {
+
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-agent", "Mozilla");
+
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            Log.d("Obrazek", "Obrazek stahnut");
+            return new BitmapDrawable(Objects.requireNonNull(getApplication()).getResources(), bitmap);
         }
     }
 
