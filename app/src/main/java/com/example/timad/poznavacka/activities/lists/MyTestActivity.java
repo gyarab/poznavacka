@@ -123,8 +123,74 @@ public class MyTestActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStart_EndClick(int position) {
+            public void onStart_EndClick(final int position) {
+                if (SharedListsActivity.checkInternet(getApplication())) {
+                    final PreviewTestObject test = previewTestObjectArrayList1.get(position);
+                    if (!test.isStarted()) {
 
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                        builder.setTitle(R.string.app_name);
+                        builder.setIcon(R.drawable.ic_list_play_black_24dp);
+                        builder.setMessage("Do you really want to  start test " + previewTestObjectArrayList1.get(position).getName() + "?");
+                        builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+
+
+                                test.setStarted(true);
+                                String userID = test.getUserID();
+                                String documentName = test.getDatabaseID();
+
+                                setStarted_end(userID, documentName, position);
+                                mTestAdapter.notifyDataSetChanged();
+                                //create document in ActiveTests database
+
+                                //create collection userID+databaseID for user results
+
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }else{
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                        builder.setTitle(R.string.app_name);
+                        builder.setIcon(R.drawable.ic_stop);
+                        builder.setMessage("Do you really want to  stop test " + previewTestObjectArrayList1.get(position).getName() + "?");
+                        builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                test.setFinished(true);
+                                String userID = test.getUserID();
+                                String documentName = test.getDatabaseID();
+
+                                setFinished(userID,documentName,position);
+                                mTestAdapter.notifyDataSetChanged();
+
+                                //2 option load results to userID+userID as array of objects
+
+
+                                dialog.dismiss();
+                            }
+                        }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+                        });
+                        AlertDialog alert = builder.create();
+                        alert.show();
+
+                    }
+                    } else {
+                        Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
+                    }
             }
         });
 
@@ -178,17 +244,20 @@ public class MyTestActivity extends AppCompatActivity {
 
         DocumentReference docRef = db.collection(userID).document(documentName);
       docRef.update(
-              "finished", previewTestObjectArrayList.get(position).isStarted()
+              "finished", previewTestObjectArrayList.get(position).isFinished()
       );
 
     }
-    private void SetStarted_end(String userID,String documentName,int position){
+    private void setStarted_end(String userID,String documentName,int position){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         DocumentReference docRef = db.collection(userID).document(documentName);
         docRef.update(
-                "started", previewTestObjectArrayList.get(position).isFinished()
+                "started", previewTestObjectArrayList.get(position).isStarted()
         );
+
+    }
+    private void addToActiveTests(){
 
     }
 

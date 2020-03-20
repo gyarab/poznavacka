@@ -102,7 +102,15 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
         holder.textView1.setText(item.getName());
         holder.resultImg1.setImageResource(R.drawable.ic_result);
         holder.deleteImg1.setImageResource(R.drawable.ic_delete);
-        holder.stop_startImg1.setImageResource(R.drawable.ic_list_play_black_24dp);
+        if(item.isFinished()) {
+            holder.stop_startImg1.setImageResource(0);
+            holder.stop_startImg1.setEnabled(false);
+        }else if (!item.isStarted()) {
+            holder.stop_startImg1.setImageResource(R.drawable.ic_list_play_black_24dp);
+        }else{
+            holder.stop_startImg1.setImageResource(R.drawable.ic_stop);
+        }
+
         Picasso.get().load(item.getPreviewImgUrl()).fit().error(R.drawable.ic_image).into(holder.previewImg1);
 
     }
