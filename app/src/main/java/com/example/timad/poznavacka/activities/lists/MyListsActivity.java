@@ -16,10 +16,11 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
+import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.PoznavackaInfo;
+import com.example.timad.poznavacka.PreviewTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
-import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AccountActivity;
@@ -46,7 +47,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
+
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
@@ -148,6 +149,12 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
+                    case (R.id.action_test):
+                        Intent intent2 = new Intent(getApplication(),MyTestActivity.class);
+                        startActivity(intent2);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        finish();
+                        break;
                     case (R.id.action_download):
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
@@ -160,6 +167,8 @@ public class MyListsActivity extends AppCompatActivity {
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                         finish();
                         break;
+
+
                 }
                 return true;
             }
@@ -296,6 +305,45 @@ public class MyListsActivity extends AppCompatActivity {
                 btnPositive.setLayoutParams(layoutParams);
                 btnNegative.setLayoutParams(layoutParams);
             }
+
+            @Override
+            public void onTestClick(final int position) {
+                if (SharedListsActivity.checkInternet(getApplication())) {
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_test);
+                    builder.setMessage("Do you really want to put " + sPoznavackaInfoArr.get(position).getName() + " into tests ?");
+                    builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            String content = getSMC(getApplication()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                            String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                            String name = sPoznavackaInfoArr.get(position).getName();
+                            boolean started = false;
+                            String previewImgUrl = sPoznavackaInfoArr.get(position).getPrewievImageUrl();
+                            boolean finished = false;
+                            DBTestObject data= new DBTestObject(name,content,userID,previewImgUrl,started,finished,"");
+                            MyTestActivity.addToTests(userID,data);
+                        //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
+
+                            dialog.dismiss();
+                        }
+                    }).setNegativeButton("no", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                } else {
+                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+
         });
 
 
