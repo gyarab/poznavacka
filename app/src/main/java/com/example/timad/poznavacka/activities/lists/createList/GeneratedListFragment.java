@@ -608,10 +608,17 @@ public class GeneratedListFragment extends Fragment {
                             imageURL = (String) harvestedInfoBox.get(3);*/
                     }
 
-                    String displayNameOfRepresentative = doc.title();
-                    if (doc.title().contains("(")) {
-                        displayNameOfRepresentative = doc.title().substring(0, doc.title().indexOf("(")).trim();
+                    //setting display name of representative
+                    String displayNameOfRepresentative;
+                    if (doc.title().toLowerCase().contains("image")) {
+                        displayNameOfRepresentative = capitalize(representative, languageURL);
+                    } else {
+                        displayNameOfRepresentative = doc.title();
+                        if (doc.title().contains("(")) {
+                            displayNameOfRepresentative = doc.title().substring(0, doc.title().indexOf("(")).trim();
+                        }
                     }
+
                     newData.add(displayNameOfRepresentative);
                     Collections.reverse(newData);
 
@@ -665,12 +672,13 @@ public class GeneratedListFragment extends Fragment {
                     String newSearchText = newWikipediaURLsuffix.substring(2);
                     try {
                         Timber.d("redirected and connecting to new wikipedia for %s", newSearchText);
-                        doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(newSearchText, "UTF-8") + "?redirect=true").userAgent("Mozilla").get();
+                        doc = Jsoup.connect("https://" + languageURL + ".wikipedia.org/api/rest_v1/page/html/" + URLEncoder.encode(newSearchText, "UTF-8") + "?redirects=true").userAgent("Mozilla").get();
 
                         try {
                             Elements rawTables = doc.getElementsByTag("table");
                             for (Element table :
                                     rawTables) {
+
                                 //cz and en infoTable
                                 if (languageURL.equals("en") || languageURL.equals("cs")) {
                                     if (table.id().contains("info")) {
@@ -682,6 +690,7 @@ public class GeneratedListFragment extends Fragment {
                                         infoBox = table.selectFirst("tbody");
                                         break;
                                     }
+
                                     //de infoTable
                                 } else if (languageURL.equals("de")) {
 
@@ -753,14 +762,25 @@ public class GeneratedListFragment extends Fragment {
                 Timber.d("current tr = %s", trCounter);
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                     currentTrsWihtoutColspan++;
-                    String[] rawData = tr.wholeText().split("\n");
+                    String th = tr.children().first().text();
+                    dataPair[0] = th;
+                    Log.d(TAG, "found " + th);
+                    String td = tr.children().last().wholeText();
+                    dataPair[1] = td;
+                    Log.d(TAG, "found " + td);
+/*                    String[] rawData = tr.wholeText().split("\n");
 
-                    if (rawData.length == 1) { //detected wrong table
+                    if (rawData.length == 1) { //detected different table
                         Timber.d("different table");
                         for (int i = 0; i < userParametersCount - 1; i++) {
                             newData.add("");
                         }
                         break;
+                    }
+
+                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                        Timber.d("first line is empty");
+                        dataPair = dataPair.clone()[1].split("\n");
                     }
 
                     //cleaning rawData to data
@@ -769,36 +789,13 @@ public class GeneratedListFragment extends Fragment {
                             rawData) {
                         if (!piece.trim().isEmpty()) data.add(piece);
                     }
-                    Timber.d("data = %s", data.toString());
+                    Timber.d("data = %s", data.toString());*/
 
                     //assigning the dataPair
-                    dataPair[0] = data.get(0);
-                    StringBuilder values = new StringBuilder();
-                    for (int i = 1; i < data.size(); i++) {
-                        if (data.get(i).contains("[")) {
-                            String editedString = data.get(i).substring(0, data.get(i).indexOf("[")).trim();
-                            data.set(i, editedString);
-                        }
-                        if (i == 1) {
-                            values.append(data.get(i));
-                            Timber.d("adding value = %s", data.get(i));
-                        } else {
-                            values.append(", ").append(data.get(i));
-                            Timber.d("adding value = " + ", " + data.get(i));
-                        }
 
-                    }
-                    dataPair[1] = values.toString();
+                    dataPair[1] = beautifyValues(dataPair[1]);
 
-/*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
-                        Timber.d("first line is empty");
-                        dataPair = dataPair.clone()[1].split("\n");
-                }*/
-                    for (int i = 0; i < 2; i++) {
-                        dataPair[i] = dataPair[i].trim();
-                        Timber.d("found " + dataPair[i]);
-                    }
-
+                    Timber.d("dataPair[1] = %s", dataPair[1]);
                     Timber.d("classPointer = " + classificationPointer);
                     Timber.d(userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
                     Timber.d("userSciClass[0] = " + userScientificClassification.get(0));
@@ -806,13 +803,15 @@ public class GeneratedListFragment extends Fragment {
                     if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
                         //trim latin etc.
                         if (dataPair[1].contains("(")) {
-                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim(); //trims after latin
+                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim();
                         }
                         newData.add(dataPair[1]); //adding the specific classification
                         Timber.d("adding new data to newData = " + dataPair[1]);
                         classificationPointer++;
 
                     } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
+
+                        //generating empty values
                         Timber.d("userScientificClassification contains " + dataPair[0]);
                         int tempPointer = classificationPointer;
                         classificationPointer = userScientificClassification.indexOf(dataPair[0]);
@@ -857,6 +856,36 @@ public class GeneratedListFragment extends Fragment {
             /*returnList.add(img);
             returnList.add(imageURL);*/
             return returnList;
+        }
+
+        private String beautifyValues(String s) {
+
+            ArrayList<String> data = new ArrayList<>();
+
+            //splitting by new lines
+            for (String piece :
+                    s.split("\n")) {
+                if (!piece.trim().isEmpty()) {
+
+                    data.add(piece);
+
+                }
+            }
+
+            StringBuilder values = new StringBuilder();
+            for (int i = 0; i < data.size(); i++) {
+                if (data.get(i).contains("[")) {
+                    String editedString = data.get(i).substring(0, data.get(i).indexOf("[")).trim();
+                    data.set(i, editedString);
+                }
+                if (i == 0) {
+                    values.append(data.get(i));
+                } else {
+                    values.append(", ").append(data.get(i));
+                }
+
+            }
+            return values.toString();
         }
 
         private ArrayList getImageFromSite(Document doc) {

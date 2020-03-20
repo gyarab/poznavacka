@@ -303,6 +303,7 @@ public class SharedListsActivity extends AppCompatActivity {
                         if (info.getId().equals(docID)) {
                             download = false;
                             Timber.d("Do not download");
+                            Toast.makeText(getApplicationContext(), "Already downloaded", Toast.LENGTH_SHORT).show();
                             break;
                         }
                     }

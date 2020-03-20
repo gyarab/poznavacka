@@ -1,6 +1,8 @@
 package com.example.timad.poznavacka;
 
 import android.graphics.drawable.Drawable;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -8,7 +10,7 @@ import java.util.ArrayList;
 /**
  * Položka v poznávačce
  **/
-public class Zastupce {
+public class Zastupce implements Parcelable {
     private static String TAG = "Zastupce";
 
     private ArrayList<String> infoArr;
@@ -82,13 +84,44 @@ public class Zastupce {
         this.image = image;
     }
 
-    public int getParameters() { return parameters; }
+    public int getParameters() {
+        return parameters;
+    }
 
-    public String toString(){
+    public String toString() {
         String s = Integer.toString(parameters) + ": ";
-        for (int i = 0; i < parameters; i ++){
+        for (int i = 0; i < parameters; i++) {
             s += infoArr.get(i) + ", ";
         }
         return s;
+    }
+
+    public static final Parcelable.Creator CREATOR = new Parcelable.Creator() {
+        public Zastupce createFromParcel(Parcel in) {
+            return new Zastupce(in);
+        }
+
+        public Zastupce[] newArray(int size) {
+            return new Zastupce[size];
+        }
+    };
+
+
+    public Zastupce(Parcel in) {
+        this.infoArr = (ArrayList<String>) in.readArrayList(String.class.getClassLoader());
+        this.parameters = in.readInt();
+        this.imageURL = in.readString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeList(this.infoArr);
+        parcel.writeInt(this.parameters);
+        parcel.writeString(this.imageURL);
     }
 }

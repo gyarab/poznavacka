@@ -3,11 +3,16 @@ package com.example.timad.poznavacka.activities.lists;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
@@ -16,6 +21,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
+import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AccountActivity;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
@@ -28,8 +34,10 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import java.io.File;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -48,6 +56,14 @@ public class MyListsActivity extends AppCompatActivity {
 
     private static final String TAG = "myListsActivity";
 
+    public static boolean savingNewList;
+    private boolean autoImportIsChecked;
+    private String title;
+    private ArrayList<Zastupce> mZastupceArr;
+    private String path;
+    private String uuid;
+    private String languageURL;
+
     public static StorageManagerClass sSMC;
 
     public static PoznavackaInfo sActivePoznavacka = null;
@@ -59,6 +75,7 @@ public class MyListsActivity extends AppCompatActivity {
     public static int sPositionOfActivePoznavackaInfo;
 
     private FabSpeedDial newListBTN;
+    private ProgressBar newListBTNProgressBar;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -69,10 +86,25 @@ public class MyListsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_lists);
-
-
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
+        newListBTN = findViewById(R.id.fabSpeedDial);
+        newListBTNProgressBar = findViewById(R.id.fabSpeedDialProgressBar);
+        newListBTNProgressBar.setVisibility(View.INVISIBLE);
 
+        if (savingNewList) {
+            newListBTNProgressBar.setVisibility(View.VISIBLE);
+            newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+
+            Intent newListIntent = getIntent();
+            autoImportIsChecked = newListIntent.getBooleanExtra("AUTOIMPORTISCHECKED", false);
+            title = newListIntent.getStringExtra("TITLE");
+            mZastupceArr = newListIntent.getParcelableArrayListExtra("MZASTUPCEARR"); //TODO THIS
+            path = newListIntent.getStringExtra("PATH");
+            uuid = newListIntent.getStringExtra("UUID");
+            languageURL = newListIntent.getStringExtra("LANGUAGEURL");
+            SaveCreatedListAsync saveCreatedListAsync = new SaveCreatedListAsync();
+            saveCreatedListAsync.execute();
+        }
 
         //initialization
         if (sPoznavackaInfoArr == null) {
@@ -107,7 +139,6 @@ public class MyListsActivity extends AppCompatActivity {
                 getActivity().finish();
             }
         });*/
-        newListBTN = findViewById(R.id.fabSpeedDial);
         newListBTN.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
@@ -266,6 +297,8 @@ public class MyListsActivity extends AppCompatActivity {
                 btnNegative.setLayoutParams(layoutParams);
             }
         });
+
+
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
         BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
@@ -317,7 +350,121 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
 
+    private class SaveCreatedListAsync extends AsyncTask<Void, Void, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
+        }
 
+        @Override
+        protected void onPostExecute(String pathPoznavacka) {
+            super.onPostExecute(pathPoznavacka);
+            MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+
+            Log.d("Files", "Saved successfully");
+            Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
+
+            savingNewList = false;
+            newListBTNProgressBar.setVisibility(View.GONE);
+            newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+        }
+
+        @Override
+        protected String doInBackground(Void... voids) {
+
+            //changing getContext() to getApllicationContext()
+            //changing getApplication() to getApplication()
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+            // Store images
+            Gson gson = new Gson();
+            Context context = getApplicationContext();
+
+
+            //DONE IN CREATE LIST ACTIVITY
+            /*String uuid = UUID.randomUUID().toString();
+            String path = uuid + "/";
+            File dir = new File(context.getFilesDir().getPath() + "/" + path);
+
+            // Create folder
+            try {
+                dir.mkdir();
+            } catch (Exception e) {
+                Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                e.printStackTrace();
+                return null;
+            }
+
+
+           // Saves images locally
+            for (Zastupce z : mZastupceArr) {
+                if (z.getImage() != null) {
+                    if (!MyListsActivity.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
+                        Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                        return null;
+                    }
+                } else {
+                    // TODO exception for first thing
+
+                            *//*Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
+                            deletePoznavacka(dir);
+                            return;*//*
+                }
+                z.setImage(null);
+            }*/
+
+            // Saving mZastupceArr
+            String json = gson.toJson(mZastupceArr);
+            //add to file
+            String userName = user.getDisplayName();
+
+            String userID = null;
+            if (user != null) {
+                userID = user.getUid();
+            } else {
+                Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
+                startActivity(intent0);
+                finish();
+            }
+
+            // Add to database
+            //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
+            //SharedListsFragment.addToFireStore("Poznavacka", item);
+            //Log.d("Files", json);
+            if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
+                Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                return null;
+            }
+
+            String pathPoznavacka = "poznavacka.txt";
+            if (MyListsActivity.sPoznavackaInfoArr == null) {
+                MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
+            }
+            if (autoImportIsChecked) {
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL(), languageURL, false));
+            } else {
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
+            }
+
+            // Deletes everything base in folder
+                /*File[] files = c.getFilesDir().listFiles();
+                for (int i = 0; i < files.length; i++)
+                {
+                    if(files[i].isDirectory()){
+                        Log.d("Files", files[i].getPath() + " : " + files[i].getName());
+                        File[] files2 = files[i].listFiles();
+                        for (int x = 0; x < files2.length; x++) {
+                            //files2[x].delete();
+                        }
+                    }
+                    //files[i].delete();
+                }
+                Log.d("Files", "Deleted "+ files.length + " files");*/
+
+            return pathPoznavacka;
+        }
+    }
 
 
 

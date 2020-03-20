@@ -385,6 +385,11 @@ public class PopActivity extends Activity {
                         ArrayList harvestedInfoBox = harvestClassification(infoBox);
                         newData = (String[]) harvestedInfoBox.get(0);
                         classificationPointer = (int) harvestedInfoBox.get(1);
+
+                        //if wrong data is fetched
+                        if (newData[0] == null) {
+                            continue;
+                        }
                     } else {
                         continue;
                     }
@@ -404,8 +409,6 @@ public class PopActivity extends Activity {
                             String text = textElement.wholeText();
                             Log.d(TAG, "russian text = " + text);
                         }
-
-
                         return null;
                     }
                 }
@@ -506,25 +509,22 @@ public class PopActivity extends Activity {
                 trCounter++;
                 Log.d(TAG, "current tr = " + trCounter);
                 if (!tr.getAllElements().hasAttr("colspan")) {
-                    dataPair = tr.wholeText().split("\n", 2);
-                    if (dataPair.length == 1) { //detected wrong table
-                        Log.d(TAG, "different table");
-                        break;
-                    }
-                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
+                    String th = tr.children().first().text();
+                    Log.d(TAG, "found " + th);
+                    String td = tr.children().last().text();
+                    Log.d(TAG, "found " + td);
+                    //dataPair = tr.wholeText().split("\n", 2);
+
+/*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
                         dataPair = dataPair.clone()[1].split("\n");
-                    }
-                    for (int i = 0; i < 2; i++) {
-                        dataPair[i] = dataPair[i].trim();
-                        Log.d(TAG, "found " + dataPair[i]);
-                    }
+                    }*/
 
                     Log.d(TAG, "classPointer = " + classificationPointer);
 
-                    newData[classificationPointer] = dataPair[0];
+                    newData[classificationPointer] = th;
                     classificationPointer++;
                     //newData.add(dataPair[0]);
-                    Log.d(TAG, "adding new data to newData = " + dataPair[1]);
+                    Log.d(TAG, "adding new data to newData = " + th);
                 }
             }
 

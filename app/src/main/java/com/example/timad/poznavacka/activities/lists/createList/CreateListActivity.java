@@ -2,6 +2,7 @@ package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -39,6 +40,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     private boolean autoImportIsChecked;
     private ArrayList<Zastupce> mZastupceArr;
 
+    private String path;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -119,117 +121,52 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     @Override
     public void onSave(ArrayList<Zastupce> mZastupceArr) {
         this.mZastupceArr = mZastupceArr;
-        saveCreatedList();
+
+        String uuid = UUID.randomUUID().toString();
+        path = uuid + "/";
+        SaveImagesAsync saveImagesAsync = new SaveImagesAsync();
+        saveImagesAsync.execute();
+
+        MyListsActivity.savingNewList = true;
+        Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
+        intent0.putExtra("AUTOIMPORTISCHECKED", autoImportIsChecked);
+        intent0.putExtra("TITLE", title);
+        intent0.putExtra("MZASTUPCEARR", mZastupceArr); //TODO THIS
+        intent0.putExtra("PATH", path);
+        intent0.putExtra("UUID", uuid);
+        intent0.putExtra("LANGUAGEURL", languageURL);
+        startActivity(intent0);
+        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
     }
 
-    private void saveCreatedList() {
+    private class SaveImagesAsync extends AsyncTask<Void, Void, Void> {
 
-        //changing getContext() to getApllicationContext()
-        //changing getApplication() to getApplication()
-        final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        @Override
+        protected Void doInBackground(Void... voids) {
 
-        Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
+            File dir = new File(getApplicationContext().getFilesDir().getPath() + "/" + path);
 
-        // Store images
-        Gson gson = new Gson();
-        Context context = getApplicationContext();
-        String uuid = UUID.randomUUID().toString();
-        String path = uuid + "/";
-        File dir = new File(context.getFilesDir().getPath() + "/" + path);
+            dir.mkdir(); //creates folder
 
-        // Create folder
-        try {
-            dir.mkdir();
-        } catch (Exception e) {
-            Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-            e.printStackTrace();
-            return;
-        }
-
-        // Saves images locally
-        for (Zastupce z : mZastupceArr) {
-            if (z.getImage() != null) {
-                if (!MyListsActivity.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
-                    Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                    return;
-                }
-            } else {
-                // TODO exception for first thing
-
+            // Saves images locally
+            for (Zastupce z : mZastupceArr) {
+                if (z.getImage() != null) {
+                    if (!MyListsActivity.getSMC(getApplicationContext()).saveDrawable(z.getImage(), path, z.getParameter(0))) {
+                        return null;
+                    }
+                } else {
+                    // TODO exception for first thing
                             /*Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
                             deletePoznavacka(dir);
                             return;*/
-            }
-            z.setImage(null);
-        }
-
-        // Saving mZastupceArr
-        String json = gson.toJson(mZastupceArr);
-        //add to file
-        String userName = user.getDisplayName();
-
-        String userID = null;
-        if (user != null) {
-            userID = user.getUid();
-        } else {
-            Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
-            startActivity(intent0);
-            finish();
-        }
-
-        // Add to database
-        //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
-        //SharedListsFragment.addToFireStore("Poznavacka", item);
-        //Log.d("Files", json);
-        if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
-            Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        String pathPoznavacka = "poznavacka.txt";
-        if (MyListsActivity.sPoznavackaInfoArr == null) {
-            MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
-        }
-        if (autoImportIsChecked) {
-            MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL(), languageURL, false));
-        } else {
-            MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
-        }
-        MyListsActivity.getSMC(context).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
-
-        Log.d("Files", "Saved successfully");
-        Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_SHORT).show();
-        Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
-        startActivity(intent0);
-        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-        finish();
-
-        // Deletes everything base in folder
-                /*File[] files = c.getFilesDir().listFiles();
-                for (int i = 0; i < files.length; i++)
-                {
-                    if(files[i].isDirectory()){
-                        Log.d("Files", files[i].getPath() + " : " + files[i].getName());
-                        File[] files2 = files[i].listFiles();
-                        for (int x = 0; x < files2.length; x++) {
-                            //files2[x].delete();
-                        }
-                    }
-                    //files[i].delete();
                 }
-                Log.d("Files", "Deleted "+ files.length + " files");*/
+                z.setImage(null);
+            }
 
-                /*for (int i = 0; i < representatives.size(); i++) {
-                    // Uploading poznavacka
-                    Map<String, Object> representativeInfo = new HashMap<>();
-                    representativeInfo.put(KEY_ZASTUPCE, representatives.get(i));
-                    representativeInfo.put(KEY_IMGREF, "imageRef - cislo/hash?");
-                    if (autoImportSwitch.isChecked()) {
-                        representativeInfo.put(KEY_DRUH, "dohledany druh");
-                        representativeInfo.put(KEY_RAD, "dohledany rad");
-                    }
-                    firestoreImpl.uploadRepresentative(title, representatives.get(i), representativeInfo);
-                }*/
+            return null;
+        }
     }
+
 }
+
 
