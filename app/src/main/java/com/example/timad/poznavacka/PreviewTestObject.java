@@ -8,11 +8,12 @@ public class PreviewTestObject {
     private String userID;
     private String content;
     private boolean finished;
+    private String activeTestID;
 
     public PreviewTestObject() {
     }
 
-    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished) {
+    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished, String activeTestID) {
         this.name = name;
         this.started = started;
         this.previewImgUrl = previewImgUrl;
@@ -20,6 +21,7 @@ public class PreviewTestObject {
         this.userID = userID;
         this.content = content;
         this.finished = finished;
+        this.activeTestID = activeTestID;
     }
 
     public String getName() {
@@ -76,5 +78,13 @@ public class PreviewTestObject {
 
     public void setFinished(boolean finished) {
         this.finished = finished;
+    }
+
+    public String getActiveTestID() {
+        return activeTestID;
+    }
+
+    public void setActiveTestID(String activeTestID) {
+        this.activeTestID = activeTestID;
     }
 }

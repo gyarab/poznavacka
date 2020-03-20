@@ -7,19 +7,20 @@ public class DBTestObject {
     private String previewImageUrl;
     private boolean started;
     private boolean finished;
+    private String activeTestID;
 
     public DBTestObject() {
     }
 
-    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished) {
+    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished, String activeTestID) {
         this.name = name;
         this.content = content;
         this.userID = userID;
         this.previewImageUrl = previewImageUrl;
         this.started = started;
         this.finished = finished;
+        this.activeTestID = activeTestID;
     }
-
 
     public String getName() {
         return name;
@@ -67,5 +68,13 @@ public class DBTestObject {
 
     public void setFinished(boolean finished) {
         this.finished = finished;
+    }
+
+    public String getActiveTestID() {
+        return activeTestID;
+    }
+
+    public void setActiveTestID(String activeTestID) {
+        this.activeTestID = activeTestID;
     }
 }

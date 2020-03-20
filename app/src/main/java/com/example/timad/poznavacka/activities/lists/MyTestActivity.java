@@ -9,13 +9,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.ActiveTestObject;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.TestAdapter;
 import com.example.timad.poznavacka.PreviewTestObject;
+import com.example.timad.poznavacka.TestCodeObject;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -143,7 +146,13 @@ public class MyTestActivity extends AppCompatActivity {
 
                                 setStarted_end(userID, documentName, position);
                                 mTestAdapter.notifyDataSetChanged();
+
                                 //create document in ActiveTests database
+                                String content = test.getContent();
+                                //TODO generate test code method
+                               StartingTestAction(position);
+
+
 
                                 //create collection userID+databaseID for user results
 
@@ -171,9 +180,18 @@ public class MyTestActivity extends AppCompatActivity {
                                 String documentName = test.getDatabaseID();
 
                                 setFinished(userID,documentName,position);
+
+
+                                String deactivateTest = test.getActiveTestID();
+
                                 mTestAdapter.notifyDataSetChanged();
+                                deactivateTest(position);
+
+
+
 
                                 //2 option load results to userID+userID as array of objects
+
 
 
                                 dialog.dismiss();
@@ -215,13 +233,14 @@ public class MyTestActivity extends AppCompatActivity {
                                String userID = document.getString("userID");
                                String name = document.getString("name");
                                boolean finished = document.getBoolean("finished");
+                               String activeTestID = document.getString("activeTestID");
                                // String name = "lev";
                               //  boolean started = false;
                               //  String previewImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1200px-Lion_waiting_in_Namibia.jpg";
                               //  String databaseID = document.getId();
                               //  String content = "xd";
                               //  String userID= "xd";
-                                PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished);
+                                PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished,activeTestID);
                                 previewTestObjectArrayList.add(test);
 
                             }
@@ -257,9 +276,96 @@ public class MyTestActivity extends AppCompatActivity {
         );
 
     }
-    private void addToActiveTests(){
+    private void addToActiveTests(ActiveTestObject data,final int position){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("ActiveTest")
+                .add(data)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                        String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
+                        String activateTestID = documentReference.getId();
+
+                        updateActiveTestID(userID,activateTestID,position);
+                        previewTestObjectArrayList.get(position).setActiveTestID(activateTestID);
+
+
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+    }
+    private String generateCode(){
+        //Databaze bude mit 1 collection s 1 documentem s 1 intem co bude urcovat id id testu zacina na 111111
+
+
+        return null;
+    }
+    private void StartingTestAction(final int position){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                TestCodeObject data = documentSnapshot.toObject(TestCodeObject.class);
+
+                String content = previewTestObjectArrayList.get(position).getContent();
+                String testCode = data.getTestCode();
+                String userID = previewTestObjectArrayList.get(position).getUserID();
+                String testDBID = previewTestObjectArrayList.get(position).getDatabaseID();
+
+                ActiveTestObject test = new ActiveTestObject(content,testCode,userID,testDBID);
+                addToActiveTests(test,position);
+
+                DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
+                docRef.update(
+                        "testCode",Integer.toString(Integer.parseInt(data.getTestCode())+1)
+                        );
+
+            }
+        });
+
 
     }
+    private void updateActiveTestID(String userID,String activeTestID,int position){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String documentName = previewTestObjectArrayList.get(position).getDatabaseID();
+        DocumentReference docRef = db.collection(userID).document(documentName);
+        docRef.update(
+                "activeTestID",activeTestID
+        );
+
+    }
+    private void deactivateTest(int position){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+
+      db.collection("ActiveTest").document(previewTestObjectArrayList.get(position).getActiveTestID())
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
+    }
+
+
 
 
 
@@ -287,7 +393,6 @@ public class MyTestActivity extends AppCompatActivity {
                     .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                         @Override
                         public void onSuccess(DocumentReference documentReference) {
-                            mTestAdapter.notifyDataSetChanged();
 
                         }
                     })
