@@ -32,6 +32,7 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
     public static class TestViewHolder extends RecyclerView.ViewHolder{
 
         private TextView textView1;
+        private TextView PIN1;
         private ImageView previewImg1;
         private ImageView resultImg1;
         private ImageView stop_startImg1;
@@ -39,10 +40,12 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
 
 
 
+
         public TestViewHolder(@NonNull View itemView, final OnItemClickListener mListener) {
             super(itemView);
 
             textView1=itemView.findViewById(R.id.testName2);
+            PIN1 = itemView.findViewById(R.id.PIN2);
             previewImg1 =itemView.findViewById(R.id.img_preview2);
             stop_startImg1=itemView.findViewById(R.id.img_start_end2);
             deleteImg1 = itemView.findViewById(R.id.img_delete2);
@@ -100,8 +103,15 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
     public void onBindViewHolder(@NonNull TestViewHolder holder, int position) {
         PreviewTestObject item = mTestList.get(position);
         holder.textView1.setText(item.getName());
+        holder.PIN1.setText("PIN:"+item.getTestCode());
         holder.resultImg1.setImageResource(R.drawable.ic_result);
-        holder.deleteImg1.setImageResource(R.drawable.ic_delete);
+        if(item.isStarted()&&!item.isFinished()){
+            holder.deleteImg1.setImageResource(0);
+            holder.deleteImg1.setEnabled(false);
+        }else {
+            holder.deleteImg1.setEnabled(true);
+            holder.deleteImg1.setImageResource(R.drawable.ic_delete);
+        }
         if(item.isFinished()) {
             holder.stop_startImg1.setImageResource(0);
             holder.stop_startImg1.setEnabled(false);
