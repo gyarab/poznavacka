@@ -609,7 +609,7 @@ public class MyListsActivity extends AppCompatActivity {
                         MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
                     }
                     MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
-                    MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+                    //MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
                 }

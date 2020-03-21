@@ -13,30 +13,36 @@ import androidx.appcompat.app.AppCompatActivity;
 
 
 public class WelcomeActivity extends AppCompatActivity {
+    int SPLASH_TIME_OUT = 300;
 
     @Override
     protected void onStart() {
         super.onStart();
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        int SPLASH_TIME_OUT = 300;
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                updateUI(user);
-            }
-        }, SPLASH_TIME_OUT);
+        updateUI(user);
 
     }
 
     private void updateUI(FirebaseUser user) {
         if (user == null) {
-            Intent intent0 = new Intent(WelcomeActivity.this, AuthenticationActivity.class);
-            startActivity(intent0);
-            finish();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent0 = new Intent(WelcomeActivity.this, AuthenticationActivity.class);
+                    startActivity(intent0);
+                    finish();
+                }
+            }, SPLASH_TIME_OUT);
         } else {
-            Intent intent0 = new Intent(WelcomeActivity.this, MyListsActivity.class);
-            startActivity(intent0);
-            finish();
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent0 = new Intent(WelcomeActivity.this, MyListsActivity.class);
+                    startActivity(intent0);
+                    finish();
+                    overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                }
+            }, SPLASH_TIME_OUT);
         }
     }
 
