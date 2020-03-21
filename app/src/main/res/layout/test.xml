@@ -21,6 +21,16 @@
             android:layout_toEndOf="@+id/img_preview2"
             android:textColor="@color/black"
             />
+        <TextView
+            android:id="@+id/PIN2"
+            android:text="title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/img_preview2"
+            android:layout_below="@+id/testName2"
+            android:textColor="@color/black"
+            />
+
 
         <ImageView
             android:id="@+id/img_preview2"

@@ -18,7 +18,9 @@
         android:roundIcon="@drawable/poznavacka_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.lists.MyTestActivity"></activity>
+        <activity android:name=".activities.test.TestUserActivity"></activity>
+        <activity android:name=".activities.lists.createList.MyResultActivity" />
+        <activity android:name=".activities.lists.MyTestActivity" />
         <activity
             android:name=".activities.lists.createList.PopActivity"
             android:theme="@style/AppTheme.Pop" />
@@ -59,8 +61,8 @@
         </activity>
         <activity
             android:name=".activities.lists.createList.CreateListActivity"
-            android:windowSoftInputMode="stateVisible|adjustResize"
-            android:configChanges="orientation|screenSize|keyboardHidden" />
+            android:configChanges="orientation|screenSize|keyboardHidden"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
     </application>
 
 </manifest>
