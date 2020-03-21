@@ -10,44 +10,69 @@
 
     <HorizontalScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_above="@id/bottomUI">
 
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewZ"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scrollbars="horizontal|vertical">
+            android:scrollbars="horizontal|vertical"
+            android:layout_gravity="center">
 
         </androidx.recyclerview.widget.RecyclerView>
 
     </HorizontalScrollView>
 
-    <ProgressBar
-        android:id="@+id/progressBar_new"
-        style="?android:attr/progressBarStyle"
+    <RelativeLayout
+        android:id="@+id/bottomUI"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="100dp"
+        android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp" />
+        android:layout_alignParentBottom="true">
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/button_save_new"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
-        android:backgroundTint="@color/color_save_button"
-        android:textColor="@color/text_color"
-        android:text="Save"
-        app:icon="@drawable/check"
-        app:iconTint="@color/text_color"
+        <ProgressBar
+            android:id="@+id/progressBar_new"
+            style="?android:attr/progressBarStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp" />
 
-        android:theme="@style/AppTheme.ExtendedFloatingActionButton"
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton" />
+        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            android:id="@+id/button_save_new"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="30dp"
+            android:layout_marginEnd="30dp"
+
+            android:backgroundTint="@color/color_save_button"
+            android:textColor="@color/text_color"
+            android:text="Save"
+            app:icon="@drawable/check"
+            app:iconTint="@color/text_color"
+
+            android:theme="@style/AppTheme.ExtendedFloatingActionButton"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton" />
+
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="5dp"
+            android:text="Edit the list if you wish."
+            android:textColor="@color/text_color"
+            android:textSize="15sp" />
+    </RelativeLayout>
+
 
 </RelativeLayout>

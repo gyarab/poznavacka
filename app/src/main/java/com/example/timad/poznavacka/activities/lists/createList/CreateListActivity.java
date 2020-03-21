@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.LockableViewPager;
@@ -41,36 +42,66 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     private ArrayList<Zastupce> mZastupceArr;
 
     private String path;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_list);
 
-        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
+/*        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
             public void handleOnBackPressed() {
+*//*
                 Intent intent = new Intent(getApplicationContext(), MyListsActivity.class);
                 startActivity(intent);
                 finish();
                 overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+*//*
+
+                getFragmentManager().popBackStack();
             }
         };
-        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);
+        getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);*/
+
 
         //fragments navigation
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = findViewById(R.id.container);
         setupViewPager(mViewPager);
 
-
+        getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
 
+    @Override
+    public void onBackPressed() {
+
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count == 0) {
+            Intent intent = new Intent(getApplicationContext(), MyListsActivity.class);
+            startActivity(intent);
+            finish();
+            overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+            return;
+        } else if (count == 1) {
+            getSupportFragmentManager().popBackStack();
+            SetTitleFragment.btnNext.setVisibility(View.VISIBLE);
+        } else if (count == 2) {
+            getSupportFragmentManager().popBackStack();
+            SetLanguageRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
+        } else if (count == 3) {
+            GeneratedListFragment.cancelWikiSearchRepresentativesAsync();
+            getSupportFragmentManager().popBackStack();
+            SetCreateOptionsFragment.btnNext.setVisibility(View.VISIBLE);
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
+    }
 
     private void setupViewPager(LockableViewPager viewPager) {
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
 
-        //TODO change back
-        //adapter.addFragment(new CreateListFragment());
         adapter.addFragment(new SetTitleFragment());
         adapter.addFragment(new SetLanguageRepresentativesFragment());
         adapter.addFragment(new SetCreateOptionsFragment());
@@ -90,7 +121,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         Timber.d("loading into setRepresentativesFragment");
         SetLanguageRepresentativesFragment setLanguageRepresentativesFragment = new SetLanguageRepresentativesFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_set_title, setLanguageRepresentativesFragment);
+        //fragmentTransaction.replace(R.id.fragment_set_title, setLanguageRepresentativesFragment);
+        fragmentTransaction.add(R.id.fragment_set_title, setLanguageRepresentativesFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }

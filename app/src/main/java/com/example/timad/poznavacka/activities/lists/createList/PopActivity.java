@@ -8,6 +8,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -208,7 +209,7 @@ public class PopActivity extends Activity {
                     trimmedValues) {
                 CheckBox ch = new CheckBox(fragment.getApplicationContext());
                 ch.setText(value);
-                ch.setTextColor(Color.WHITE);
+                ch.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 fragment.layout1.addView(ch);
 
                 Log.d(TAG, "Checkbox " + values[0] + " added");

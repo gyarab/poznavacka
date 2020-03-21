@@ -18,6 +18,7 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import java.util.ArrayList;
 import java.util.Objects;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import timber.log.Timber;
@@ -29,7 +30,7 @@ public class SetCreateOptionsFragment extends Fragment {
     private OnFragmentInteractionListener mListener;
 
     private Switch autoImportSwitch;
-    private ExtendedFloatingActionButton btnNext;
+    public static ExtendedFloatingActionButton btnNext;
 
     private boolean autoImportIsChecked;
 
@@ -72,7 +73,9 @@ public class SetCreateOptionsFragment extends Fragment {
             languageURL = getArguments().getString("ARG_LANGUAGEURL");
             representatives = getArguments().getStringArrayList("ARG_REPRESENTATIVES");
         }
+
     }
+
 
     //the actual in-fragment operations
     @Override

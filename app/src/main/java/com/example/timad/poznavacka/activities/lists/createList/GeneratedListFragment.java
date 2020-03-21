@@ -26,6 +26,7 @@ import com.example.timad.poznavacka.BuildConfig;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObjectAutoCorrect;
@@ -87,6 +88,8 @@ public class GeneratedListFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+    public static WikiSearchRepresentatives wikiSearchRepresentatives;
+
     private boolean loadingRepresentative;
     private boolean listCreated;
 
@@ -95,7 +98,7 @@ public class GeneratedListFragment extends Fragment {
 
     //RecyclerView
     private RecyclerView mRecyclerView;
-    private RecyclerView.Adapter mAdapter;
+    private ZastupceAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     private ArrayList<Zastupce> mZastupceArr;
 
@@ -148,6 +151,7 @@ public class GeneratedListFragment extends Fragment {
             Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 
         }
+
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -174,14 +178,13 @@ public class GeneratedListFragment extends Fragment {
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = (int) ((float) displayMetrics.heightPixels * 0.7f);
+        int height = (int) ((float) displayMetrics.heightPixels * 1.0f);
         //int width = (int) ((float) displayMetrics.widthPixels * 2f);
 
         //from https://stackoverflow.com/questions/19805981/android-layout-view-height-is-equal-to-screen-size
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollV.getLayoutParams();
         params.height = height;
         scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
-
 
         mZastupceArr = new ArrayList<>();
         mLManager = new LinearLayoutManager(getContext());
@@ -201,12 +204,22 @@ public class GeneratedListFragment extends Fragment {
         }
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
+        mAdapter.setOnItemClickListener(new ZastupceAdapter.OnItemClickListener() {
+            @Override
+            public void onViewClick(int position) {
+                Zastupce currentZastupce = mZastupceArr.get(position);
+                Toast.makeText(getActivity(), "image of " + position, Toast.LENGTH_SHORT).show();
+            }
+        });
 
         /* generation */
-        final GeneratedListFragment.WikiSearchRepresentatives[] WikiSearchRepresentatives = {new WikiSearchRepresentatives(GeneratedListFragment.this)};
-        WikiSearchRepresentatives[0] = new WikiSearchRepresentatives(GeneratedListFragment.this);
-        WikiSearchRepresentatives[0].execute();
+        wikiSearchRepresentatives = new WikiSearchRepresentatives(GeneratedListFragment.this);
+        wikiSearchRepresentatives.execute();
 
+    }
+
+    public static void cancelWikiSearchRepresentativesAsync() {
+        wikiSearchRepresentatives.cancel(true);
     }
 
     @Override
@@ -969,8 +982,10 @@ public class GeneratedListFragment extends Fragment {
             if (!values[0].equals("")) {
                 Toast.makeText(fragment.getActivity(), "No Wiki for " + values[0], Toast.LENGTH_SHORT).show();
                 fragment.mAdapter.notifyDataSetChanged();
+                fragment.mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
             } else {
                 fragment.mAdapter.notifyDataSetChanged();
+                fragment.mRecyclerView.scrollToPosition(mAdapter.getItemCount() - 1);
             }
         }
 

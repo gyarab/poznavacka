@@ -24,14 +24,13 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
     private static int mParameters;
     private static int[] mIds;
 
-    public OnItemClickListener listener;
+    private OnItemClickListener listener;
 
-    public interface  OnItemClickListener{
+    public interface OnItemClickListener {
         void onViewClick(int position);
-
     }
 
-    public  void setOnItemClickListener(OnItemClickListener listener){
+    public void setOnItemClickListener(OnItemClickListener listener) {
         this.listener=listener;
     }
 
@@ -66,16 +65,17 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
             zastupceImage = itemView.findViewById(mIds[mParameters]);
 
             //TODO set change/import image
-          /*  zastupceImage.setOnClickListener(new View.OnClickListener() {
+            zastupceImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    int position = getAdapterPosition();
-                    if(position!=RecyclerView.NO_POSITION){
-                        listener.onViewClick(position);
-
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onViewClick(position);
+                        }
                     }
                 }
-            });*/
+            });
 
             /*for (int i = 0; i < mParameters; i++){
                 // https://stackoverflow.com/questions/31844373/saving-edittext-content-in-recyclerview
@@ -225,7 +225,6 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         for (int i = 0; i < mParameters; i++){
             holder.editTArr.get(i).setText(currentZastupce.getParameter(i));
         }
-
         holder.zastupceImage.setImageDrawable(currentZastupce.getImage()); // IMG
     }
 

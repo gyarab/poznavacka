@@ -1,6 +1,7 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -8,15 +9,18 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.Objects;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 
 
@@ -32,7 +36,9 @@ public class SetTitleFragment extends Fragment {
 
     private EditText titleInput;
     private TextView textView;
-    private FloatingActionButton btnNext;
+
+    public static FloatingActionButton btnNext;
+    private Button btnCancel;
 
     public SetTitleFragment() {
         // Required empty public constructor
@@ -70,6 +76,7 @@ public class SetTitleFragment extends Fragment {
         super.onStart();
         titleInput = getView().findViewById(R.id.title_input);
         btnNext = getView().findViewById(R.id.button_next);
+        btnCancel = getView().findViewById(R.id.button_cancel);
 
         showSoftKeyboard(titleInput);
      /*   titleInput.requestFocus();
@@ -101,6 +108,7 @@ public class SetTitleFragment extends Fragment {
 
             }
         });
+
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -109,7 +117,19 @@ public class SetTitleFragment extends Fragment {
             }
         });
 
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyListsActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                getActivity().finish();
+            }
+        });
+
+
     }
+
 
     private void showSoftKeyboard(View view) {
         if (view.requestFocus()) {

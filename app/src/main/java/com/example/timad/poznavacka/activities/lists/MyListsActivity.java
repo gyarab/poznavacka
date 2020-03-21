@@ -66,6 +66,8 @@ import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
 
+import static java.security.AccessController.getContext;
+
 
 public class MyListsActivity extends AppCompatActivity {
 
@@ -176,6 +178,10 @@ public class MyListsActivity extends AppCompatActivity {
         newListBTN.setMenuListener(new SimpleMenuListenerAdapter() {
             @Override
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                if (!SharedListsActivity.checkInternet(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "Not connected to internet", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
                 return super.onPrepareMenu(navigationMenu);
             }
 

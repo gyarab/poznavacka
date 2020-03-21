@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 
 
@@ -37,11 +38,11 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
 
     private Spinner languageSpinner;
     private EditText representativesInput;
-    private FloatingActionButton btnNext;
+    public static FloatingActionButton btnNext;
 
     private String languageURL;
 
-    private boolean languageSelected;
+    private boolean languageSelected = true;
     private boolean enteredTextIsValid;
 
     public SetLanguageRepresentativesFragment() {
@@ -71,14 +72,6 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
-
-/*        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
-            @Override
-            public void handleOnBackPressed() {
-                getFragmentManager().popBackStackImmediate();
-            }
-        };
-        getActivity().getOnBackPressedDispatcher().addCallback(this, onBackPressedCallback);*/
     }
 
     //the actual fragment operations
@@ -157,10 +150,6 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         languageSelected = true;
 
         switch (languageString) {
-            case "Select Language":
-                languageURL = "Select Language";
-                languageSelected = false;
-                break;
             case "English":
                 languageURL = "en";
                 break;

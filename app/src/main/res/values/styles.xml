@@ -19,7 +19,7 @@
 
     <style name="AppTheme.Pop">
         <item name="android:windowIsTranslucent">true</item>
-        <item name="android:windowCloseOnTouchOutside">true</item>
+        <item name="android:windowCloseOnTouchOutside">false</item>
         <item name="android:fontFamily">@font/lineto_circular_pro_medium</item>
     </style>
 

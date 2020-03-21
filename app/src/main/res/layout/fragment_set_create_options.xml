@@ -13,44 +13,35 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:paddingBottom="100dp">
+        android:paddingBottom="0dp">
 
-            <RelativeLayout
-                android:id="@+id/layout_with_border1"
-                android:layout_width="match_parent"
+        <RelativeLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:paddingTop="50dp">
+
+            <TextView
+                android:id="@+id/options_text_view_hint"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="20dp"
-                android:layout_marginTop="200dp"
-                android:layout_marginEnd="20dp"
-                android:background="@drawable/layout_border"
-                android:gravity="center_vertical"
-                android:orientation="vertical"
-                android:paddingTop="25dp"
-                android:paddingBottom="25dp"
-                android:backgroundTint="@color/colorPrimaryDark">
-
-                <TextView
-                    android:id="@+id/import_text_view_hint"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:layout_marginBottom="30dp"
-                    android:gravity="center"
-                    android:lineSpacingMultiplier="1.2"
-                    android:text="@string/generate_text_view"
-                    android:textColor="@color/text_color"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                android:layout_centerHorizontal="true"
+                android:layout_marginBottom="230dp"
+                android:layout_marginStart="35dp"
+                android:layout_marginEnd="35dp"
+                android:text="@string/generate_text_view"
+                android:textColor="@color/text_color"
+                android:textSize="20sp"
+                android:textStyle="bold"
+                android:textAlignment="center" />
 
                 <Switch
                     android:id="@+id/generateSwitch"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/import_text_view_hint"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="10dp"
+                    android:layout_centerInParent="true"
+                    android:layout_margin="50dp"
                     android:gravity="center_horizontal"
                     android:switchPadding="20dp"
                     android:text="@string/autoRadDruhSwitch"
@@ -68,8 +59,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginEnd="30dp"
-        android:layout_marginBottom="30dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="20dp"
         android:backgroundTint="@color/colorAccent"
         android:textColor="@color/text_color"
         android:text="Create"

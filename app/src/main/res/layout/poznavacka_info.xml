@@ -1,17 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/cardView1"
     android:layout_width="match_parent"
-    android:theme="@style/Theme.MaterialComponents"
     android:layout_height="wrap_content"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="7dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="7dp"
+    android:theme="@style/Theme.MaterialComponents"
     app:cardCornerRadius="20dp"
     app:strokeColor="@color/black"
-    app:strokeWidth="2dp"
-    android:layout_marginStart="5dp"
-    android:layout_marginEnd="5dp"
-    android:layout_marginTop="7dp"
-    android:layout_marginBottom="7dp">
+    app:strokeWidth="2dp">
     <!--android:background="@drawable/poznavacko_info_cardview_background"-->
 
 
@@ -25,8 +25,8 @@
             android:id="@+id/itemText1"
             android:layout_width="140dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:layout_above="@+id/itemText2"
+            android:layout_alignParentTop="true"
             android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/img_prewiew"
@@ -41,6 +41,8 @@
             android:layout_above="@+id/img_delete"
             android:layout_alignStart="@id/itemText1"
             android:layout_toEndOf="@+id/img_prewiew"
+            android:layout_marginBottom="5dp"
+
             android:text="User Name"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="normal" />
@@ -61,38 +63,39 @@
             android:id="@+id/img_practice"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
-            android:layout_toStartOf="@id/img_share"
+            android:layout_toEndOf="@id/img_test"
+            android:layout_alignBottom="@id/img_test"
+            android:layout_marginStart="10dp"
             app:srcCompat="@drawable/ic_school_dark_purple_24dp" />
 
         <ImageView
             android:id="@+id/img_share"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="10dp"
-            android:layout_marginStart="8dp"
-            android:layout_marginEnd="8dp"
-            android:layout_toStartOf="@id/img_delete" />
+            android:layout_alignBottom="@id/img_delete"
+            android:layout_toStartOf="@id/img_delete"
+            android:layout_marginEnd="10dp"
+
+
+            />
 
         <ImageView
             android:id="@+id/img_delete"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_alignTop="@+id/img_practice"
+            android:layout_alignTop="@+id/img_test"
+            android:layout_alignBottom="@id/img_test"
             android:layout_alignParentEnd="true"
-            android:layout_alignBottom="@id/img_practice"
             app:srcCompat="@drawable/ic_delete_dark_purple_24dp" />
+
         <ImageView
             android:id="@+id/img_test"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_marginEnd="8dp"
-            android:layout_alignTop="@+id/img_practice"
-            android:layout_toStartOf="@+id/img_practice"
-            />
+            android:layout_alignStart="@id/itemText2"
+            android:layout_alignBottom="@id/img_prewiew"
 
+            />
 
         <!--        <ImageView
                     android:id="@+id/img_prewiew"
@@ -106,10 +109,10 @@
             android:id="@+id/img_prewiew"
             android:layout_width="140dp"
             android:layout_height="140dp"
-            android:layout_marginStart="15dp"
-            android:src="@drawable/ic_image"
             android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
             android:scaleType="fitCenter"
+            android:src="@drawable/ic_image"
 
             app:riv_border_color="#333333"
             app:riv_border_width="1dip"
