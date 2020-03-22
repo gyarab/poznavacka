@@ -362,7 +362,7 @@ public class MyTestActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(Void aVoid) {
 
-                        //TODO remove results
+
 
 
                     }
@@ -376,14 +376,43 @@ public class MyTestActivity extends AppCompatActivity {
 
     }
 
-    public static void addResultToDB(String testDBID,String userID,ResultObjectDB data){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+    public static void addResultToDB(String activeTestID,ResultObjectDB data){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(activeTestID)
+                .add(data)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
 
     }
 
-    public void deleteResults(String documentName,String userID){
+    public void deleteResults(String activeTestID,String documentName){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(activeTestID).document(documentName)
+                .delete()
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+
+                    }
+                });
+
 
 
     }

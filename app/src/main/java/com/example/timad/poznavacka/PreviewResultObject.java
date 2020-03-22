@@ -1,16 +1,17 @@
 package com.example.timad.poznavacka;
 
-public class ResultObjectDB {
+public class PreviewResultObject {
     private String userID;
     private String result;
+    private String databaseID;
 
-
-    public ResultObjectDB() {
+    public PreviewResultObject() {
     }
 
-    public ResultObjectDB(String userID, String result) {
+    public PreviewResultObject(String userID, String result, String databaseID) {
         this.userID = userID;
         this.result = result;
+        this.databaseID = databaseID;
     }
 
     public String getUserID() {
@@ -27,5 +28,13 @@ public class ResultObjectDB {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public String getDatabaseID() {
+        return databaseID;
+    }
+
+    public void setDatabaseID(String databaseID) {
+        this.databaseID = databaseID;
     }
 }

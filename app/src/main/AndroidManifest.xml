@@ -18,7 +18,8 @@
         android:roundIcon="@drawable/poznavacka_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.test.TestUserActivity"></activity>
+        <activity android:name=".activities.test.UserResultActivity"></activity>
+        <activity android:name=".activities.test.TestUserActivity" />
         <activity android:name=".activities.lists.createList.MyResultActivity" />
         <activity android:name=".activities.lists.MyTestActivity" />
         <activity
