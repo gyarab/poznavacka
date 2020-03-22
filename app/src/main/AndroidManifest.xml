@@ -20,7 +20,7 @@
         android:theme="@style/AppTheme">
         <activity android:name=".activities.test.TestUserActivity"></activity>
         <activity android:name=".activities.lists.createList.MyResultActivity" />
-        <activity android:name=".activities.lists.MyTestActivity" />
+        <activity android:name=".activities.lists.MyExamsActivity" />
         <activity
             android:name=".activities.lists.createList.PopActivity"
             android:theme="@style/AppTheme.Pop" />

@@ -3,7 +3,7 @@
 
     <item
         android:id="@+id/nav_practice"
-        android:icon="@drawable/ic_school_black_24dp"
+        android:icon="@drawable/brain_grey"
         android:title="@string/practice_list" />
 
     <item
@@ -13,8 +13,8 @@
 
     <item
         android:id="@+id/nav_test"
-        android:icon="@drawable/ic_play_circle_outline_black_24dp"
-        android:title="@string/test" />
+        android:icon="@drawable/ic_school_black_24dp"
+        android:title="@string/exam" />
 
     <item
         android:id="@+id/nav_account"

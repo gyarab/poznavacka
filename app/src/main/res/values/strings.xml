@@ -23,14 +23,14 @@
     <string name="select_list">Select the list first</string>
     <string name="open">open</string>
     <string name="close">close</string>
-    <string name="test">Test</string>
+    <string name="exam">Exam</string>
     <string name="enter_pin_button">ENTER</string>
     <string name="account">Account</string>
     <string name="create_fragment_text"><u> • Split the representatives using the entered word or character, e.g. \"plus\" -> \"dog plus otter plus ...\" </u>\n • You have the option to speak in the text using the keyboard inbuilt speak-in function</string>
     <string name="create_button">CREATE</string>
     <string name="autoRadDruhSwitch">Generate classification</string>
     <string name="save_button">SAVE</string>
-    <string name="wait_text">Please, wait for your teacher to start the test</string>
+    <string name="wait_text">Please, wait for your teacher to start the exam</string>
     <string name="pop_done">DONE</string>
     <string name="title_activity_pop">Auto-insert</string>
     <string name="language_spinner_prompt">Language</string>
@@ -64,4 +64,5 @@
     <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a simple ,</string>
     <string name="generate_text_view">Do you want some additional info about the things you entered?</string>
     <string name="user_select_language">First, select the language for your list.</string>
+    <string name="my_exams_title">YOUR EXAMS</string>
 </resources>

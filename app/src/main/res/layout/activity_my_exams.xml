@@ -5,15 +5,18 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.MyTestActivity">
+    tools:context=".activities.lists.MyExamsActivity">
 
     <TextView
         android:id="@id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
-        android:text="YOUR TESTS"
-        android:textSize="20dp"
+        android:layout_margin="8dp"
+
+        android:text="@string/my_exams_title"
+        android:textSize="28sp"
+        android:textColor="@color/text_color"
         android:fontFamily="@font/lineto_circular_black"/>
 
     <androidx.recyclerview.widget.RecyclerView

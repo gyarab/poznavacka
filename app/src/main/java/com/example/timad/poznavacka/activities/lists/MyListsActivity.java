@@ -22,7 +22,6 @@ import android.widget.Toast;
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.PoznavackaInfo;
-import com.example.timad.poznavacka.PreviewTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
@@ -46,13 +45,11 @@ import com.google.gson.reflect.TypeToken;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Objects;
-import java.util.UUID;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -65,8 +62,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
-
-import static java.security.AccessController.getContext;
 
 
 public class MyListsActivity extends AppCompatActivity {
@@ -189,7 +184,7 @@ public class MyListsActivity extends AppCompatActivity {
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
                     case (R.id.action_test):
-                        Intent intent2 = new Intent(getApplication(),MyTestActivity.class);
+                        Intent intent2 = new Intent(getApplication(), MyExamsActivity.class);
                         startActivity(intent2);
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                         finish();
@@ -363,7 +358,7 @@ public class MyListsActivity extends AppCompatActivity {
                             String previewImgUrl = sPoznavackaInfoArr.get(position).getPrewievImageUrl();
                             boolean finished = false;
                             DBTestObject data= new DBTestObject(name,content,userID,previewImgUrl,started,finished,"","");
-                            MyTestActivity.addToTests(userID,data);
+                            MyExamsActivity.addToTests(userID, data);
                         //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
 
                             dialog.dismiss();

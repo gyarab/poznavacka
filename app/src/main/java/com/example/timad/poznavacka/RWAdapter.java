@@ -141,7 +141,7 @@ public class RWAdapter extends RecyclerView.Adapter<RWAdapter.PoznavackaInfoView
         holder.textView1.setText(currentPoznavackaInfo.getName());
         holder.textView2.setText(currentPoznavackaInfo.getAuthor());
         holder.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
-        holder.testImg.setImageResource(R.drawable.ic_test);
+        holder.testImg.setImageResource(R.drawable.ic_school_dark_purple_24dp);
 
         Drawable d = MyListsActivity.getSMC(holder.prewiewImg.getContext()).readDrawable(mPoznavackaInfoList.get(position).getId() + "/", mPoznavackaInfoList.get(position).getPrewievImageLocation(), holder.prewiewImg.getContext());
         holder.prewiewImg.setImageDrawable(d);

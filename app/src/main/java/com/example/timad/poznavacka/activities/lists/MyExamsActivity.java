@@ -9,13 +9,11 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.ActiveTestObject;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.R;
-import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.ResultObjectDB;
 import com.example.timad.poznavacka.TestAdapter;
 import com.example.timad.poznavacka.PreviewTestObject;
@@ -32,9 +30,8 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
-public class MyTestActivity extends AppCompatActivity {
+public class MyExamsActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
     static private TestAdapter mTestAdapter;
@@ -44,7 +41,7 @@ public class MyTestActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_my_test);
+        setContentView(R.layout.activity_my_exams);
 
         String  userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -71,7 +68,7 @@ public class MyTestActivity extends AppCompatActivity {
             @Override
             public void onDeleteClick(final int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyExamsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_delete);
                     builder.setMessage("Do you really want to delete " + previewTestObjectArrayList1.get(position).getName() + " from tests?");
@@ -103,7 +100,7 @@ public class MyTestActivity extends AppCompatActivity {
             @Override
             public void onResultsClick(int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyExamsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_result);
                     builder.setMessage("Do you really want to check results of test " + previewTestObjectArrayList1.get(position).getName() +"?");
@@ -133,7 +130,7 @@ public class MyTestActivity extends AppCompatActivity {
                     final PreviewTestObject test = previewTestObjectArrayList1.get(position);
                     if (!test.isStarted()) {
 
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MyExamsActivity.this);
                         builder.setTitle(R.string.app_name);
                         builder.setIcon(R.drawable.ic_list_play_black_24dp);
                         builder.setMessage("Do you really want to  start test " + previewTestObjectArrayList1.get(position).getName() + "?");
@@ -170,7 +167,7 @@ public class MyTestActivity extends AppCompatActivity {
                         alert.show();
 
                     }else{
-                        AlertDialog.Builder builder = new AlertDialog.Builder(MyTestActivity.this);
+                        AlertDialog.Builder builder = new AlertDialog.Builder(MyExamsActivity.this);
                         builder.setTitle(R.string.app_name);
                         builder.setIcon(R.drawable.ic_stop);
                         builder.setMessage("Do you really want to  stop test " + previewTestObjectArrayList1.get(position).getName() + "?");
