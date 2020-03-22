@@ -11,9 +11,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.ResultObjectDB;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,12 +30,6 @@ public class TestUserActivity extends AppCompatActivity {
 
         if(SharedListsActivity.checkInternet(this)){
             finishTest=findViewById(R.id.finishTest3);
-            /*finishTest.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                   // MyTestActivity.addResultToDB();
-                }
-            });*/
             loadContent(TestPINFragment.firebaseTestID);
         }
     }
@@ -67,16 +63,25 @@ public class TestUserActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
         }
     }
-    private void loadContent(String documentName){
+    private void loadContent(final String documentName){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("ActiveTest").document(documentName);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
-            public void onSuccess(DocumentSnapshot documentSnapshot) {
+            public void onSuccess(final DocumentSnapshot documentSnapshot) {
                 TextView content = findViewById(R.id.content3);
                 content.setText(documentSnapshot.getString("content"));
                 TextView result = findViewById(R.id.result3);
                 result.setText("17/20");
+                final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
+                /*
+                finishTest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        MyTestActivity.addResultToDB(documentSnapshot.getId(),item);
+                    }
+                });
+                */
             }
             });
     }
