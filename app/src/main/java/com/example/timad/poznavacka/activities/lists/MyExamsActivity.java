@@ -13,11 +13,14 @@ import android.widget.Toast;
 
 import com.example.timad.poznavacka.ActiveTestObject;
 import com.example.timad.poznavacka.DBTestObject;
+import com.example.timad.poznavacka.PreviewResultObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.ResultObjectDB;
 import com.example.timad.poznavacka.TestAdapter;
 import com.example.timad.poznavacka.PreviewTestObject;
 import com.example.timad.poznavacka.TestCodeObject;
+import com.example.timad.poznavacka.activities.test.TestUserActivity;
+import com.example.timad.poznavacka.activities.test.UserResultActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -37,6 +40,7 @@ public class MyExamsActivity extends AppCompatActivity {
     static private TestAdapter mTestAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private static ArrayList<PreviewTestObject> previewTestObjectArrayList;
+    public static String currentCollectionResultID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,6 +57,26 @@ public class MyExamsActivity extends AppCompatActivity {
                 Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    private void clearResults(final String collectionID){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection(collectionID)
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                deleteResults(collectionID,document.getId());
+                            }
+                        }
+
+                    }
+                });
+    }
+    private void gotToResults(){
+        Intent intent = new Intent(getApplication(), UserResultActivity.class);
+        startActivity(intent);
     }
     //current focus
     private void buildRecyclerView(final ArrayList<PreviewTestObject> previewTestObjectArrayList1){
@@ -76,8 +100,8 @@ public class MyExamsActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            clearResults(previewTestObjectArrayList1.get(position).getActiveTestID());
                             removeTest(FirebaseAuth.getInstance().getCurrentUser().getUid(),previewTestObjectArrayList1.get(position).getDatabaseID(),position);
-
 
                             dialog.dismiss();
                     }
@@ -98,7 +122,7 @@ public class MyExamsActivity extends AppCompatActivity {
 
 
             @Override
-            public void onResultsClick(int position) {
+            public void onResultsClick(final int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyExamsActivity.this);
                     builder.setTitle(R.string.app_name);
@@ -107,6 +131,12 @@ public class MyExamsActivity extends AppCompatActivity {
                     builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+
+                           PreviewTestObject item = previewTestObjectArrayList1.get(position);
+                           currentCollectionResultID = item.getActiveTestID();
+
+                           gotToResults();
+
 
                             dialog.dismiss();
                         }

@@ -6,12 +6,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.ResultObjectDB;
+import com.example.timad.poznavacka.activities.lists.MyExamsActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -74,14 +76,14 @@ public class TestUserActivity extends AppCompatActivity {
                 TextView result = findViewById(R.id.result3);
                 result.setText("17/20");
                 final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
-                /*
+
                 finishTest.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        MyTestActivity.addResultToDB(documentSnapshot.getId(),item);
+                        MyExamsActivity.addResultToDB(documentSnapshot.getId(),item);
                     }
                 });
-                */
+
             }
             });
     }
