@@ -8,11 +8,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.ResultObjectDB;
+import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.MyExamsActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
@@ -21,17 +23,33 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.squareup.picasso.Picasso;
+
+import java.lang.reflect.Type;
+import java.util.ArrayList;
 
 public class TestUserActivity extends AppCompatActivity {
     private Button finishTest;
+    private Button next;
+    private Button previous;
+    private ArrayList<Zastupce> zastupces;
+    private int index;
+    private int first;
+    private int last;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_test_user);
 
+
         if(SharedListsActivity.checkInternet(this)){
-            finishTest=findViewById(R.id.finishTest3);
+            next= findViewById(R.id.next3);
+            previous = findViewById(R.id.previous3);
+            finishTest = findViewById(R.id.finishTest3);
             loadContent(TestPINFragment.firebaseTestID);
         }
     }
@@ -71,12 +89,93 @@ public class TestUserActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(final DocumentSnapshot documentSnapshot) {
-                TextView content = findViewById(R.id.content3);
+                initializeZastupces(documentSnapshot.getString("content"));
+                index=0;
+                first = index;
+                if(zastupces.get(0).getParameter(0).isEmpty()){
+                    index++;
+                    first = index;
+                }
+                testViewer(index,last,first);
+                next.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                       index++;
+                       testViewer(index,last,first);
+                    }
+                });
+                previous.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        index--;
+                        testViewer(index,last,first);
+                    }
+                });
+                finishTest.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        TextView result = findViewById(R.id.result3);
+                        result.setText("17/20");
+                        final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
+                        MyExamsActivity.updateResultsEmpty(documentSnapshot.getString("userID"),documentSnapshot.getString("testDBID"),getApplicationContext());
+                        MyExamsActivity.addResultToDB(documentSnapshot.getId(),item);
+                    }
+                });
+
+
+
+
+
+            }
+            });
+    }
+    private void createArr(){
+        zastupces=new ArrayList<>();
+    }
+    private void initializeZastupces(String content){
+        createArr();
+        Gson gson = new Gson();
+        Type cType = new TypeToken<ArrayList<Zastupce>>() {
+        }.getType();
+        zastupces = gson.fromJson(content, cType);
+        last = zastupces.size()-1;
+    }
+    private void testViewer(int index,int last,int first) {
+        Zastupce item = zastupces.get(index);
+        String imageUrl = item.getImageURL();
+        ImageView img = findViewById(R.id.zastupceImage3);
+        Picasso.get().load(imageUrl).error(R.drawable.ic_image).into(img);
+        // previous button
+        if (first == index) {
+            previous.setEnabled(false);
+        } else {
+            previous.setEnabled(true);
+        }
+        //finish test button
+        if (index == last) {
+            finishTest.setEnabled(true);
+        } else {
+            finishTest.setEnabled(false);
+        }
+        //next button
+        if(index==last){
+            next.setEnabled(false);
+        }else{
+            next.setEnabled(true);
+        }
+
+    }
+
+    private void setResults(){
+
+    }
+    /*
+     TextView content = findViewById(R.id.content3);
+                initializeZastupces(documentSnapshot.getString("content"));
                 content.setText(documentSnapshot.getString("content"));
                 TextView result = findViewById(R.id.result3);
                 result.setText("17/20");
                 final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
-
                 finishTest.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -84,12 +183,6 @@ public class TestUserActivity extends AppCompatActivity {
                     }
                 });
 
-            }
-            });
-    }
-    private void finishTest(){
-
-
-    }
+     */
 
 }

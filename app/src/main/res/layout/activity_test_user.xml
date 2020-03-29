@@ -16,12 +16,11 @@
         android:textSize="20dp"
         android:fontFamily="@font/lineto_circular_black"/>
 
-    <TextView
-        android:id="@+id/content3"
+    <ImageView
+        android:id="@+id/zastupceImage3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="100dp"
-        android:text="content"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/title3"
         />
@@ -42,6 +41,25 @@
         android:layout_centerHorizontal="true"
         android:layout_above="@+id/result3"
         />
+    <Button
+        android:id="@+id/next3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="next"
+        android:layout_toEndOf="@+id/finishTest3"
+        android:layout_above="@+id/result3"
+        />
+    <Button
+        android:id="@+id/previous3"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="10dp"
+        android:text="previous"
+        android:layout_toStartOf="@+id/finishTest3"
+        android:layout_above="@+id/result3"
+        />
+
 
 
 

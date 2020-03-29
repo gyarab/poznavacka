@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -26,6 +27,7 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -134,10 +136,11 @@ public class MyExamsActivity extends AppCompatActivity {
 
                            PreviewTestObject item = previewTestObjectArrayList1.get(position);
                            currentCollectionResultID = item.getActiveTestID();
+                           FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-                           gotToResults();
-
-
+                           if(item.isResultsEmpty()) {
+                               gotToResults();
+                           }
                             dialog.dismiss();
                         }
                     }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -264,13 +267,14 @@ public class MyExamsActivity extends AppCompatActivity {
                                boolean finished = document.getBoolean("finished");
                                String activeTestID = document.getString("activeTestID");
                                String testCode = document.getString("testCode");
+                               boolean resultsEmpty = document.getBoolean("resultsEmpty");
                                // String name = "lev";
                               //  boolean started = false;
                               //  String previewImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1200px-Lion_waiting_in_Namibia.jpg";
                               //  String databaseID = document.getId();
                               //  String content = "xd";
                               //  String userID= "xd";
-                                PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished,activeTestID,testCode);
+                                PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished,activeTestID,testCode,resultsEmpty);
                                 previewTestObjectArrayList.add(test);
 
                             }
@@ -280,6 +284,15 @@ public class MyExamsActivity extends AppCompatActivity {
                     }
                 });
 
+
+    }
+    public static void updateResultsEmpty(String userID, String testID, Context  context){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        Toast.makeText(context,userID+","+testID,Toast.LENGTH_LONG).show();
+        DocumentReference docRef = db.collection(userID).document(testID);
+        docRef.update(
+                "resultsEmpty",true
+        );
 
     }
 

@@ -9,11 +9,12 @@ public class DBTestObject {
     private boolean finished;
     private String activeTestID;
     private String testCode;
+    private boolean resultsEmpty;
 
     public DBTestObject() {
     }
 
-    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished, String activeTestID, String testCode) {
+    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
         this.name = name;
         this.content = content;
         this.userID = userID;
@@ -22,6 +23,7 @@ public class DBTestObject {
         this.finished = finished;
         this.activeTestID = activeTestID;
         this.testCode = testCode;
+        this.resultsEmpty = resultsEmpty;
     }
 
     public String getName() {
@@ -86,5 +88,13 @@ public class DBTestObject {
 
     public void setTestCode(String testCode) {
         this.testCode = testCode;
+    }
+
+    public boolean isResultsEmpty() {
+        return resultsEmpty;
+    }
+
+    public void setResultsEmpty(boolean resultsEmpty) {
+        this.resultsEmpty = resultsEmpty;
     }
 }
