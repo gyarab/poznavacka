@@ -10,12 +10,13 @@ public class PreviewTestObject {
     private boolean finished;
     private String activeTestID;
     private String testCode;
+    private boolean resultsEmpty;
 
 
     public PreviewTestObject() {
     }
 
-    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished, String activeTestID, String testCode) {
+    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
         this.name = name;
         this.started = started;
         this.previewImgUrl = previewImgUrl;
@@ -25,6 +26,7 @@ public class PreviewTestObject {
         this.finished = finished;
         this.activeTestID = activeTestID;
         this.testCode = testCode;
+        this.resultsEmpty = resultsEmpty;
     }
 
     public String getName() {
@@ -97,5 +99,13 @@ public class PreviewTestObject {
 
     public void setTestCode(String testCode) {
         this.testCode = testCode;
+    }
+
+    public boolean isResultsEmpty() {
+        return resultsEmpty;
+    }
+
+    public void setResultsEmpty(boolean resultsEmpty) {
+        this.resultsEmpty = resultsEmpty;
     }
 }
