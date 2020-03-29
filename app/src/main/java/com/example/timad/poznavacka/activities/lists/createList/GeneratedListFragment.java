@@ -2,6 +2,7 @@ package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -12,25 +13,35 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.HorizontalScrollView;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BuildConfig;
+import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.ZastupceAdapter;
+import com.example.timad.poznavacka.activities.lists.MyExamsActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
+import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.example.timad.poznavacka.google_search_objects.GoogleItemObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObject;
 import com.example.timad.poznavacka.google_search_objects.GoogleSearchObjectAutoCorrect;
 import com.example.timad.poznavacka.google_search_objects.Spelling;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.firebase.auth.FirebaseAuth;
 import com.google.gson.Gson;
 
 import org.jsoup.Jsoup;
@@ -53,6 +64,8 @@ import java.util.Locale;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -93,6 +106,7 @@ public class GeneratedListFragment extends Fragment {
     private boolean loadingRepresentative;
     private boolean listCreated;
 
+    private FloatingActionButton btnNext;
     private Button btnSAVE;
     private ProgressBar progressBar;
 
@@ -126,6 +140,22 @@ public class GeneratedListFragment extends Fragment {
         args.putStringArrayList(ARG_REVERSEDUSERSCIENTIFICCLASSIFICATION, reversedUserScientificClassification);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        if (savedInstanceState != null) {
+            mZastupceArr = savedInstanceState.getParcelableArrayList("MZASTUPCEARR");
+            //TODO restore
+        }
+    }
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putParcelableArrayList("MZASTUPCEARR", mZastupceArr);
+        //TODO save
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -185,14 +215,14 @@ public class GeneratedListFragment extends Fragment {
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams) scrollV.getLayoutParams();
         params.height = height;
         scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
-
-        mZastupceArr = new ArrayList<>();
+        if (mZastupceArr == null) {
+            mZastupceArr = new ArrayList<>();
+            Toast.makeText(getActivity(), "Creating, please wait...", Toast.LENGTH_SHORT).show();
+        }
         mLManager = new LinearLayoutManager(getContext());
 
         //new generation?..
         listCreated = false;
-
-        Toast.makeText(getActivity(), "Creating, please wait..", Toast.LENGTH_SHORT).show();
 
         Timber.d("automImportIsChecked is %s", autoImportIsChecked);
         if (autoImportIsChecked) {
@@ -204,17 +234,13 @@ public class GeneratedListFragment extends Fragment {
         }
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
-        mAdapter.setOnItemClickListener(new ZastupceAdapter.OnItemClickListener() {
-            @Override
-            public void onViewClick(int position) {
-                Zastupce currentZastupce = mZastupceArr.get(position);
-                Toast.makeText(getActivity(), "image of " + position, Toast.LENGTH_SHORT).show();
-            }
-        });
+        setOnClickListener();
 
         /* generation */
-        wikiSearchRepresentatives = new WikiSearchRepresentatives(GeneratedListFragment.this);
-        wikiSearchRepresentatives.execute();
+        if (mZastupceArr.size() == 0) {
+            wikiSearchRepresentatives = new WikiSearchRepresentatives(GeneratedListFragment.this);
+            wikiSearchRepresentatives.execute();
+        }
 
     }
 
@@ -355,7 +381,6 @@ public class GeneratedListFragment extends Fragment {
                 Timber.d("Classification 1 added");
                 fragment.loadingRepresentative = true;
                 publishProgress("");
-                //HERE LEFT OFF classification not loading
             }
 
             /*fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
@@ -384,7 +409,7 @@ public class GeneratedListFragment extends Fragment {
                     } catch (MalformedURLException e) {
                         e.printStackTrace();
                         Timber.d("no wiki");
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
                     }
@@ -394,7 +419,7 @@ public class GeneratedListFragment extends Fragment {
                     } catch (IOException e) {
                         e.printStackTrace();
                         Timber.d("no wiki");
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
                     }
@@ -406,7 +431,7 @@ public class GeneratedListFragment extends Fragment {
                     } catch (IOException e) {
                         Log.e(TAG, "Http getting response code ERROR " + e.toString());
                         Timber.d("no wiki");
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
 
@@ -425,14 +450,14 @@ public class GeneratedListFragment extends Fragment {
                             rd.close();
                             conn.disconnect();
                             result = sb.toString();
-                            Timber.d("result=" + result);
+                            //Timber.d("result=" + result);
                         } else {
                             //response problem
 
                             String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
                             Log.e(TAG, errorMsg);
                             Timber.d("no wiki");
-                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                             publishProgress(representative);
                             continue;
                             //result = errorMsg;
@@ -441,7 +466,7 @@ public class GeneratedListFragment extends Fragment {
                     } catch (IOException e) {
                         Log.e(TAG, "Http Response ERROR " + e.toString());
                         Timber.d("no wiki");
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                         publishProgress(representative);
                         continue;
                     }
@@ -504,7 +529,7 @@ public class GeneratedListFragment extends Fragment {
                                 rd.close();
                                 imgconn.disconnect();
                                 imgResult = sb.toString();
-                                Timber.d("result=" + imgResult);
+                                //Timber.d("result=" + imgResult);
                             } else {
                                 //response problem
                                 String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
@@ -603,7 +628,7 @@ public class GeneratedListFragment extends Fragment {
                     if (redirects) {
                         ArrayList redirectedSiteAndTable = redirect_getTable(doc);
                         if (redirectedSiteAndTable.get(2).equals(false)) { //if new site is not found
-                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                             publishProgress(representative);
                             continue;
                         } else {
@@ -659,7 +684,7 @@ public class GeneratedListFragment extends Fragment {
 
                 } else {
                     //add an empty only with representative
-                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, fragment.capitalize(representative, languageURL)));
+                    fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
                     Timber.d("Wiki for " + representative + " doesn't exist or you might have misspelled");
                 }
                 publishProgress("");
@@ -840,20 +865,20 @@ public class GeneratedListFragment extends Fragment {
                         }
                         newData.add(dataPair[1]);
                         Timber.d("adding new data to newData = " + dataPair[1]);
+                    } else if (currentTrsWihtoutColspan == trsWithoutColspan) { //current tr is the last one with information
+                        Timber.d("Current tr is the last one with information.");
+                        //if (newData.size() <= (userParametersCount - 2)) {
+                        for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
+                            Timber.d("one of last parameters not detected");
+                            newData.add("");
+                            //}
+                        /*Timber.d("last parameter not detected");
+                        newData.add("");*/
+                            //break;
+                        }
                     }
                     Timber.d("currentTrsWithoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWithoutColspan);
 
-                } else if (currentTrsWihtoutColspan == trsWithoutColspan) { //current tr is the last one with information
-                    Timber.d("Current tr is the last one with information.");
-                    //if (newData.size() <= (userParametersCount - 2)) {
-                    for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
-                        Timber.d("one of last parameters not detected");
-                        newData.add("");
-                        //}
-                        /*Timber.d("last parameter not detected");
-                        newData.add("");*/
-                        //break;
-                    }
                 }
 
 
@@ -971,6 +996,7 @@ public class GeneratedListFragment extends Fragment {
             }
             fragment.mRecyclerView.setLayoutManager(fragment.mLManager);
             fragment.mRecyclerView.setAdapter(fragment.mAdapter);
+            setOnClickListener();
             //TODO adapter cannot set for some reason on item click listener
 
         }
@@ -1030,5 +1056,120 @@ public class GeneratedListFragment extends Fragment {
                 return false;
             }
         }*/
+    }
+
+    public void setOnClickListener() {
+        mAdapter.setOnItemClickListener(new ZastupceAdapter.OnItemClickListener() {
+            @Override
+            public void onViewClick(final int position) {
+                Zastupce currentZastupce = mZastupceArr.get(position);
+                final String[] userImgURL = new String[1];
+
+                if (SharedListsActivity.checkInternet(getActivity())) {
+                    final AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                    builder.setTitle("Image for " + currentZastupce.getParameter(0))
+                            .setIcon(R.drawable.ic_image_black_24dp)
+                            .setItems(R.array.image_import_options, new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int which) {
+                                    switch (which) {
+                                        case 0:
+                                            LayoutInflater factory = getLayoutInflater();
+                                            View textEntryView = factory.inflate(R.layout.image_url_input_dialog, null);
+                                            final EditText userURLInput = textEntryView.findViewById(R.id.url_input);
+                                            AlertDialog.Builder URLInputBuilder = new AlertDialog.Builder(getActivity());
+                                            URLInputBuilder.setView(textEntryView);
+                                            URLInputBuilder.setTitle("Enter URL");
+                                            URLInputBuilder.setPositiveButton("DONE", new DialogInterface.OnClickListener() {
+                                                @Override
+                                                public void onClick(DialogInterface dialogInterface, int i) {
+                                                    userImgURL[0] = userURLInput.getText().toString().trim();
+
+                                                    new DrawableFromURLAsync(userImgURL[0], position).execute();
+
+
+                                                    dialogInterface.dismiss();
+                                                }
+                                            });
+                                            final AlertDialog alert = URLInputBuilder.create();
+                                            alert.show();
+
+                                            userURLInput.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                                                @Override
+                                                public boolean onEditorAction(TextView textView, int i, KeyEvent keyEvent) {
+                                                    if ((keyEvent != null) && (keyEvent.getKeyCode() == KeyEvent.KEYCODE_ENTER) || (i == EditorInfo.IME_ACTION_DONE)) {
+                                                        userImgURL[0] = userURLInput.getText().toString().trim();
+
+                                                        new DrawableFromURLAsync(userImgURL[0], position).execute();
+
+                                                        alert.dismiss();
+                                                    }
+
+                                                    return false;
+                                                }
+                                            });
+
+                                            break;
+                                        case 1:
+
+                                            break;
+                                    }
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+                } else {
+                    Toast.makeText(getActivity(), "reconnect!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+    }
+
+    private class DrawableFromURLAsync extends AsyncTask<Void, Void, Void> {
+        String imgURL;
+        int position;
+        boolean newImageImported;
+
+        DrawableFromURLAsync(String imgURL, int position) {
+            this.imgURL = imgURL;
+            this.position = position;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Drawable img = null;
+            try {
+                img = drawable_from_url(imgURL);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return null;
+            }
+            Timber.d("ImgURL is %s", imgURL);
+            mZastupceArr.get(position).setImage(img);
+            mZastupceArr.get(position).setImageURL(imgURL);
+            newImageImported = true;
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            if (newImageImported) {
+                mAdapter.notifyItemChanged(position);
+            } else {
+                Toast.makeText(getActivity(), "Invalid URL", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        Drawable drawable_from_url(String url) throws java.io.IOException {
+
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestProperty("User-agent", "Mozilla");
+
+            connection.connect();
+            InputStream input = connection.getInputStream();
+            Bitmap bitmap = BitmapFactory.decodeStream(input);
+            Timber.d("Obrazek stahnut");
+            return new BitmapDrawable(Objects.requireNonNull(getActivity()).getResources(), bitmap);
+        }
     }
 }

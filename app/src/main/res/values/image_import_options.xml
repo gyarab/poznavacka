@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="image_import_options">
+        <item>From URL</item>
+        <!-- <item>From device</item> -->
+    </string-array>
+</resources>

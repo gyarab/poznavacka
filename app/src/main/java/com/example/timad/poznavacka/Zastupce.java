@@ -80,8 +80,8 @@ public class Zastupce implements Parcelable {
         return imageURL;
     }
 
-    public void setImageURL(Drawable image) {
-        this.image = image;
+    public void setImageURL(String imageURL) {
+        this.imageURL = imageURL;
     }
 
     public int getParameters() {

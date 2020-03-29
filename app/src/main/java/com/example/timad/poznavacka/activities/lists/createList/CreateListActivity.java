@@ -24,7 +24,9 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import androidx.activity.OnBackPressedCallback;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
@@ -43,10 +45,17 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     private String path;
 
+    private Fragment currentFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_create_list);
+
+        /*if (savedInstanceState != null) {
+            currentFragment = getSupportFragmentManager().getFragment(savedInstanceState, "myFragmentName");
+        }*/
+
 
 /*        OnBackPressedCallback onBackPressedCallback = new OnBackPressedCallback(true) {
             @Override
@@ -70,6 +79,13 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         setupViewPager(mViewPager);
 
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    @Override
+    protected void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+        //Save the fragment's instance
+        //getSupportFragmentManager().putFragment(outState, "myFragmentName", currentFragment);
     }
 
     @Override
@@ -163,7 +179,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
         intent0.putExtra("AUTOIMPORTISCHECKED", autoImportIsChecked);
         intent0.putExtra("TITLE", title);
-        intent0.putExtra("MZASTUPCEARR", mZastupceArr); //TODO THIS
+        intent0.putExtra("MZASTUPCEARR", mZastupceArr);
         intent0.putExtra("PATH", path);
         intent0.putExtra("UUID", uuid);
         intent0.putExtra("LANGUAGEURL", languageURL);

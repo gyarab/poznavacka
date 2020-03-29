@@ -34,6 +34,7 @@
     <string name="pop_done">DONE</string>
     <string name="title_activity_pop">Auto-insert</string>
     <string name="language_spinner_prompt">Language</string>
+    <string name="image_dialog">Import an image</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -46,9 +47,7 @@
     <!-- User -->
     <string name="user_not_signed_in">You are not signed in</string>
     <string name="sign_out">Sign out</string>
-    <!--<string name="default_web_client_id">882289086797-lm51brb1i8pm5m9tiqndurp9bg9hep7i.apps.googleusercontent.com</string>-->
 
-    <!-- Sync Preferences -->
     <string name="sync_title">Sync email periodically</string>
     <string name="attachment_title">Download incoming attachments</string>
     <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>

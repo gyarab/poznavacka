@@ -344,7 +344,7 @@ public class MyListsActivity extends AppCompatActivity {
             public void onTestClick(final int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                    builder.setTitle(R.string.app_name);
+                    builder.setTitle(R.string.exam);
                     builder.setIcon(R.drawable.ic_test);
                     builder.setMessage("Do you really want to put " + sPoznavackaInfoArr.get(position).getName() + " into tests ?");
                     builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
