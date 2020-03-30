@@ -61,7 +61,8 @@
     <string name="internet_connection_required">Internet connection required</string>
     <string name="give_your_list_a_name">Give your list a name.</string>
     <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a simple ,</string>
-    <string name="generate_text_view">Do you want some additional info about the things you entered?</string>
+    <string name="generate_text_view">Lastly, do you want some additional info about the things you entered?</string>
     <string name="user_select_language">First, select the language for your list.</string>
     <string name="my_exams_title">YOUR EXAMS</string>
+    <string name="exams">exams</string>
 </resources>

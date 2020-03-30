@@ -1,36 +1,27 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.example.timad.poznavacka.LockableViewPager;
-import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.Zastupce;
-import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
-import com.google.gson.Gson;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.UUID;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
-public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
+public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
 
     private final String TAG = "CreateListActivity";
 
@@ -104,8 +95,11 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             SetTitleFragment.btnNext.setVisibility(View.VISIBLE);
         } else if (count == 2) {
             getSupportFragmentManager().popBackStack();
-            SetLanguageRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
+            SetRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
         } else if (count == 3) {
+            getSupportFragmentManager().popBackStack();
+            SetRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
+        } else if (count == 4) {
             GeneratedListFragment.cancelWikiSearchRepresentativesAsync();
             getSupportFragmentManager().popBackStack();
             SetCreateOptionsFragment.btnNext.setVisibility(View.VISIBLE);
@@ -119,7 +113,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
 
         adapter.addFragment(new SetTitleFragment());
-        adapter.addFragment(new SetLanguageRepresentativesFragment());
+        adapter.addFragment(new SetLanguageFragment());
+        adapter.addFragment(new SetRepresentativesFragment());
         adapter.addFragment(new SetCreateOptionsFragment());
         adapter.addFragment(new GeneratedListFragment());
 
@@ -135,19 +130,28 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     public void updateTitle(String input) {
         title = input;
         Timber.d("loading into setRepresentativesFragment");
-        SetLanguageRepresentativesFragment setLanguageRepresentativesFragment = new SetLanguageRepresentativesFragment();
+        SetLanguageFragment setLanguageFragment = new SetLanguageFragment();
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         //fragmentTransaction.replace(R.id.fragment_set_title, setLanguageRepresentativesFragment);
-        fragmentTransaction.add(R.id.fragment_set_title, setLanguageRepresentativesFragment);
+        fragmentTransaction.add(R.id.fragment_set_title, setLanguageFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
     }
 
+    @Override
+    public void updateLanguage(String languageURL) {
+        CreateListActivity.languageURL = languageURL;
+        SetRepresentativesFragment setRepresentativesFragment = new SetRepresentativesFragment();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        //fragmentTransaction.replace(R.id.fragment_set_title, setLanguageRepresentativesFragment);
+        fragmentTransaction.add(R.id.fragment_set_language, setRepresentativesFragment);
+        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.commit();
+    }
 
     @Override
-    public void updateLanguageAndRepresentatives(String languageURL, ArrayList<String> representatives) {
+    public void updateRepresentatives(ArrayList<String> representatives) {
         CreateListActivity.representatives = representatives;
-        CreateListActivity.languageURL = languageURL;
         Timber.d("loading into setCreateOptionsFragment");
         SetCreateOptionsFragment setCreateOptionsFragment = SetCreateOptionsFragment.newInstance(languageURL, representatives);
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();

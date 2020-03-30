@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/fragment_generated_list"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.createList.GeneratedListFragment"
-    android:id="@+id/fragment_generated_list">
+    tools:context=".activities.lists.createList.GeneratedListFragment">
 
     <HorizontalScrollView
         android:layout_width="match_parent"
@@ -18,8 +18,8 @@
             android:id="@+id/recyclerViewZ"
             android:layout_width="wrap_content"
             android:layout_height="match_parent"
-            android:scrollbars="horizontal|vertical"
-            android:layout_gravity="center">
+            android:layout_gravity="start"
+            android:scrollbars="horizontal|vertical">
 
         </androidx.recyclerview.widget.RecyclerView>
 
@@ -28,10 +28,23 @@
     <RelativeLayout
         android:id="@+id/bottomUI"
         android:layout_width="wrap_content"
-        android:layout_height="100dp"
+        android:layout_height="wrap_content"
         android:layout_alignParentStart="true"
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true">
+
+        <Button
+            android:id="@+id/button_cancel_generated"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+
+            android:layout_marginStart="15dp"
+            android:background="@drawable/cancel_bg"
+            android:text="CANCEL"
+            android:textColor="@color/colorGrey" />
 
         <ProgressBar
             android:id="@+id/progressBar_new"
@@ -39,39 +52,49 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="30dp" />
+            android:layout_centerVertical="true"
+            android:layout_marginEnd="10dp" />
 
         <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
             android:id="@+id/button_save_new"
+            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
-            android:layout_alignParentBottom="true"
-            android:layout_marginBottom="30dp"
-            android:layout_marginEnd="30dp"
+            android:layout_centerVertical="true"
 
+            android:layout_marginEnd="10dp"
             android:backgroundTint="@color/color_save_button"
-            android:textColor="@color/text_color"
             android:text="Save"
-            app:icon="@drawable/check"
-            app:iconTint="@color/text_color"
-
+            android:textColor="@color/text_color"
             android:theme="@style/AppTheme.ExtendedFloatingActionButton"
-            style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton" />
 
+            app:icon="@drawable/check"
+            app:iconTint="@color/text_color" />
 
         <TextView
+            android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentStart="true"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="30dp"
-            android:layout_marginTop="5dp"
-            android:text="Edit the list if you wish."
+            android:text="EDIT"
             android:textColor="@color/text_color"
-            android:textSize="15sp" />
+            android:textStyle="bold"
+            android:textSize="25sp"
+            android:layout_centerInParent="true"
+
+            />
+
+
+        <!--        <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:layout_marginStart="30dp"
+                    android:layout_marginTop="5dp"
+                    android:text="Edit the list if you wish."
+                    android:textColor="@color/text_color"
+                    android:textSize="15sp" />-->
     </RelativeLayout>
 
 

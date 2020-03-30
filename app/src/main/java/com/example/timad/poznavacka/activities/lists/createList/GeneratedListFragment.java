@@ -3,6 +3,7 @@ package com.example.timad.poznavacka.activities.lists.createList;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.graphics.Bitmap;
@@ -71,6 +72,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
+import static com.example.timad.poznavacka.activities.lists.createList.CreateListActivity.languageURL;
+
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -108,6 +111,7 @@ public class GeneratedListFragment extends Fragment {
 
     private FloatingActionButton btnNext;
     private Button btnSAVE;
+    private Button btnCancel;
     private ProgressBar progressBar;
 
     //RecyclerView
@@ -191,6 +195,16 @@ public class GeneratedListFragment extends Fragment {
 
         btnSAVE = Objects.requireNonNull(getView()).findViewById(R.id.button_save_new);
         btnSAVE.setVisibility(View.INVISIBLE);
+        btnCancel = getView().findViewById(R.id.button_cancel_generated);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyListsActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                getActivity().finish();
+            }
+        });
         progressBar = getView().findViewById(R.id.progressBar_new);
         mRecyclerView = getView().findViewById(R.id.recyclerViewZ);
 
@@ -612,6 +626,16 @@ public class GeneratedListFragment extends Fragment {
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
+                                } else if (table.id().toLowerCase().contains("info")) {
+                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").toLowerCase().contains("info")) {
+                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
                                 }
                             }
 
@@ -639,6 +663,13 @@ public class GeneratedListFragment extends Fragment {
 
                     //harvesting the infoBox
                     if (infoBox != null) {
+                        //special case german classification structure
+                        if (languageURL.equals("de")) {
+                            if (infoBox.getElementsByTag("table") != null) {
+                                Elements infoboxes = infoBox.getElementsByTag("table");
+                                infoBox = infoboxes.get(0);
+                            }
+                        }
                         ArrayList harvestedInfoBox = harvestInfo(infoBox);
                         newData = (ArrayList<String>) harvestedInfoBox.get(0);
                         classificationPointer = (int) harvestedInfoBox.get(1);
@@ -740,6 +771,14 @@ public class GeneratedListFragment extends Fragment {
                                         Timber.d("does contain class info = " + table.attr("class"));
                                         infoBox = table.selectFirst("tbody");
                                         break;
+                                    } else if (table.id().toLowerCase().contains("info")) {
+                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").toLowerCase().contains("info")) {
+                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
                                     }
                                 }
 
@@ -801,6 +840,11 @@ public class GeneratedListFragment extends Fragment {
                 if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
                     currentTrsWihtoutColspan++;
                     String th = tr.children().first().text();
+                    if (languageURL.equals("de")) {
+                        if (th.contains(":")) {
+                            th = th.replace(":", "");
+                        }
+                    }
                     dataPair[0] = th;
                     Log.d(TAG, "found " + th);
                     String td = tr.children().last().wholeText();

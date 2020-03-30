@@ -1,6 +1,7 @@
 package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
@@ -11,22 +12,23 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Objects;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 
 
-public class SetLanguageRepresentativesFragment extends Fragment implements AdapterView.OnItemSelectedListener {
+public class SetRepresentativesFragment extends Fragment {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -36,16 +38,13 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
 
     private OnFragmentInteractionListener mListener;
 
-    private Spinner languageSpinner;
     private EditText representativesInput;
     public static FloatingActionButton btnNext;
+    private Button btnCancel;
 
-    private String languageURL;
-
-    private boolean languageSelected = true;
     private boolean enteredTextIsValid;
 
-    public SetLanguageRepresentativesFragment() {
+    public SetRepresentativesFragment() {
         // Required empty public constructor
     }
 
@@ -58,8 +57,8 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
      * @return A new instance of fragment SetTitleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SetLanguageRepresentativesFragment newInstance(String param1, String param2) {
-        SetLanguageRepresentativesFragment fragment = new SetLanguageRepresentativesFragment();
+    public static SetRepresentativesFragment newInstance(String param1, String param2) {
+        SetRepresentativesFragment fragment = new SetRepresentativesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -82,7 +81,8 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         btnNext = getView().findViewById(R.id.button_next_representatives);
         representativesInput.requestFocus();
         final InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
+        imgr.showSoftInput(representativesInput, InputMethodManager.SHOW_FORCED);
+        //imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);
 
         //btnNext.setVisibility(View.INVISIBLE);
         btnNext.hide();
@@ -103,9 +103,7 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
 
                 if (!s.toString().trim().isEmpty() && s.toString().contains(",")) {
                     enteredTextIsValid = true;
-                    if (languageSelected) {
-                        btnNext.show();
-                    }
+                    btnNext.show();
                 } else {
                     enteredTextIsValid = false;
                     btnNext.hide();
@@ -117,6 +115,7 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnCancel.setVisibility(View.GONE);
                 View view = getActivity().getCurrentFocus();
                 if (view != null) {
                     representativesInput.clearFocus();
@@ -126,115 +125,33 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
 
                 ArrayList<String> representatives = new ArrayList<>(Arrays.asList(representativesInput.getText().toString().split("\\s*" + "," + "\\s*")));
 
-                onButtonPressed(languageURL, representatives);
+                onButtonPressed(representatives);
             }
         });
 
-        //spinner
-        languageSpinner = getView().findViewById(R.id.languageSpinnerNew);
-        languageURL = "Select Language";
-        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        languageSpinner.setAdapter(adapter);
-        languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
-        languageSpinner.setOnItemSelectedListener(this);
+        btnCancel = getView().findViewById(R.id.button_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyListsActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                getActivity().finish();
+            }
+        });
 
-    }
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-
-        //getting the language of wiki
-        Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
-        String languageString = selectedLanguageSpinnerItem.toString();
-        languageSelected = true;
-
-        switch (languageString) {
-            case "English":
-                languageURL = "en";
-                break;
-            case "Czech":
-                languageURL = "cs";
-                break;
-            case "French":
-                languageURL = "fr";
-                break;
-            case "German":
-                languageURL = "de";
-                break;
-            case "Spanish":
-                languageURL = "es";
-                break;
-            case "Japanese":
-                languageURL = "ja";
-                break;
-            case "Russian":
-                languageURL = "ru";
-                break;
-            case "Italian":
-                languageURL = "it";
-                break;
-            case "Portuguese":
-                languageURL = "pt";
-                break;
-            case "Arabic":
-                languageURL = "ar";
-                break;
-            case "Persian":
-                languageURL = "fa";
-                break;
-            case "Polish":
-                languageURL = "pl";
-                break;
-            case "Dutch":
-                languageURL = "nl";
-                break;
-            case "Indonesian":
-                languageURL = "id";
-                break;
-            case "Ukrainian":
-                languageURL = "uk";
-                break;
-            case "Hebrew":
-                languageURL = "he";
-                break;
-            case "Swedish":
-                languageURL = "sv";
-                break;
-            case "Korean":
-                languageURL = "ko";
-                break;
-            case "Vietnamese":
-                languageURL = "vi";
-                break;
-            case "Finnish":
-                languageURL = "fi";
-                break;
-        }
-
-        if (languageSelected && enteredTextIsValid) {
-            btnNext.show();
-        } else {
-            btnNext.hide();
-        }
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-        // Another interface callback
-        Toast.makeText(getContext(), "Select language", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_set_language_representatives, container, false);
+        return inflater.inflate(R.layout.fragment_set_representatives, container, false);
     }
 
-    public void onButtonPressed(String languageURL, ArrayList<String> representatives) {
+    public void onButtonPressed(ArrayList<String> representatives) {
         if (mListener != null) {
-            mListener.updateLanguageAndRepresentatives(languageURL, representatives);
+            mListener.updateRepresentatives(representatives);
         }
     }
 
@@ -267,7 +184,7 @@ public class SetLanguageRepresentativesFragment extends Fragment implements Adap
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void updateLanguageAndRepresentatives(String languageURL, ArrayList<String> representatives);
+        void updateRepresentatives(ArrayList<String> representatives);
     }
 
 

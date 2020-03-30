@@ -2,6 +2,7 @@ package com.example.timad.poznavacka.activities.lists.createList;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,22 +10,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
-import com.example.timad.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Objects;
 
-import androidx.activity.OnBackPressedCallback;
 import androidx.fragment.app.Fragment;
 
 
-public class SetTitleFragment extends Fragment {
+public class SetLanguageFragment extends Fragment implements AdapterView.OnItemSelectedListener {
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -34,13 +38,13 @@ public class SetTitleFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
-    private EditText titleInput;
-    private TextView textView;
-
+    private Spinner languageSpinner;
     public static FloatingActionButton btnNext;
     private Button btnCancel;
 
-    public SetTitleFragment() {
+    private String languageURL;
+
+    public SetLanguageFragment() {
         // Required empty public constructor
     }
 
@@ -53,8 +57,8 @@ public class SetTitleFragment extends Fragment {
      * @return A new instance of fragment SetTitleFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static SetTitleFragment newInstance(String param1, String param2) {
-        SetTitleFragment fragment = new SetTitleFragment();
+    public static SetRepresentativesFragment newInstance(String param1, String param2) {
+        SetRepresentativesFragment fragment = new SetRepresentativesFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         fragment.setArguments(args);
@@ -67,53 +71,21 @@ public class SetTitleFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
         }
-
     }
 
     //the actual fragment operations
     @Override
     public void onStart() {
         super.onStart();
-        titleInput = getView().findViewById(R.id.title_input);
-        btnNext = getView().findViewById(R.id.button_next);
-
-        showSoftKeyboard(titleInput);
-     /*   titleInput.requestFocus();
-        InputMethodManager imgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-        imgr.toggleSoftInput(InputMethodManager.SHOW_FORCED, InputMethodManager.HIDE_IMPLICIT_ONLY);*/
-
-        //btnNext.setVisibility(View.INVISIBLE);
-        btnNext.hide();
-
-        titleInput.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-
-            }
-
-            @Override
-            public void afterTextChanged(Editable s) {
-
-                if (!s.toString().trim().isEmpty()) {
-                    btnNext.show();
-                } else {
-                    btnNext.hide();
-                }
-
-            }
-        });
+        btnNext = getView().findViewById(R.id.button_next_language);
+        btnNext.show();
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                btnNext.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
-                onButtonPressed(titleInput.getText().toString());
+                btnNext.setVisibility(View.GONE);
+                onButtonPressed(languageURL);
             }
         });
 
@@ -129,33 +101,104 @@ public class SetTitleFragment extends Fragment {
         });
 
 
+        //spinner
+        languageSpinner = getView().findViewById(R.id.languageSpinnerNew);
+        languageURL = "Select Language";
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(Objects.requireNonNull(getContext()), R.array.language_array, R.layout.spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        languageSpinner.setAdapter(adapter);
+        languageSpinner.getBackground().setColorFilter(getResources().getColor(R.color.colorWhite), PorterDuff.Mode.SRC_ATOP);
+        languageSpinner.setOnItemSelectedListener(this);
+
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
-    private void showSoftKeyboard(View view) {
-        if (view.requestFocus()) {
-            InputMethodManager imm = (InputMethodManager)
-                    getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT);
+        //getting the language of wiki
+        Object selectedLanguageSpinnerItem = parent.getItemAtPosition(position);
+        String languageString = selectedLanguageSpinnerItem.toString();
+
+        switch (languageString) {
+            case "English":
+                languageURL = "en";
+                break;
+            case "Czech":
+                languageURL = "cs";
+                break;
+            case "French":
+                languageURL = "fr";
+                break;
+            case "German":
+                languageURL = "de";
+                break;
+            case "Spanish":
+                languageURL = "es";
+                break;
+            case "Japanese":
+                languageURL = "ja";
+                break;
+            case "Russian":
+                languageURL = "ru";
+                break;
+            case "Italian":
+                languageURL = "it";
+                break;
+            case "Portuguese":
+                languageURL = "pt";
+                break;
+            case "Arabic":
+                languageURL = "ar";
+                break;
+            case "Persian":
+                languageURL = "fa";
+                break;
+            case "Polish":
+                languageURL = "pl";
+                break;
+            case "Dutch":
+                languageURL = "nl";
+                break;
+            case "Indonesian":
+                languageURL = "id";
+                break;
+            case "Ukrainian":
+                languageURL = "uk";
+                break;
+            case "Hebrew":
+                languageURL = "he";
+                break;
+            case "Swedish":
+                languageURL = "sv";
+                break;
+            case "Korean":
+                languageURL = "ko";
+                break;
+            case "Vietnamese":
+                languageURL = "vi";
+                break;
+            case "Finnish":
+                languageURL = "fi";
+                break;
         }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        // Another interface callback
+        Toast.makeText(getContext(), "Select language", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        final View view;
-        if (!SharedListsActivity.checkInternet(Objects.requireNonNull(getContext()))) {
-            view = inflater.inflate(R.layout.fragment_not_connected_to_internet, container, false);
-        } else {
-            view = inflater.inflate(R.layout.fragment_set_title, container, false);
-        }
-        return view;
+        return inflater.inflate(R.layout.fragment_set_language, container, false);
     }
 
-    public void onButtonPressed(String input) {
+    public void onButtonPressed(String languageURL) {
         if (mListener != null) {
-            mListener.updateTitle(input);
+            mListener.updateLanguage(languageURL);
         }
     }
 
@@ -188,6 +231,8 @@ public class SetTitleFragment extends Fragment {
      */
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
-        void updateTitle(String input);
+        void updateLanguage(String languageURL);
     }
+
+
 }

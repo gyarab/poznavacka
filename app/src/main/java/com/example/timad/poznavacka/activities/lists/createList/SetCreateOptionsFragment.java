@@ -7,12 +7,14 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BuildConfig;
 import com.example.timad.poznavacka.R;
+import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 
 import java.util.ArrayList;
@@ -31,6 +33,7 @@ public class SetCreateOptionsFragment extends Fragment {
 
     private Switch autoImportSwitch;
     public static ExtendedFloatingActionButton btnNext;
+    private Button btnCancel;
 
     private boolean autoImportIsChecked;
 
@@ -92,12 +95,25 @@ public class SetCreateOptionsFragment extends Fragment {
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                btnCancel.setVisibility(View.GONE);
                 Timber.d(TAG + " btnNext userParametersCount = " + userParametersCount);
                 Timber.d(TAG + " btnNext userScientificClassification = " + userScientificClassification.toString());
                 btnNext.setVisibility(View.GONE);
                 onButtonPressed(autoImportIsChecked, userParametersCount, userScientificClassification, reversedUserScientificClassification);
             }
         });
+
+        btnCancel = getView().findViewById(R.id.button_cancel);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(getActivity(), MyListsActivity.class);
+                startActivity(intent);
+                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                getActivity().finish();
+            }
+        });
+
 
         //switch
         autoImportSwitch = getView().findViewById(R.id.generateSwitch);

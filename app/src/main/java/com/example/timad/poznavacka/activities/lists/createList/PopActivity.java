@@ -254,7 +254,6 @@ public class PopActivity extends Activity {
                         responseMessage = conn.getResponseMessage();
                     } catch (IOException e) {
                         Log.e(TAG, "Http getting response code ERROR " + e.toString());
-                        Toast.makeText(fragment, "Are you online?", Toast.LENGTH_SHORT).show();
                         break allRepresentatives;
                     }
 
@@ -277,7 +276,6 @@ public class PopActivity extends Activity {
                             //response problem
 
                             String errorMsg = "Http ERROR response " + responseMessage + "\n" + "Are you online ? " + "\n" + "Make sure to replace in code your own Google API key and Search Engine ID";
-                            Toast.makeText(fragment, "Are you online?", Toast.LENGTH_SHORT).show();
                             Log.e(TAG, errorMsg);
                             //result = errorMsg;
                         }
@@ -358,6 +356,16 @@ public class PopActivity extends Activity {
                                     infoBox = table.selectFirst("tbody");
                                     redirects = false;
                                     break;
+                                } else if (table.id().toLowerCase().contains("info")) {
+                                    Log.d(TAG, "does contain id info = " + table.id());
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
+                                } else if (table.attr("class").toLowerCase().contains("info")) {
+                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                    infoBox = table.selectFirst("tbody");
+                                    redirects = false;
+                                    break;
                                 }
                             }
 
@@ -383,6 +391,13 @@ public class PopActivity extends Activity {
                     int classificationPointer;
                     //harvesting the infoBox
                     if (infoBox != null) {
+                        //special case german classification structure
+                        if (languageURL.equals("de")) {
+                            if (infoBox.getElementsByTag("table") != null) {
+                                Elements infoboxes = infoBox.getElementsByTag("table");
+                                infoBox = infoboxes.get(0);
+                            }
+                        }
                         ArrayList harvestedInfoBox = harvestClassification(infoBox);
                         newData = (String[]) harvestedInfoBox.get(0);
                         classificationPointer = (int) harvestedInfoBox.get(1);
@@ -465,6 +480,14 @@ public class PopActivity extends Activity {
                                         Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
                                         infoBox = table.selectFirst("tbody");
                                         break;
+                                    } else if (table.id().toLowerCase().contains("info")) {
+                                        Log.d(TAG, "does contain id info = " + table.id());
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
+                                    } else if (table.attr("class").toLowerCase().contains("info")) {
+                                        Log.d(TAG, "does contain class info = " + table.attr("class"));
+                                        infoBox = table.selectFirst("tbody");
+                                        break;
                                     }
                                 }
 
@@ -519,8 +542,13 @@ public class PopActivity extends Activity {
 /*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
                         dataPair = dataPair.clone()[1].split("\n");
                     }*/
-
                     Log.d(TAG, "classPointer = " + classificationPointer);
+
+                    if (languageURL.equals("de")) {
+                        if (th.contains(":")) {
+                            th = th.replace(":", "");
+                        }
+                    }
 
                     newData[classificationPointer] = th;
                     classificationPointer++;

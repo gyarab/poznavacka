@@ -2,17 +2,16 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/fragment_set_create_options"
+    android:id="@+id/fragment_set_representatives"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.createList.SetCreateOptionsFragment">
+    tools:context=".activities.lists.createList.SetRepresentativesFragment">
 
     <ScrollView
         android:id="@+id/scrollView"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentTop="true"
         android:paddingBottom="0dp">
 
         <RelativeLayout
@@ -22,7 +21,7 @@
             android:layout_gravity="center">
 
             <RelativeLayout
-                android:id="@+id/layout_with_border"
+                android:id="@+id/layout_with_border1"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="20dp"
@@ -34,54 +33,53 @@
                 android:paddingTop="25dp"
                 android:paddingBottom="25dp">
 
-            <TextView
-                android:id="@+id/options_text_view_hint"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginBottom="30dp"
-                android:layout_marginStart="20dp"
-                android:layout_marginEnd="20dp"
-                android:text="@string/generate_text_view"
-                android:textColor="@color/text_color"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:textAlignment="center" />
-
-                <Switch
-                    android:id="@+id/generateSwitch"
+                <TextView
+                    android:id="@+id/title_text_view_hint"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerHorizontal="true"
-                    android:gravity="center_horizontal"
+                    android:layout_marginStart="40dp"
+                    android:layout_marginEnd="20dp"
+                    android:text="@string/representatives_text"
+                    android:textColor="@color/text_color"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:lineSpacingMultiplier="1.2"
+                    android:gravity="center" />
+
+                <EditText
+                    android:id="@+id/representatives_input"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/title_text_view_hint"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginEnd="10dp"
                     android:layout_marginBottom="20dp"
-                    android:layout_below="@id/options_text_view_hint"
-                    android:switchPadding="20dp"
-                    android:text="@string/autoRadDruhSwitch"
+                    android:inputType="textMultiLine"
+                    android:shadowColor="@color/colorAccent"
+                    android:textAlignment="center"
                     android:textColor="@color/text_color"
                     android:textSize="20sp" />
 
             </RelativeLayout>
         </RelativeLayout>
 
-
     </ScrollView>
 
 
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/button_create_new"
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/button_next_representatives"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+
         android:layout_alignParentEnd="true"
         android:layout_alignParentBottom="true"
         android:layout_marginEnd="20dp"
         android:layout_marginBottom="20dp"
-        android:backgroundTint="@color/colorAccent"
-        android:textColor="@color/text_color"
-        android:text="Create"
 
-        android:theme="@style/AppTheme.ExtendedFloatingActionButton"
-        style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton" />
+        app:srcCompat="@drawable/ic_arrow_forward_white_50dp" />
 
     <Button
         android:id="@+id/button_cancel"

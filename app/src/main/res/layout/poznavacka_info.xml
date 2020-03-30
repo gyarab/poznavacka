@@ -63,13 +63,12 @@
             android:textStyle="italic" />
 
         <ImageView
-            android:id="@+id/img_practice"
+            android:id="@+id/img_test"
             android:layout_width="35dp"
             android:layout_height="35dp"
-            android:layout_toEndOf="@id/img_test"
-            android:layout_alignBottom="@id/img_test"
-            android:layout_marginStart="10dp"
-            app:srcCompat="@drawable/brain_dark" />
+            android:layout_toEndOf="@id/img_practice"
+            android:layout_alignBottom="@id/img_practice"
+            android:layout_marginStart="10dp" />
 
         <ImageView
             android:id="@+id/img_share"
@@ -92,12 +91,12 @@
             app:srcCompat="@drawable/ic_delete_dark_purple_24dp" />
 
         <ImageView
-            android:id="@+id/img_test"
+            android:id="@+id/img_practice"
             android:layout_width="35dp"
             android:layout_height="35dp"
             android:layout_alignStart="@id/itemText2"
             android:layout_alignBottom="@id/img_prewiew"
-
+            app:srcCompat="@drawable/brain_dark"
             />
 
         <!--        <ImageView

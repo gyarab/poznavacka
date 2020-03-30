@@ -33,6 +33,7 @@ import com.example.timad.poznavacka.activities.lists.createList.CreateListActivi
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -95,6 +96,8 @@ public class MyListsActivity extends AppCompatActivity {
 
     private FabSpeedDial newListBTN;
     private ProgressBar newListBTNProgressBar;
+
+    private ExtendedFloatingActionButton examEFAB;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -183,12 +186,6 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public boolean onMenuItemSelected(MenuItem menuItem) {
                 switch (menuItem.getItemId()) {
-                    case (R.id.action_test):
-                        Intent intent2 = new Intent(getApplication(), MyExamsActivity.class);
-                        startActivity(intent2);
-                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                        finish();
-                        break;
                     case (R.id.action_download):
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
@@ -205,6 +202,17 @@ public class MyListsActivity extends AppCompatActivity {
 
                 }
                 return true;
+            }
+        });
+
+        examEFAB = findViewById(R.id.exams_btn);
+        examEFAB.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent2 = new Intent(getApplication(), MyExamsActivity.class);
+                startActivity(intent2);
+                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                finish();
             }
         });
 
@@ -232,6 +240,8 @@ public class MyListsActivity extends AppCompatActivity {
 
                 Intent myIntent = new Intent(getApplication(), PracticeActivity.class);
                 startActivity(myIntent);
+                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                finish();
             }
 
             @Override
