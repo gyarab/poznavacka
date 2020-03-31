@@ -2,6 +2,8 @@ package com.example.timad.poznavacka.activities.test;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -12,8 +14,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.AnswerObject;
+import com.example.timad.poznavacka.ExamsAdapter;
+import com.example.timad.poznavacka.PreviewTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.ResultObjectDB;
+import com.example.timad.poznavacka.TestAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.MyExamsActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
@@ -38,6 +44,11 @@ public class TestUserActivity extends AppCompatActivity {
     private int index;
     private int first;
     private int last;
+    //recyclerview
+    private RecyclerView mRecyclerView;
+    static private ExamsAdapter mExamsAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private static ArrayList<AnswerObject> answerObjectArrayList;
 
 
     @Override
@@ -141,10 +152,14 @@ public class TestUserActivity extends AppCompatActivity {
         last = zastupces.size()-1;
     }
     private void testViewer(int index,int last,int first) {
+        if(first!=0){
+            setResults(index);
+            buildRecyclerView();
+        }
         Zastupce item = zastupces.get(index);
         String imageUrl = item.getImageURL();
         ImageView img = findViewById(R.id.zastupceImage3);
-        Picasso.get().load(imageUrl).error(R.drawable.ic_image).into(img);
+        Picasso.get().load(imageUrl).resize(500,500).onlyScaleDown().centerInside().error(R.drawable.ic_image).into(img);
         // previous button
         if (first == index) {
             previous.setEnabled(false);
@@ -166,7 +181,40 @@ public class TestUserActivity extends AppCompatActivity {
 
     }
 
-    private void setResults(){
+    private void buildRecyclerView(){
+        mRecyclerView = findViewById(R.id.examView3);
+        mRecyclerView.setHasFixedSize(false);
+        mLayoutManager = new LinearLayoutManager(getApplication());
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mExamsAdapter = new ExamsAdapter(answerObjectArrayList);
+        mRecyclerView.setAdapter(mExamsAdapter);
+
+        mExamsAdapter.notifyDataSetChanged();
+
+    }
+    private void createAnswerArr(){
+        answerObjectArrayList=new ArrayList<>();
+    }
+
+    private void setResults(int index){
+        createAnswerArr();
+
+        for(int counter=0;counter<zastupces.get(index).getParameters();counter++){
+
+            String fieldName = zastupces.get(0).getParameter(counter);
+            String result = zastupces.get(index).getParameter(counter);
+
+            if(counter==0){
+                fieldName="Název";
+            }
+            AnswerObject item = new AnswerObject(result,fieldName);
+            //AnswerObject item = new AnswerObject("","");
+            answerObjectArrayList.add(item);
+        }
+
+
+
+
 
     }
     /*
