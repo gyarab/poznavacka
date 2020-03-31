@@ -99,7 +99,20 @@ public class PracticeActivity extends AppCompatActivity {
             mButtonAll.setText("Practice all (" + count + ")");
             mButtonContinue.setText("Continue practicing (" + sNenauceniZastupci.size() + ")");
             if(sNenauceniZastupci.size() < 1){
-                mButtonContinue.setEnabled(false);
+                //mButtonContinue.setEnabled(false);
+                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+                Bundle b = new Bundle();
+                b.putInt("key", ALL);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
+            } else if(sNenauceniZastupci.size() == sZastupceArrOrig.size()){
+                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+                Bundle b = new Bundle();
+                b.putInt("key", ALL);
+                intent.putExtras(b);
+                startActivity(intent);
+                finish();
             }
         }
 
