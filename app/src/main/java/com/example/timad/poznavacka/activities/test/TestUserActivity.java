@@ -159,7 +159,7 @@ public class TestUserActivity extends AppCompatActivity {
         Zastupce item = zastupces.get(index);
         String imageUrl = item.getImageURL();
         ImageView img = findViewById(R.id.zastupceImage3);
-        Picasso.get().load(imageUrl).error(R.drawable.ic_image).into(img);
+        Picasso.get().load(imageUrl).resize(500,500).onlyScaleDown().centerInside().error(R.drawable.ic_image).into(img);
         // previous button
         if (first == index) {
             previous.setEnabled(false);
