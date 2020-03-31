@@ -18,6 +18,9 @@
         android:roundIcon="@drawable/poznavacka_logo"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-2924053854177245~1305178669" />
         <activity android:name=".activities.test.UserResultActivity"></activity>
         <activity android:name=".activities.test.TestUserActivity" />
         <activity android:name=".activities.lists.MyExamsActivity" />

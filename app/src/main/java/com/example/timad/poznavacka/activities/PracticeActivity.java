@@ -157,6 +157,7 @@ public class PracticeActivity extends AppCompatActivity {
                 b.putInt("key", ALL);
                 intent.putExtras(b);
                 startActivity(intent);
+                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                 finish();
             }
         });
@@ -170,6 +171,7 @@ public class PracticeActivity extends AppCompatActivity {
                 b.putInt("key", NOT_MEM);
                 intent.putExtras(b);
                 startActivity(intent);
+                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                 finish();
             }
         });

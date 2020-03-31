@@ -3,20 +3,28 @@ package com.example.timad.poznavacka.activities;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
+import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
 
@@ -47,6 +55,7 @@ public class PracticeActivity2 extends AppCompatActivity {
 
     protected Resources res;
 
+    private AdView mAdView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,6 +130,52 @@ public class PracticeActivity2 extends AppCompatActivity {
                 imageView.setVisibility(View.VISIBLE);
             }
         });
+
+        //ad
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        //navigation
+        BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
+        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        Menu menu = bottomNavigationView.getMenu();
+        MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_white);
+        menuItem.setChecked(true);
+
+        bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()) {
+                    case R.id.nav_practice:
+                        /*Intent intent0 = new Intent(ListsActivity.this, PracticeActivity.class);
+                        startActivity(intent0);*/
+                        break;
+
+                    case R.id.nav_lists:
+                        Intent intent1 = new Intent(PracticeActivity2.this, MyListsActivity.class);
+                        startActivity(intent1);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                    case R.id.nav_test:
+                        Intent intent3 = new Intent(PracticeActivity2.this, TestActivity.class);
+                        startActivity(intent3);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+                    case R.id.nav_account:
+                        Intent intent4 = new Intent(PracticeActivity2.this, AccountActivity.class);
+                        startActivity(intent4);
+                        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+                        break;
+
+
+                }
+
+                return false;
+            }
+        });
     }
 
     @Override
@@ -132,6 +187,21 @@ public class PracticeActivity2 extends AppCompatActivity {
             PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
             MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        // Save state when leaving this activity before learning all
+        if (nenauceniZastupci.size() > 0) {
+            PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
+            MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
+        }
+        Intent intent = new Intent(this, MyListsActivity.class);
+        startActivity(intent);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        finish();
     }
 
     private int get_setRandomisedCurrentZastupce() {

@@ -100,6 +100,7 @@ public class GeneratedListFragment extends Fragment {
     private String languageURL;
     private int userParametersCount;
     private ArrayList<String> userScientificClassification;
+    private ArrayList<String> originalUserScientificClassification;
     private ArrayList<String> reversedUserScientificClassification;
 
     private OnFragmentInteractionListener mListener;
@@ -174,9 +175,9 @@ public class GeneratedListFragment extends Fragment {
             autoImportIsChecked = getArguments().getBoolean(ARG_AUTOIMPORTISCHECKED);
             languageURL = getArguments().getString(ARG_LANGUAGEURL);
             userParametersCount = getArguments().getInt(ARG_USERPARAMETERSCOUNT);
-            userScientificClassification = getArguments().getStringArrayList(ARG_USERSCIENTIFICCLASSIFICATION);
+            originalUserScientificClassification = getArguments().getStringArrayList(ARG_USERSCIENTIFICCLASSIFICATION);
             reversedUserScientificClassification = getArguments().getStringArrayList(ARG_REVERSEDUSERSCIENTIFICCLASSIFICATION);
-            Timber.d(TAG + "userScientificClassification = " + userScientificClassification.toString());
+            Timber.d(TAG + "originalUserScientificClassification = " + originalUserScientificClassification.toString());
         }
 
         if (userParametersCount < 4) {
@@ -231,7 +232,7 @@ public class GeneratedListFragment extends Fragment {
         scrollV.setLayoutParams(new RelativeLayout.LayoutParams(params));
         if (mZastupceArr == null) {
             mZastupceArr = new ArrayList<>();
-            Toast.makeText(getActivity(), "Creating, please wait...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getActivity(), "Creating, please wait...", Toast.LENGTH_LONG).show();
         }
         mLManager = new LinearLayoutManager(getContext());
 
@@ -403,6 +404,7 @@ public class GeneratedListFragment extends Fragment {
             allRepresentatives:
             for (String representative :
                     representatives) {
+                userScientificClassification = (ArrayList<String>) originalUserScientificClassification.clone();
                 String searchText = representative.trim().replace(" ", "_");
                 Drawable img = null;
                 String imageURL = "";
@@ -589,7 +591,7 @@ public class GeneratedListFragment extends Fragment {
 
 
                 //checking for the right table
-                ArrayList<String> newData = new ArrayList<>();
+                String newData[] = new String[userParametersCount];
                 int classificationPointer = 0;
 
                 Element infoBox = null;
@@ -671,7 +673,12 @@ public class GeneratedListFragment extends Fragment {
                             }
                         }
                         ArrayList harvestedInfoBox = harvestInfo(infoBox);
-                        newData = (ArrayList<String>) harvestedInfoBox.get(0);
+                        newData = (String[]) harvestedInfoBox.get(0);
+                        Timber.d("1newData array is ->");
+                        for (String data :
+                                newData) {
+                            Timber.d("1newData array is -> " + data);
+                        }
                         classificationPointer = (int) harvestedInfoBox.get(1);
                             /*img = (Drawable) harvestedInfoBox.get(2);
                             imageURL = (String) harvestedInfoBox.get(3);*/
@@ -688,17 +695,17 @@ public class GeneratedListFragment extends Fragment {
                         }
                     }
 
-                    newData.add(displayNameOfRepresentative);
-                    Collections.reverse(newData);
+                    newData[userParametersCount - 1] = displayNameOfRepresentative;
+                    //Collections.reverse(newData);
 
                     //loading into mZastupceArr
 
                     //loading representative
-                    if (detectedWrongTable(classificationPointer)) { //if detected wrong table but on the correct site
+                    /*if (detectedWrongTable(classificationPointer)) { //if detected wrong table but on the correct site
                         for (int i = 0; i < userParametersCount - 1; i++) {
-                            newData.add("");
+                            newData[i] = "";
                         }
-                    }
+                    }*/
                     if (img == null) {
                         //get only the image
                         ArrayList imgAndUrl = getImageFromSite(doc);
@@ -706,12 +713,18 @@ public class GeneratedListFragment extends Fragment {
                         imageURL = (String) imgAndUrl.get(1);
                     }
 
-                    if (img == null) {
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, newData));
-                    } else {
-                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newData));
+                    ArrayList<String> newDataArrayList = new ArrayList<>();
+                    for (int i = userParametersCount - 1; i >= 0; i--) {
+                        newDataArrayList.add(newData[i]);
                     }
-                    Timber.d("newData size for representative " + representative + "= " + newData.size() + "\n\n");
+
+
+                    if (img == null) {
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, newDataArrayList));
+                    } else {
+                        fragment.mZastupceArr.add(new Zastupce(userParametersCount, img, imageURL, newDataArrayList));
+                    }
+                    Timber.d("newData size for representative " + representative + "= " + newDataArrayList.size() + "\n\n");
 
                 } else {
                     //add an empty only with representative
@@ -809,7 +822,8 @@ public class GeneratedListFragment extends Fragment {
 
             ArrayList returnList = new ArrayList();
 
-            ArrayList<String> newData = new ArrayList<>();
+            //ArrayList<String> newData = new ArrayList<>();
+            String[] newData = new String[userParametersCount];
            /* Drawable img = null;
             String imageURL = "";*/
             int classificationPointer = 0;
@@ -837,7 +851,7 @@ public class GeneratedListFragment extends Fragment {
 
                 trCounter++;
                 Timber.d("current tr = %s", trCounter);
-                if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() <= classificationPointer)) {
+                if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() == 0)) {
                     currentTrsWihtoutColspan++;
                     String th = tr.children().first().text();
                     if (languageURL.equals("de")) {
@@ -877,32 +891,44 @@ public class GeneratedListFragment extends Fragment {
 
                     dataPair[1] = beautifyValues(dataPair[1]);
 
-                    Timber.d("dataPair[1] = %s", dataPair[1]);
+                    /*Timber.d("dataPair[1] = %s", dataPair[1]);
                     Timber.d("classPointer = " + classificationPointer);
-                    Timber.d(userScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
-                    Timber.d("userSciClass[0] = " + userScientificClassification.get(0));
+                    Timber.d(originalUserScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
+                    Timber.d("userSciClass[0] = " + originalUserScientificClassification.get(0));*/
 
-                    if (userScientificClassification.get(classificationPointer).equals(dataPair[0])) { //detected searched classification
+                    if (userScientificClassification.contains(dataPair[0])) {
+                        Timber.d("Adding classification at " + userScientificClassification.indexOf(dataPair[0]) + "with value " + dataPair[1]);
+                        newData[userScientificClassification.indexOf(dataPair[0])] = dataPair[1];
+                    }
+
+                    /*if (userScientificClassification.get(0).equals(dataPair[0])) { //detected searched classification
                         //trim latin etc.
                         if (dataPair[1].contains("(")) {
                             dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim();
                         }
                         newData.add(dataPair[1]); //adding the specific classification
                         Timber.d("adding new data to newData = " + dataPair[1]);
+
+                        userScientificClassification.remove(dataPair[0]);
                         classificationPointer++;
 
                     } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
 
                         //generating empty values
-                        Timber.d("userScientificClassification contains " + dataPair[0]);
+                        *//*Timber.d("userScientificClassification contains " + dataPair[0]);
                         int tempPointer = classificationPointer;
                         classificationPointer = userScientificClassification.indexOf(dataPair[0]);
                         for (; tempPointer < classificationPointer; tempPointer++) {
                             newData.add("");
                             Timber.d("adding new data to newData = empty (not detected)");
+                        }*//*
+                        int temp = userScientificClassification.indexOf(dataPair[0]);
+                        for (int i = 0; i < temp; i++) {
+                            Timber.d("adding new data to newData = empty (not detected)");
+                            newData.add("");
                         }
 
-
+                        userScientificClassification.remove(dataPair[0]);
                         classificationPointer++;
                         if (dataPair[1].contains("(")) {
                             dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
@@ -916,11 +942,11 @@ public class GeneratedListFragment extends Fragment {
                             Timber.d("one of last parameters not detected");
                             newData.add("");
                             //}
-                        /*Timber.d("last parameter not detected");
-                        newData.add("");*/
+                        *//*Timber.d("last parameter not detected");
+                        newData.add("");*//*
                             //break;
                         }
-                    }
+                    }*/
                     Timber.d("currentTrsWithoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWithoutColspan);
 
                 }
@@ -932,6 +958,16 @@ public class GeneratedListFragment extends Fragment {
                     img = (Drawable) imgAndUrl.get(0);
                     imageURL = (String) imgAndUrl.get(1);
                 }*/
+            }
+            /*for (int i = 0; i < newData.length; i++) {
+                if (newData[i].isEmpty()) {
+
+                }
+            }*/
+            Timber.d("newData array is ->");
+            for (String data :
+                    newData) {
+                Timber.d("newData array is -> " + data);
             }
             returnList.add(newData);
             returnList.add(classificationPointer);
