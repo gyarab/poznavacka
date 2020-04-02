@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Cognitive</string>
+    <string name="app_name">Memimg</string>
     <string name="welcome_title">POZNÁVAČKA</string>
     <string name="all_learnt_message_0">\nMožná už to umíš!</string>
     <string name="all_learnt_message_1">\nAle spíš ne…</string>
@@ -65,4 +65,6 @@
     <string name="user_select_language">First, select the language for your list.</string>
     <string name="my_exams_title">YOUR EXAMS</string>
     <string name="exams">exams</string>
+    <string name="removed_from_database">Removed from database</string>
+    <string name="failed_to_remove_from_database">Failed to remove from database</string>
 </resources>

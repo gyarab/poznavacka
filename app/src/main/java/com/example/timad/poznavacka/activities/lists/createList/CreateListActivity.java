@@ -10,6 +10,10 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.query.AdInfo;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -37,6 +41,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     private String path;
 
     private Fragment currentFragment;
+
+    private static InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,6 +76,24 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         setupViewPager(mViewPager);
 
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mInterstitialAd = new InterstitialAd(this);
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); TEST
+        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });
     }
 
     @Override
@@ -168,6 +192,11 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         fragmentTransaction.replace(R.id.fragment_set_create_options, generatedListFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Timber.d("The interstitial wasn't loaded yet.");
+        }
     }
 
     @Override

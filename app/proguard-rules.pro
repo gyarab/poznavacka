@@ -25,3 +25,7 @@
 }
 
 -keep class * implements android.os.Parcelable { public static final android.os.Parcelable$Creator *; }
+
+-keepclassmembers class android.support.design.internal.BottomNavigationMenuView {
+    boolean mShiftingMode;
+}

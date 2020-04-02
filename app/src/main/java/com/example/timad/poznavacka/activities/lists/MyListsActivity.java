@@ -10,13 +10,17 @@ import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AnimationUtils;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.TranslateAnimation;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
@@ -31,6 +35,7 @@ import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
@@ -63,6 +68,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.Pointer;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
 
 
 public class MyListsActivity extends AppCompatActivity {
@@ -78,11 +87,10 @@ public class MyListsActivity extends AppCompatActivity {
     private String languageURL;
 
     public static boolean savingDownloadedList;
-    private String userID;
+    private String userIDfromGenerated;
     private String docID;
 
     private PoznavackaDbObject item;
-
 
     public static StorageManagerClass sSMC;
 
@@ -98,6 +106,9 @@ public class MyListsActivity extends AppCompatActivity {
     private ProgressBar newListBTNProgressBar;
 
     private ExtendedFloatingActionButton examEFAB;
+
+    private RelativeLayout noListsLayout;
+    private TourGuide mTourGuide;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -133,7 +144,7 @@ public class MyListsActivity extends AppCompatActivity {
 
             Intent newDownloadedListIntent = getIntent();
             title = newDownloadedListIntent.getStringExtra("TITLE");
-            userID = newDownloadedListIntent.getStringExtra("USERID");
+            userIDfromGenerated = newDownloadedListIntent.getStringExtra("USERID");
             docID = newDownloadedListIntent.getStringExtra("DOCID");
 
             SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
@@ -155,10 +166,17 @@ public class MyListsActivity extends AppCompatActivity {
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
                     sPositionOfActivePoznavackaInfo = -1;
+                    /*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
+                    noListsLayout = findViewById(R.id.no_lists_layout);
+                    noListsLayout.setVisibility(View.VISIBLE);*/
+                    initTourGuide();
+
                 }
             } else {
                 sPoznavackaInfoArr = new ArrayList<>();
                 sPositionOfActivePoznavackaInfo = -1;
+
+                initTourGuide();
             }
         }
 
@@ -179,6 +197,9 @@ public class MyListsActivity extends AppCompatActivity {
                 if (!SharedListsActivity.checkInternet(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "Not connected to internet", Toast.LENGTH_SHORT).show();
                     return false;
+                }
+                if (mTourGuide != null) {
+                    mTourGuide.cleanUp();
                 }
                 return super.onPrepareMenu(navigationMenu);
             }
@@ -300,7 +321,45 @@ public class MyListsActivity extends AppCompatActivity {
                     btnPositive.setLayoutParams(layoutParams);
                     btnNegative.setLayoutParams(layoutParams);
                 } else {
-                    Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT).show();
+                    AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
+                    builder.setTitle(R.string.app_name);
+                    builder.setIcon(R.drawable.ic_share_black_24dp);
+                    builder.setMessage("Do you want to remove " + sPoznavackaInfoArr.get(position).getName() + " from shared database?");
+                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            // Sharing of poznavacka
+                            if (SharedListsActivity.checkInternet(getApplication())) {
+                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                                //remote deletion
+                                removeFromDatabase(sPoznavackaInfoArr.get(position).getId());
+
+                                //local change
+                                sPoznavackaInfoArr.get(position).setUploaded(false);
+                                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+
+                            } else {
+                                Toast.makeText(getApplication(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
+                            }
+
+                            dialog.dismiss();
+                        }
+                    });
+                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.dismiss();
+                        }
+                    });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+
+                    Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
+                    Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
+
+                    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
+                    layoutParams.weight = 20;
+                    btnPositive.setLayoutParams(layoutParams);
+                    btnNegative.setLayoutParams(layoutParams);
                 }
             }
 
@@ -368,9 +427,9 @@ public class MyListsActivity extends AppCompatActivity {
                             String previewImgUrl = sPoznavackaInfoArr.get(position).getPrewievImageUrl();
                             boolean finished = false;
                             boolean resultsEmpty = false;
-                            DBTestObject data= new DBTestObject(name,content,userID,previewImgUrl,started,finished,"","",resultsEmpty);
+                            DBTestObject data = new DBTestObject(name, content, userID, previewImgUrl, started, finished, "", "", resultsEmpty);
                             MyExamsActivity.addToTests(userID, data);
-                        //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
+                            //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
 
                             dialog.dismiss();
                         }
@@ -394,7 +453,7 @@ public class MyListsActivity extends AppCompatActivity {
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(1);
         menuItem.setChecked(true);
@@ -430,6 +489,47 @@ public class MyListsActivity extends AppCompatActivity {
 
 
                 return false;
+            }
+        });
+    }
+
+    private void initTourGuide() {
+        mTourGuide = TourGuide.init(this).with(TourGuide.Technique.CLICK)
+                .setPointer(new Pointer())
+                .setToolTip(new ToolTip().setTitle("Oh, it's empty in here")
+                        .setDescription("Click to add new list")
+                        .setGravity(Gravity.TOP))
+                .playOn(newListBTN);
+        mTourGuide.setOverlay(new Overlay());
+        mTourGuide.getToolTip().setEnterAnimation(new TranslateAnimation(0, 0, 200f, 0));
+        mTourGuide.getToolTip().getMEnterAnimation().setFillAfter(true);
+        mTourGuide.getToolTip().getMEnterAnimation().setInterpolator(new BounceInterpolator());
+        mTourGuide.getToolTip().getMEnterAnimation().setDuration(1000);
+        //mTourGuide.getMPointer().setColor(R.color.colorAccentSecond);
+    }
+
+    private void removeFromDatabase(String docID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+        final DocumentReference docRef = db.collection("Users").document(user.getUid()).collection("Poznavacky").document(docID);
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                docRef
+                        .delete()
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                                Toast.makeText(getApplication(), R.string.removed_from_database, Toast.LENGTH_SHORT).show();
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Toast.makeText(getApplication(), R.string.failed_to_remove_from_database, Toast.LENGTH_SHORT).show();
+                            }
+                        });
             }
         });
     }
@@ -576,7 +676,7 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(docID);
+            DocumentReference docRef = db.collection("Users").document(userIDfromGenerated).collection("Poznavacky").document(docID);
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {

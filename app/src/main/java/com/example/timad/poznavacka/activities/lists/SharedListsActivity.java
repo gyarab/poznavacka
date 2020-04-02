@@ -314,29 +314,29 @@ public class SharedListsActivity extends AppCompatActivity {
                         builder.setMessage("Do you really want to download " + arrayList.get(position).getName() + "?");
                         builder
                                 .setPositiveButton("yes", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //pickDocument(userID, docID);
-                                dialog.dismiss();
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        //pickDocument(userID, docID);
+                                        dialog.dismiss();
 
-                                MyListsActivity.savingDownloadedList = true;
-                                Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
+                                        MyListsActivity.savingDownloadedList = true;
+                                        Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
 
-                                intent0.putExtra("TITLE", arrayList.get(position).getName());
-                                intent0.putExtra("USERID", userID);
-                                intent0.putExtra("DOCID", docID);
+                                        intent0.putExtra("TITLE", arrayList.get(position).getName());
+                                        intent0.putExtra("USERID", userID);
+                                        intent0.putExtra("DOCID", docID);
 
-                                startActivity(intent0);
-                                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                                finish();
-                            }
+                                        startActivity(intent0);
+                                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                        finish();
+                                    }
                                 })
                                 .setNegativeButton("no", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.dismiss();
-                            }
-                        });
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
                         AlertDialog alert = builder.create();
                         alert.show();
                     }
@@ -366,7 +366,14 @@ public class SharedListsActivity extends AppCompatActivity {
                             removePoznavacka(userID, documentID, position);
 
                             //local change
-                            MyListsActivity.sPoznavackaInfoArr.get(position).setUploaded(false);
+                            for (PoznavackaInfo poznavackaInfo :
+                                    MyListsActivity.sPoznavackaInfoArr) {
+                                if (poznavackaInfo.getId().equals(arrayList.get(position).getId())) {
+                                    poznavackaInfo.setUploaded(false);
+                                }
+                            }
+
+                            //MyListsActivity.sPoznavackaInfoArr.get(position).setUploaded(false);
                             MyListsActivity.getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", MyListsActivity.sPoznavackaInfoArr);
 
                             dialog.dismiss();
@@ -589,13 +596,11 @@ public class SharedListsActivity extends AppCompatActivity {
 
     // potreba pridat moznost odebrani autorem w verejnym collectionu chce to upravit
     // nedodelane
-    public void removePoznavacka(final String userID, final String documentName, final int position) {
-        final DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(documentName);
+    public void removePoznavacka(final String userID, final String docID, final int position) {
+        final DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(docID);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                PoznavackaDbObject item = documentSnapshot.toObject(PoznavackaDbObject.class);
-
                 docRef
                         .delete()
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

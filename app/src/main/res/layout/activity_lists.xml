@@ -27,8 +27,8 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:paddingStart="20dp"
                     android:layout_marginTop="12dp"
+                    android:paddingStart="20dp"
 
                     android:text="@string/app_name"
                     android:textColor="@color/text_color"
@@ -70,10 +70,42 @@
 
 
         <RelativeLayout
+            android:id="@+id/main_container"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/bottomBar"
             android:layout_below="@+id/topBar">
+
+            <RelativeLayout
+                android:id="@+id/no_lists_layout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/fabSpeedDialProgressBar"
+                android:layout_alignParentTop="true"
+                android:visibility="gone">
+
+                <TextView
+                    android:id="@+id/its_empty_here_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="50dp"
+
+                    android:textSize="25sp"
+                    android:text="It's empty in here, add new list"
+                    android:textColor="@color/text_color" />
+
+                <ImageView
+                    android:layout_width="260dp"
+                    android:layout_height="367dp"
+                    android:layout_below="@+id/its_empty_here_text"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginEnd="85dp"
+                    android:src="@drawable/custom_arrow_down" />
+
+            </RelativeLayout>
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recyclerViewL"
