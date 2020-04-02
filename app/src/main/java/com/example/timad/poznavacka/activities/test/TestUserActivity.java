@@ -35,15 +35,21 @@ import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class TestUserActivity extends AppCompatActivity {
     private Button finishTest;
     private Button next;
     private Button previous;
     private ArrayList<Zastupce> zastupces;
-    private int index;
+    public static int index;
     private int first;
     private int last;
+    public static  int []tempResult;//store results size = zastupces.size()
+    public static String[] tempAnswer;
+    private int maxResult;//max result = zastupces.size()*params
+    private int urResult;//soucet tempResults
+    public static int parametrs;
     //recyclerview
     private RecyclerView mRecyclerView;
     static private ExamsAdapter mExamsAdapter;
@@ -126,7 +132,16 @@ public class TestUserActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         TextView result = findViewById(R.id.result3);
-                        result.setText("17/20");
+                        String finalResult ="";
+                        urResult=0;
+                        maxResult = zastupces.get(0).getParameters()*zastupces.size();
+                        for(int answer:tempResult){
+                            urResult+=answer;
+
+                        }
+                        Toast.makeText(getApplicationContext(), Arrays.toString(tempResult),Toast.LENGTH_SHORT).show();
+                        finalResult =  Integer.toString(urResult)+"/"+Integer.toString(maxResult);
+                        result.setText(finalResult);
                         final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
                         MyExamsActivity.updateResultsEmpty(documentSnapshot.getString("userID"),documentSnapshot.getString("testDBID"),getApplicationContext());
                         MyExamsActivity.addResultToDB(documentSnapshot.getId(),item);
@@ -149,6 +164,9 @@ public class TestUserActivity extends AppCompatActivity {
         Type cType = new TypeToken<ArrayList<Zastupce>>() {
         }.getType();
         zastupces = gson.fromJson(content, cType);
+        parametrs = zastupces.get(0).getParameters();
+        tempResult = new int[zastupces.size()*zastupces.get(0).getParameters()];
+        tempAnswer = new String[zastupces.size()*zastupces.get(0).getParameters()];
         last = zastupces.size()-1;
     }
     private void testViewer(int index,int last,int first) {
@@ -191,6 +209,7 @@ public class TestUserActivity extends AppCompatActivity {
 
         mExamsAdapter.notifyDataSetChanged();
 
+
     }
     private void createAnswerArr(){
         answerObjectArrayList=new ArrayList<>();
@@ -212,11 +231,8 @@ public class TestUserActivity extends AppCompatActivity {
             answerObjectArrayList.add(item);
         }
 
-
-
-
-
     }
+
     /*
      TextView content = findViewById(R.id.content3);
                 initializeZastupces(documentSnapshot.getString("content"));
