@@ -532,7 +532,7 @@ public class PopActivity extends Activity {
 
                 trCounter++;
                 Log.d(TAG, "current tr = " + trCounter);
-                if (!tr.getAllElements().hasAttr("colspan")) {
+                if (!tr.children().first().hasAttr("colspan")) {
                     String th = tr.children().first().text();
                     Log.d(TAG, "found " + th);
                     String td = tr.children().last().text();

@@ -184,11 +184,12 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-2924053854177245/9719495936"
-
+                ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
                 ads:layout_constraintBottom_toBottomOf="parent"
                 ads:layout_constraintStart_toStartOf="parent"
                 ads:layout_constraintEnd_toEndOf="parent" />
+
+            <!--ca-app-pub-2924053854177245/9719495936 TODO return-->
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

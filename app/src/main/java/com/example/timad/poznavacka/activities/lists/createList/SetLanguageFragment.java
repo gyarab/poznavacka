@@ -40,7 +40,7 @@ public class SetLanguageFragment extends Fragment implements AdapterView.OnItemS
 
     private Spinner languageSpinner;
     public static FloatingActionButton btnNext;
-    private Button btnCancel;
+    public static Button btnCancel;
 
     private String languageURL;
 
@@ -78,7 +78,8 @@ public class SetLanguageFragment extends Fragment implements AdapterView.OnItemS
     public void onStart() {
         super.onStart();
         btnNext = getView().findViewById(R.id.button_next_language);
-        btnNext.show();
+        //btnNext.setVisibility(View.VISIBLE);
+        //btnNext.show();
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override

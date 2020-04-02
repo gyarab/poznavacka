@@ -110,7 +110,6 @@ public class GeneratedListFragment extends Fragment {
     private boolean loadingRepresentative;
     private boolean listCreated;
 
-    private FloatingActionButton btnNext;
     private Button btnSAVE;
     private Button btnCancel;
     private ProgressBar progressBar;
@@ -184,9 +183,7 @@ public class GeneratedListFragment extends Fragment {
             Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
             Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
-
         }
-
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -195,7 +192,11 @@ public class GeneratedListFragment extends Fragment {
         super.onStart();
 
         btnSAVE = Objects.requireNonNull(getView()).findViewById(R.id.button_save_new);
-        btnSAVE.setVisibility(View.INVISIBLE);
+        if (listCreated) {
+            btnSAVE.setVisibility(View.VISIBLE);
+        } else {
+            btnSAVE.setVisibility(View.INVISIBLE);
+        }
         btnCancel = getView().findViewById(R.id.button_cancel_generated);
         btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,7 +238,7 @@ public class GeneratedListFragment extends Fragment {
         mLManager = new LinearLayoutManager(getContext());
 
         //new generation?..
-        listCreated = false;
+        //listCreated = false;
 
         Timber.d("automImportIsChecked is %s", autoImportIsChecked);
         if (autoImportIsChecked) {
@@ -1077,8 +1078,7 @@ public class GeneratedListFragment extends Fragment {
             fragment.mRecyclerView.setLayoutManager(fragment.mLManager);
             fragment.mRecyclerView.setAdapter(fragment.mAdapter);
             setOnClickListener();
-            //TODO adapter cannot set for some reason on item click listener
-
+            listCreated = false;
         }
 
         @Override
@@ -1200,6 +1200,13 @@ public class GeneratedListFragment extends Fragment {
                 } else {
                     Toast.makeText(getActivity(), "reconnect!", Toast.LENGTH_SHORT).show();
                 }
+            }
+
+            @Override
+            public void onDeleteClick(int position) {
+                Zastupce currentZastupce = mZastupceArr.get(position);
+                mZastupceArr.remove(position);
+                mAdapter.notifyItemRemoved(position);
             }
         });
     }

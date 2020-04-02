@@ -14,6 +14,10 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.query.AdInfo;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,6 +28,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
+
+import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
 
 public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
 
@@ -42,7 +48,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     private Fragment currentFragment;
 
-    private static InterstitialAd mInterstitialAd;
+    private RewardedAd mRewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,19 +87,21 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     @Override
     protected void onStart() {
         super.onStart();
-        mInterstitialAd = new InterstitialAd(this);
-        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); TEST
-        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-        mInterstitialAd.setAdListener(new AdListener() {
+        mRewardedAd = new RewardedAd(this, "ca-app-pub-3940256099942544/5224354917"); //TEST
+        //TODO return ca-app-pub-2924053854177245/2892047910
+        RewardedAdLoadCallback rewardedAdLoadCallback = new RewardedAdLoadCallback() {
             @Override
-            public void onAdClosed() {
-                // Load the next interstitial.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            public void onRewardedAdLoaded() {
+                super.onRewardedAdLoaded();
             }
 
-        });
+            @Override
+            public void onRewardedAdFailedToLoad(int i) {
+                super.onRewardedAdFailedToLoad(i);
+            }
+        };
+        mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);
     }
 
     @Override
@@ -117,16 +125,20 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         } else if (count == 1) {
             getSupportFragmentManager().popBackStack();
             SetTitleFragment.btnNext.setVisibility(View.VISIBLE);
+            SetTitleFragment.btnCancel.setVisibility(View.VISIBLE);
         } else if (count == 2) {
             getSupportFragmentManager().popBackStack();
-            SetRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
+            SetLanguageFragment.btnNext.setVisibility(View.VISIBLE);
+            SetLanguageFragment.btnCancel.setVisibility(View.VISIBLE);
         } else if (count == 3) {
             getSupportFragmentManager().popBackStack();
             SetRepresentativesFragment.btnNext.setVisibility(View.VISIBLE);
+            SetRepresentativesFragment.btnCancel.setVisibility(View.VISIBLE);
         } else if (count == 4) {
             GeneratedListFragment.cancelWikiSearchRepresentativesAsync();
             getSupportFragmentManager().popBackStack();
             SetCreateOptionsFragment.btnNext.setVisibility(View.VISIBLE);
+            SetCreateOptionsFragment.btnCancel.setVisibility(View.VISIBLE);
         } else {
             getSupportFragmentManager().popBackStack();
         }
@@ -192,11 +204,62 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         fragmentTransaction.replace(R.id.fragment_set_create_options, generatedListFragment);
         fragmentTransaction.addToBackStack(null);
         fragmentTransaction.commit();
-        if (mInterstitialAd.isLoaded()) {
+        /*if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
             Timber.d("The interstitial wasn't loaded yet.");
+        }*/
+        mInterstitialAd = new InterstitialAd(this);
+        //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); TODO return
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });
+
+        if (mRewardedAd.isLoaded()) {
+            RewardedAdCallback adCallback = new RewardedAdCallback() {
+                @Override
+                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+
+                }
+
+                @Override
+                public void onRewardedAdClosed() {
+                    super.onRewardedAdClosed();
+                    mRewardedAd = createAndLoadRewardedAd();
+                }
+            };
+            mRewardedAd.show(this, adCallback);
+        } else {
+            Timber.d("The rewarded ad wasn't loaded yet.");
         }
+    }
+
+    public RewardedAd createAndLoadRewardedAd() {
+        RewardedAd rewardedAd = new RewardedAd(this,
+                "ca-app-pub-3940256099942544/5224354917"); //TEST
+        //ca-app-pub-2924053854177245/2892047910 TODO Return this
+
+        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                // Ad successfully loaded.
+            }
+
+            @Override
+            public void onRewardedAdFailedToLoad(int errorCode) {
+                // Ad failed to load.
+            }
+        };
+        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+        return rewardedAd;
     }
 
     @Override

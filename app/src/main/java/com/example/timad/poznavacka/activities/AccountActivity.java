@@ -41,7 +41,7 @@ public class AccountActivity extends AppCompatActivity {
         final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplication());
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView_Bar);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(3);
         menuItem.setChecked(true);

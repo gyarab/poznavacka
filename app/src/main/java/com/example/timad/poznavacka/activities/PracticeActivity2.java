@@ -138,7 +138,7 @@ public class PracticeActivity2 extends AppCompatActivity {
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_white);
         menuItem.setChecked(true);

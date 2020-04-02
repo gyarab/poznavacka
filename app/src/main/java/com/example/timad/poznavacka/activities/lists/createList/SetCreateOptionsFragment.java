@@ -33,7 +33,7 @@ public class SetCreateOptionsFragment extends Fragment {
 
     private Switch autoImportSwitch;
     public static ExtendedFloatingActionButton btnNext;
-    private Button btnCancel;
+    public static Button btnCancel;
 
     private boolean autoImportIsChecked;
 

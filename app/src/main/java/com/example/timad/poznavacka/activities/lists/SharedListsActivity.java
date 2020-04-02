@@ -27,6 +27,9 @@ import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -63,6 +66,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
+
+import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
 
 
 public class SharedListsActivity extends AppCompatActivity {
@@ -297,14 +302,17 @@ public class SharedListsActivity extends AppCompatActivity {
                     final String docID = arrayList.get(position).getId();
                     final String userID = arrayList.get(position).getAuthorsUuid();
                     boolean download = true;
-                    for (PoznavackaInfo info :
+                    for (Object info :
                             MyListsActivity.sPoznavackaInfoArr) {
-                        Timber.d("Download - " + info.getName() + ", id=" + info.getId() + "?equals - " + arrayList.get(position).getName() + ", id=" + docID);
-                        if (info.getId().equals(docID)) {
-                            download = false;
-                            Timber.d("Do not download");
-                            Toast.makeText(getApplicationContext(), "Already downloaded", Toast.LENGTH_SHORT).show();
-                            break;
+                        if (info instanceof PoznavackaInfo) {
+                            PoznavackaInfo currentPozn = (PoznavackaInfo) info;
+                            Timber.d("Download - " + currentPozn.getName() + ", id=" + currentPozn.getId() + "?equals - " + arrayList.get(position).getName() + ", id=" + docID);
+                            if (currentPozn.getId().equals(docID)) {
+                                download = false;
+                                Timber.d("Do not download");
+                                Toast.makeText(getApplicationContext(), "Already downloaded", Toast.LENGTH_SHORT).show();
+                                break;
+                            }
                         }
                     }
                     if (download) {
@@ -366,10 +374,13 @@ public class SharedListsActivity extends AppCompatActivity {
                             removePoznavacka(userID, documentID, position);
 
                             //local change
-                            for (PoznavackaInfo poznavackaInfo :
+                            for (Object object :
                                     MyListsActivity.sPoznavackaInfoArr) {
-                                if (poznavackaInfo.getId().equals(arrayList.get(position).getId())) {
-                                    poznavackaInfo.setUploaded(false);
+                                if (object instanceof PoznavackaInfo) {
+                                    PoznavackaInfo currentPozn = (PoznavackaInfo) object;
+                                    if (currentPozn.getId().equals(arrayList.get(position).getId())) {
+                                        currentPozn.setUploaded(false);
+                                    }
                                 }
                             }
 

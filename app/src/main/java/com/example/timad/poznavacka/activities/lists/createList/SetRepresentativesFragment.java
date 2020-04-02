@@ -40,7 +40,7 @@ public class SetRepresentativesFragment extends Fragment {
 
     private EditText representativesInput;
     public static FloatingActionButton btnNext;
-    private Button btnCancel;
+    public static Button btnCancel;
 
     private boolean enteredTextIsValid;
 

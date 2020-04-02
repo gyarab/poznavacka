@@ -118,7 +118,7 @@ public class PracticeActivity extends AppCompatActivity {
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
-        BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
+        //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_white);
         menuItem.setChecked(true);
@@ -194,7 +194,8 @@ public class PracticeActivity extends AppCompatActivity {
 
     public ArrayList<Integer> fillArr(){
         ArrayList<Integer> arr = new ArrayList<Integer>();
-        if(sZastupceArrOrig.get(0).getParameter(0).equals("") || sZastupceArrOrig.get(0).getParameter(0).isEmpty()) {
+
+        if (sZastupceArrOrig.get(0).getParameter(0).equals("") || sZastupceArrOrig.get(0).getParameter(0).isEmpty()) {
             for (int i = 1; i < sZastupceArrOrig.size(); i++){
                 arr.add(i);
             }

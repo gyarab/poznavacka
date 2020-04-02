@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka;
 
+import android.app.Application;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -7,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 
@@ -14,6 +16,7 @@ import java.util.ArrayList;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
@@ -28,29 +31,33 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
     public interface OnItemClickListener {
         void onViewClick(int position);
+
+        void onDeleteClick(int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
-        this.listener=listener;
+        this.listener = listener;
     }
 
 
     public static class ZastupceViewHolder extends RecyclerView.ViewHolder {
         public ImageView zastupceImage;
         public ArrayList<EditText> editTArr;
+        public ImageButton deleteButton;
 
         //image  --   https://stackoverflow.com/a/41479670/10746262
 
         public ZastupceViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             editTArr = new ArrayList<>();
-            for (int x = 0; x < mParameters; x++){
+            for (int x = 0; x < mParameters; x++) {
                 final int pos = x;
                 editTArr.add(x, (EditText) itemView.findViewById(mIds[x]));
                 //Log.d("WELP", "Scroll: " + mIds[x]);
                 editTArr.get(x).addTextChangedListener(new TextWatcher() {
                     @Override
-                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {   }
+                    public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                    }
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -58,13 +65,13 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     }
 
                     @Override
-                    public void afterTextChanged(Editable editable) {   }
+                    public void afterTextChanged(Editable editable) {
+                    }
                 });
             }
 
             zastupceImage = itemView.findViewById(mIds[mParameters]);
 
-            //TODO set change/import image
             zastupceImage.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -72,6 +79,20 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                         int position = getAdapterPosition();
                         if (position != RecyclerView.NO_POSITION) {
                             listener.onViewClick(position);
+                        }
+                    }
+                }
+            });
+
+            deleteButton = itemView.findViewById(mIds[mParameters] + 1);
+
+            deleteButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    if (listener != null) {
+                        int position = getAdapterPosition();
+                        if (position != RecyclerView.NO_POSITION) {
+                            listener.onDeleteClick(position);
                         }
                     }
                 }
@@ -86,7 +107,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         }
     }
 
-    private View createCardView(ViewGroup parent){
+    private View createCardView(ViewGroup parent) {
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
         LinearLayout ll = (LinearLayout) cardView.getChildAt(0);
         Context context = parent.getContext();
@@ -180,11 +201,22 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         //Log.i("GenerateId", "Img: " + imgV.getId());
         ll.addView(imgV);
 
+        ImageButton deleteButton = new ImageButton(parent.getContext());
+        deleteButton.setLayoutParams(new LinearLayout.LayoutParams(
+                100,
+                100,
+                1f
+        ));
+        deleteButton.setMinimumWidth(100);
+        deleteButton.setMaxWidth(100);
+        deleteButton.setId(mIds[mParameters] + 1);
+        ll.addView(deleteButton);
+
         return cardView;
     }
 
-    private void createEditTexts(Context context, LinearLayout ll, int start, int end){
-        for(int i = start; i < end; i++){
+    private void createEditTexts(Context context, LinearLayout ll, int start, int end) {
+        for (int i = start; i < end; i++) {
             //Log.d("WELP", "Button: " + i);
             EditText editT = new EditText(context);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
@@ -209,11 +241,11 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         return ipvh;
     }
 
-    public ZastupceAdapter(ArrayList<Zastupce> zastupceList, int parameters){
+    public ZastupceAdapter(ArrayList<Zastupce> zastupceList, int parameters) {
         mZastupceList = zastupceList;
         mParameters = parameters;
         mIds = new int[mParameters + 1];
-        for (int i = 0; i < mParameters + 1; i++){
+        for (int i = 0; i < mParameters + 1; i++) {
             mIds[i] = View.generateViewId();
             //Log.i("GenerateId", i + ": " + Integer.toString(mIds[i]));
         }
@@ -222,10 +254,12 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
     @Override
     public void onBindViewHolder(@NonNull ZastupceViewHolder holder, int position) {
         Zastupce currentZastupce = mZastupceList.get(position);
-        for (int i = 0; i < mParameters; i++){
+        for (int i = 0; i < mParameters; i++) {
             holder.editTArr.get(i).setText(currentZastupce.getParameter(i));
         }
         holder.zastupceImage.setImageDrawable(currentZastupce.getImage()); // IMG
+        holder.deleteButton.setImageDrawable(ResourcesCompat.getDrawable(holder.deleteButton.getResources(), R.drawable.ic_cross_red_24dp, null));
+        holder.deleteButton.setBackgroundColor(holder.deleteButton.getResources().getColor(R.color.colorAccentSecond));
     }
 
     public int getmParameters() {

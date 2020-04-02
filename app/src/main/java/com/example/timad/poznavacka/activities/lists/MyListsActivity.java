@@ -23,7 +23,6 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
-import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
@@ -35,6 +34,12 @@ import com.example.timad.poznavacka.activities.AuthenticationActivity;
 import com.example.timad.poznavacka.activities.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
+import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -73,7 +78,6 @@ import tourguide.tourguide.Pointer;
 import tourguide.tourguide.ToolTip;
 import tourguide.tourguide.TourGuide;
 
-
 public class MyListsActivity extends AppCompatActivity {
 
     private static final String TAG = "myListsActivity";
@@ -95,20 +99,25 @@ public class MyListsActivity extends AppCompatActivity {
     public static StorageManagerClass sSMC;
 
     public static PoznavackaInfo sActivePoznavacka = null;
-    public static ArrayList<PoznavackaInfo> sPoznavackaInfoArr;
+    public static ArrayList<Object> sPoznavackaInfoArr;
 
     private RecyclerView mRecyclerView;
     public static RWAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
     public static int sPositionOfActivePoznavackaInfo;
 
-    private FabSpeedDial newListBTN;
+    private static FabSpeedDial newListBTN;
     private ProgressBar newListBTNProgressBar;
 
     private ExtendedFloatingActionButton examEFAB;
 
     private RelativeLayout noListsLayout;
-    private TourGuide mTourGuide;
+    private static TourGuide mTourGuide;
+
+    public static InterstitialAd mInterstitialAd;
+    public static UnifiedNativeAd mUnifiedNativeAd;
+    public static boolean initialized;
+    private AdLoader nativeAdLoader;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -125,6 +134,7 @@ public class MyListsActivity extends AppCompatActivity {
         newListBTNProgressBar.setVisibility(View.INVISIBLE);
 
         if (savingNewList) {
+            showInterstitial();
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -139,6 +149,7 @@ public class MyListsActivity extends AppCompatActivity {
             saveCreatedListAsync.execute();
 
         } else if (savingDownloadedList) {
+            showInterstitial();
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -151,7 +162,16 @@ public class MyListsActivity extends AppCompatActivity {
             saveDownloadedListAsync.execute();
         }
 
-        //initialization
+        if (!initialized) {
+            init(getApplication());
+            initialized = false;
+        }
+
+        if (sPositionOfActivePoznavackaInfo == -1) {
+            initTourGuide();
+        }
+
+        /*//initialization
         if (sPoznavackaInfoArr == null) {
             Gson gson = new Gson();
             String s = getSMC(getApplication()).readFile("poznavacka.txt", true);
@@ -161,14 +181,14 @@ public class MyListsActivity extends AppCompatActivity {
                     Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
                     }.getType();
                     sPoznavackaInfoArr = gson.fromJson(s, cType);
-                    sActivePoznavacka = sPoznavackaInfoArr.get(0);
+                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
                     sPositionOfActivePoznavackaInfo = 0;
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
                     sPositionOfActivePoznavackaInfo = -1;
-                    /*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
+                    *//*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
                     noListsLayout = findViewById(R.id.no_lists_layout);
-                    noListsLayout.setVisibility(View.VISIBLE);*/
+                    noListsLayout.setVisibility(View.VISIBLE);*//*
                     initTourGuide();
 
                 }
@@ -178,7 +198,7 @@ public class MyListsActivity extends AppCompatActivity {
 
                 initTourGuide();
             }
-        }
+        }*/
 
         /* Add new button */
         /*newListBTN = view.findViewById(R.id.new_list_btn);
@@ -211,7 +231,21 @@ public class MyListsActivity extends AppCompatActivity {
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                        finish();
+                        mInterstitialAd = new InterstitialAd(getApplication());
+                        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
+                        //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); //TODO return
+                        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                        Timber.d("Interstitial shared lists ad loaded");
+
+                        mInterstitialAd.setAdListener(new AdListener() {
+                            @Override
+                            public void onAdClosed() {
+                                // Load the next interstitial.
+                                //mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                                Timber.d("Interstitial shared lists ad loaded");
+                            }
+
+                        });
                         break;
                     case (R.id.action_create):
                         Intent intent1 = new Intent(getApplication(), CreateListActivity.class);
@@ -245,18 +279,23 @@ public class MyListsActivity extends AppCompatActivity {
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
+
+        if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
+            loadNativeAd();
+        }
+
         mAdapter.setOnItemClickListener(new RWAdapter.OnItemClickListener() {
             @Override
             public void onItemClick(int position) {
                 sPositionOfActivePoznavackaInfo = position;
-                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
             public void onPracticeClick(final int position) {
                 sPositionOfActivePoznavackaInfo = position;
-                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                 mAdapter.notifyDataSetChanged();
 
                 Intent myIntent = new Intent(getApplication(), PracticeActivity.class);
@@ -267,14 +306,15 @@ public class MyListsActivity extends AppCompatActivity {
 
             @Override
             public void onShareClick(final int position) {
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
 
-                boolean poznavackaIsUploaded = sPoznavackaInfoArr.get(position).isUploaded();
+                boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
 
                 if (!poznavackaIsUploaded) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
-                    builder.setMessage("Do you want to share " + sPoznavackaInfoArr.get(position).getName() + "?");
+                    builder.setMessage("Do you want to share " + sActivePoznavacka.getName() + "?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
@@ -282,10 +322,10 @@ public class MyListsActivity extends AppCompatActivity {
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                                 //remote upload
-                                String content = getSMC(getApplication()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                                String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
                                 if (!(user.getUid() == null)) {
                                     Timber.d("Adding to firestore");
-                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sPoznavackaInfoArr.get(position).getName(), sPoznavackaInfoArr.get(position).getId(), content, sPoznavackaInfoArr.get(position).getAuthor(), sPoznavackaInfoArr.get(position).getAuthorsID(), sPoznavackaInfoArr.get(position).getPrewievImageUrl(), sPoznavackaInfoArr.get(position).getPrewievImageLocation(), sPoznavackaInfoArr.get(position).getLanguageURL(), System.currentTimeMillis()));
+                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
                                 } else {
                                     Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
                                     startActivity(intent0);
@@ -293,7 +333,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 }
 
                                 //local change
-                                sPoznavackaInfoArr.get(position).setUploaded(true);
+                                sActivePoznavacka.setUploaded(true);
                                 getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
                                 Toast toast = Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT);
@@ -324,7 +364,7 @@ public class MyListsActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.app_name);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
-                    builder.setMessage("Do you want to remove " + sPoznavackaInfoArr.get(position).getName() + " from shared database?");
+                    builder.setMessage("Do you want to remove " + sActivePoznavacka.getName() + " from shared database?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
@@ -332,10 +372,10 @@ public class MyListsActivity extends AppCompatActivity {
                                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
                                 //remote deletion
-                                removeFromDatabase(sPoznavackaInfoArr.get(position).getId());
+                                removeFromDatabase(sActivePoznavacka.getId());
 
                                 //local change
-                                sPoznavackaInfoArr.get(position).setUploaded(false);
+                                sActivePoznavacka.setUploaded(false);
                                 getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
                             } else {
@@ -365,14 +405,15 @@ public class MyListsActivity extends AppCompatActivity {
 
             @Override
             public void onDeleteClick(final int position) {
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                 builder.setTitle(R.string.app_name);
                 builder.setIcon(R.drawable.ic_delete);
-                builder.setMessage("Do you really want to delete " + sPoznavackaInfoArr.get(position).getName() + "?");
+                builder.setMessage("Do you really want to delete " + sActivePoznavacka.getName() + "?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Context context = getApplication();
-                        getSMC(context).deletePoznavacka(sPoznavackaInfoArr.get(position).getId() + "/");
+                        getSMC(context).deletePoznavacka(sActivePoznavacka.getId() + "/");
 
                         sPoznavackaInfoArr.remove(position);
                         getSMC(context).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
@@ -383,7 +424,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 if (sPositionOfActivePoznavackaInfo < 0) {
                                     sPositionOfActivePoznavackaInfo = 0;
                                 }
-                                sActivePoznavacka = sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                             } else {
                                 sActivePoznavacka = null;
                             }
@@ -411,20 +452,21 @@ public class MyListsActivity extends AppCompatActivity {
 
             @Override
             public void onTestClick(final int position) {
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
                 if (SharedListsActivity.checkInternet(getApplication())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.exam);
                     builder.setIcon(R.drawable.ic_test);
-                    builder.setMessage("Do you really want to put " + sPoznavackaInfoArr.get(position).getName() + " into tests ?");
+                    builder.setMessage("Do you really want to put " + sActivePoznavacka.getName() + " into tests ?");
                     builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            String content = getSMC(getApplication()).readFile(sPoznavackaInfoArr.get(position).getId() + "/" + sPoznavackaInfoArr.get(position).getId() + ".txt", false);
+                            String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
                             String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
-                            String name = sPoznavackaInfoArr.get(position).getName();
+                            String name = sActivePoznavacka.getName();
                             boolean started = false;
-                            String previewImgUrl = sPoznavackaInfoArr.get(position).getPrewievImageUrl();
+                            String previewImgUrl = sActivePoznavacka.getPrewievImageUrl();
                             boolean finished = false;
                             boolean resultsEmpty = false;
                             DBTestObject data = new DBTestObject(name, content, userID, previewImgUrl, started, finished, "", "", resultsEmpty);
@@ -491,6 +533,85 @@ public class MyListsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+
+    public static void init(Context context) {
+        //initialization
+        if (sPoznavackaInfoArr == null) {
+            Gson gson = new Gson();
+            String s = getSMC(context).readFile("poznavacka.txt", true);
+
+            if (s != null) {
+                if (!s.isEmpty()) {
+                    Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
+                    }.getType();
+                    sPoznavackaInfoArr = gson.fromJson(s, cType);
+                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
+                    sPositionOfActivePoznavackaInfo = 0;
+                } else {
+                    sPoznavackaInfoArr = new ArrayList<>();
+                    sPositionOfActivePoznavackaInfo = -1;
+                    /*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
+                    noListsLayout = findViewById(R.id.no_lists_layout);
+                    noListsLayout.setVisibility(View.VISIBLE);*/
+                }
+            } else {
+                sPoznavackaInfoArr = new ArrayList<>();
+                sPositionOfActivePoznavackaInfo = -1;
+            }
+        }
+
+        //RecyclerView
+
+    }
+
+    private void loadNativeAd() {
+
+        nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-3940256099942544/2247696110")
+                .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
+                    @Override
+                    public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
+                        // Show the ad.
+                        mUnifiedNativeAd = unifiedNativeAd;
+                        sPoznavackaInfoArr.add(mUnifiedNativeAd);
+                        mAdapter.notifyDataSetChanged();
+                    }
+                })
+                .withAdListener(new AdListener() {
+                    @Override
+                    public void onAdFailedToLoad(int errorCode) {
+                        // Handle the failure by logging, altering the UI, and so on.
+                    }
+                })
+                .withNativeAdOptions(new NativeAdOptions.Builder()
+                        // Methods in the NativeAdOptions.Builder class can be
+                        // used here to specify individual options settings.
+                        .build())
+                .build();
+        nativeAdLoader.loadAd(new AdRequest.Builder().build());
+    }
+
+    private void showInterstitial() {
+        /*mInterstitialAd = new InterstitialAd(this);
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); TEST
+        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+
+        mInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+            }
+
+        });*/
+
+        if (mInterstitialAd.isLoaded()) {
+            mInterstitialAd.show();
+        } else {
+            Timber.d("The interstitial wasn't loaded yet.");
+        }
     }
 
     private void initTourGuide() {

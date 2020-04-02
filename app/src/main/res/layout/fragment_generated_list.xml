@@ -43,7 +43,7 @@
 
             android:layout_marginStart="15dp"
             android:background="@drawable/cancel_bg"
-            android:text="CANCEL"
+            android:text="@string/cancel"
             android:textColor="@color/colorGrey" />
 
         <ProgressBar
@@ -65,7 +65,7 @@
 
             android:layout_marginEnd="10dp"
             android:backgroundTint="@color/color_save_button"
-            android:text="Save"
+            android:text="@string/save"
             android:textColor="@color/text_color"
             android:theme="@style/AppTheme.ExtendedFloatingActionButton"
 
@@ -76,13 +76,17 @@
             android:id="@+id/textView3"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="EDIT"
-            android:textColor="@color/text_color"
-            android:textStyle="bold"
-            android:textSize="25sp"
-            android:layout_centerInParent="true"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
+            android:layout_toStartOf="@+id/button_save_new"
+            android:gravity="center"
+            android:layout_toEndOf="@+id/button_cancel_generated"
+            android:layout_centerVertical="true"
 
-            />
+            android:text="@string/generated_fragment_edit_text_view"
+            android:textColor="@color/text_color"
+            android:textSize="22sp"
+            android:textStyle="bold" />
 
 
         <!--        <TextView

@@ -38,7 +38,7 @@ public class SetTitleFragment extends Fragment {
     private TextView textView;
 
     public static FloatingActionButton btnNext;
-    private Button btnCancel;
+    public static Button btnCancel;
 
     public SetTitleFragment() {
         // Required empty public constructor

@@ -17,18 +17,19 @@ import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 
 public class StorageManagerClass {
     private final String ENV_PATH;
     private final Gson GSON;
 
-    public StorageManagerClass(String envPath){
+    public StorageManagerClass(String envPath) {
         ENV_PATH = envPath + "/";
         GSON = new Gson();
     }
 
-    public String readFile(String path, boolean create){
+    public String readFile(String path, boolean create) {
         ArrayList<PoznavackaInfo> arr = new ArrayList<>();
         File txtFile = new File(ENV_PATH + path);
         String s = "";
@@ -46,7 +47,7 @@ public class StorageManagerClass {
             fr.close();
         } catch (IOException e) {
             e.printStackTrace();
-            if(create) {
+            if (create) {
                 createFile(txtFile);
             }
         }
@@ -54,7 +55,7 @@ public class StorageManagerClass {
         return s.trim();
     }
 
-    private void createFile(File file){
+    private void createFile(File file) {
         FileWriter fw = null;
 
         try {
@@ -62,12 +63,20 @@ public class StorageManagerClass {
             fw.write("");
             fw.flush();
             fw.close();
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public void updatePoznavackaFile(String path, ArrayList<PoznavackaInfo> arr) {
+    public void updatePoznavackaFile(String path, ArrayList<Object> arrRaw) {
+        ArrayList arr = new ArrayList();
+        for (Object object :
+                arrRaw) {
+            if (object instanceof PoznavackaInfo) {
+                arr.add(object);
+            }
+        }
+
         File file = new File(ENV_PATH + path);
         FileWriter fw;
         String s;
@@ -125,7 +134,7 @@ public class StorageManagerClass {
         }
     }
 
-    public boolean saveDrawable(Drawable drawable, String path, String name){
+    public boolean saveDrawable(Drawable drawable, String path, String name) {
         BitmapDrawable bitmapDraw = (BitmapDrawable) drawable;
         Bitmap bitmap = bitmapDraw.getBitmap();
         FileOutputStream fos;
@@ -147,17 +156,15 @@ public class StorageManagerClass {
         Bitmap bitmap = null;
 
         try {
-            File file =new File(ENV_PATH + path + name + ".png");
+            File file = new File(ENV_PATH + path + name + ".png");
             bitmap = BitmapFactory.decodeStream(new FileInputStream(file));
-        }
-        catch (FileNotFoundException e)
-        {
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
-    public boolean createAndWriteToFile(String path, String name ,String json){
+    public boolean createAndWriteToFile(String path, String name, String json) {
         File txtFile = new File(ENV_PATH + path + name + ".txt");
         FileWriter fw;
 

@@ -60,11 +60,14 @@
     <string name="search_lists">Search lists online</string>
     <string name="internet_connection_required">Internet connection required</string>
     <string name="give_your_list_a_name">Give your list a name.</string>
-    <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a simple ,</string>
+    <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a comma ","</string>
     <string name="generate_text_view">Lastly, do you want some additional info about the things you entered?</string>
     <string name="user_select_language">First, select the language for your list.</string>
     <string name="my_exams_title">YOUR EXAMS</string>
     <string name="exams">exams</string>
     <string name="removed_from_database">Removed from database</string>
     <string name="failed_to_remove_from_database">Failed to remove from database</string>
+    <string name="generated_fragment_edit_text_view">Now, edit</string>
+    <string name="save">Save</string>
+    <string name="cancel">CANCEL</string>
 </resources>
