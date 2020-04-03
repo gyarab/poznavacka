@@ -5,8 +5,7 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorPrimary"
-    tools:context=".activities.lists.SharedListsActivity"
-    android:theme="@style/Theme.AppCompat">
+    tools:context=".activities.lists.SharedListsActivity">
 
     <EditText
         android:id="@+id/search_view"

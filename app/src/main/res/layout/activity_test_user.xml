@@ -13,13 +13,14 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:text="Welcome to the test"
-        android:textSize="20dp"
+        android:textSize="25sp"
+        android:textColor="@color/text_color"
         android:fontFamily="@font/lineto_circular_black"/>
 
     <ImageView
         android:id="@+id/zastupceImage3"
-        android:layout_width="500px"
-        android:layout_height="500px"
+        android:layout_width="160dp"
+        android:layout_height="160dp"
         android:layout_centerHorizontal="true"
         android:layout_below="@id/title3"
         />

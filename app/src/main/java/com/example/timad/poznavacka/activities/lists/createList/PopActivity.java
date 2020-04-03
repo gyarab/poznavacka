@@ -183,27 +183,10 @@ public class PopActivity extends Activity {
         }
 
         @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
+        protected void onProgressUpdate(String... trimmedValues) {
+            super.onProgressUpdate(trimmedValues);
             PopActivity fragment = fragmentWeakReference.get();
             checkboxAdded = true;
-
-            //trimming the array
-            int count = 0;
-            for (String value :
-                    values) {
-                if (value != null) {
-                    count++;
-                }
-            }
-            String[] trimmedValues = new String[count];
-            int index = 0;
-            for (String value :
-                    values) {
-                if (value != null) {
-                    trimmedValues[index++] = value;
-                }
-            }
 
             for (String value :
                     trimmedValues) {
@@ -212,7 +195,7 @@ public class PopActivity extends Activity {
                 ch.setTextColor(getResources().getColor(R.color.colorPrimaryDark));
                 fragment.layout1.addView(ch);
 
-                Log.d(TAG, "Checkbox " + values[0] + " added");
+                Log.d(TAG, "Checkbox " + trimmedValues[0] + " added");
             }
         }
 
@@ -306,7 +289,6 @@ public class PopActivity extends Activity {
                             googleSearchRepresentative = spelling.getCorrectedQuery();
                         } else {
                             continue allRepresentatives;
-                            //LEFT OFF HERE, if no spell correction, go for next representative
                         }
                     }
                 }
@@ -322,94 +304,16 @@ public class PopActivity extends Activity {
                     continue;
                 }
 
-                Element infoBox = null;
-
                 if (doc != null && doc.head().hasText()) {
-                    boolean redirects = false;
-                    try {
-                        Elements rawTables = doc.getElementsByTag("table");
-                        redirects = true;
-                        for (Element table :
-                                rawTables) {
-                            if (languageURL.equals("en") || languageURL.equals("cs")) {
-                                if (table.id().toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                }
-
-                            } else if (languageURL.equals("de")) {
-
-                                if (table.id().toLowerCase().contains("taxo")) {
-                                    Log.d(TAG, "doesn't contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").toLowerCase().contains("taxo")) {
-                                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.id().toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                    } catch (NullPointerException e) {
-                        //rozcestník
-                        redirects = true;
-                        e.printStackTrace();
-                    }
-
-                    if (redirects) {
-                        //if it is a redirecting site
-                        ArrayList redirectedSiteAndTable = redirect_getTable(doc);
-                        if (redirectedSiteAndTable.get(2).equals(false)) { //if new site is not found
-                            continue;
-                        } else {
-                            infoBox = (Element) redirectedSiteAndTable.get(1);
-                        }
-                    }
-
                     String[] newData;
-                    int classificationPointer;
-                    //harvesting the infoBox
-                    if (infoBox != null) {
-                        //special case german classification structure
-                        if (languageURL.equals("de")) {
-                            if (infoBox.getElementsByTag("table") != null) {
-                                Elements infoboxes = infoBox.getElementsByTag("table");
-                                infoBox = infoboxes.get(0);
-                            }
-                        }
-                        ArrayList harvestedInfoBox = harvestClassification(infoBox);
-                        newData = (String[]) harvestedInfoBox.get(0);
-                        classificationPointer = (int) harvestedInfoBox.get(1);
+                    ArrayList<Element> infoTables = getInfoTables(doc);
+                    if (infoTables.size() == 0) continue;
+                    newData = harvestClassification(infoTables);
 
-                        //if wrong data is fetched
-                        if (newData[0] == null) {
-                            continue;
-                        }
-                    } else {
-                        continue;
-                    }
-                    publishProgress(newData);
+                    String[] trimmedValues = trimStringArray(newData);
+                    if (trimmedValues.length == 0) continue;
+
+                    publishProgress(trimmedValues);
                     break;
                 }
 
@@ -514,53 +418,132 @@ public class PopActivity extends Activity {
             return returnDocAndInfobox;
         }
 
-        private ArrayList<String> harvestClassification(Element infoBox) {
+        private String[] harvestClassification(ArrayList<Element> infoTables) {
 
             ArrayList returnList = new ArrayList();
 
             String[] newData = new String[50];
             int classificationPointer = 0;
-
-            String[] dataPair;
             int trCounter = 0;
 
+            for (Element infoTable :
+                    infoTables) {
 
-            //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
-            Elements trs = infoBox.select("tr");
-            for (Element tr :
-                    trs) {
+                Elements trs = infoTable.select("tr");
 
-                trCounter++;
-                Log.d(TAG, "current tr = " + trCounter);
-                if (!tr.children().first().hasAttr("colspan")) {
-                    String th = tr.children().first().text();
-                    Log.d(TAG, "found " + th);
-                    String td = tr.children().last().text();
-                    Log.d(TAG, "found " + td);
-                    //dataPair = tr.wholeText().split("\n", 2);
+                for (Element tr :
+                        trs) {
 
-/*                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
-                        dataPair = dataPair.clone()[1].split("\n");
-                    }*/
-                    Log.d(TAG, "classPointer = " + classificationPointer);
+                    trCounter++;
+                    Log.d(TAG, "current tr = " + trCounter);
+                    if (tr.childrenSize() != 0 && tr.child(0).siblingElements().size() == 1) {
+                        Timber.d("Sibling size = %s", tr.child(0).siblingElements().size());
+                        String th = tr.children().first().text();
+                        Log.d(TAG, "found " + th);
+                        String td = tr.children().last().text();
+                        Log.d(TAG, "found " + td);
+                        Log.d(TAG, "classPointer = " + classificationPointer);
 
-                    if (languageURL.equals("de")) {
-                        if (th.contains(":")) {
+                        if (th.isEmpty()) continue;
+                        if (th.trim().substring(th.length() - 1, th.length()).contentEquals(":")) {
                             th = th.replace(":", "");
                         }
-                    }
 
-                    newData[classificationPointer] = th;
-                    classificationPointer++;
-                    //newData.add(dataPair[0]);
-                    Log.d(TAG, "adding new data to newData = " + th);
+
+                        newData[classificationPointer] = th;
+                        classificationPointer++;
+                        //newData.add(dataPair[0]);
+                        Log.d(TAG, "adding new data to newData = " + th);
+                    }
+                }
+                //returnList.add(newData);
+            }
+            //returnList.add(classificationPointer);
+            return newData;
+        }
+    }
+
+    private String[] trimStringArray(String[] newData) {
+        //trimming the array
+        int count = 0;
+        for (String value :
+                newData) {
+            if (value != null) {
+                count++;
+            }
+        }
+        String[] trimmedValues = new String[count];
+        int index = 0;
+        for (String value :
+                newData) {
+            if (value != null) {
+                trimmedValues[index++] = value;
+            }
+        }
+        return trimmedValues;
+    }
+
+
+    private ArrayList<Element> getInfoTables(Document doc) {
+        ArrayList<Element> infoTables = new ArrayList<>();
+        boolean addTable = false;
+        Element classTable = null;
+        try {
+            Elements rawTables = doc.getElementsByTag("table");
+            for (Element table :
+                    rawTables) {
+
+                if (table.id().toLowerCase().contains("info")) {
+                    Log.d(TAG, "does contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("info")) {
+                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.id().toLowerCase().contains("taxo")) {
+                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("taxo")) {
+                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("sinottico")) {
+                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.id().toLowerCase().contains("sinottico")) {
+                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (languageURL.equals("fr") && table.selectFirst("tbody").child(0).child(0).siblingElements().size() == 1) {
+                    infoTables.add(table.selectFirst("tbody"));
                 }
             }
 
-            returnList.add(newData);
-            returnList.add(classificationPointer);
-            return returnList;
+            if (addTable) {
+                Element tableToBeAdded = classTable.selectFirst("tbody");
+                if (tableToBeAdded.getElementsByTag("table") != null && tableToBeAdded.getElementsByTag("table").size() != 0) {
+                    Elements infoboxes = tableToBeAdded.getElementsByTag("table");
+                    infoTables.add(infoboxes.get(0));
+                }
+                infoTables.add(classTable.selectFirst("tbody"));
+
+            }
+
+        } catch (NullPointerException e) {
+            //rozcestník
+            e.printStackTrace();
         }
+
+        return infoTables;
     }
 
 

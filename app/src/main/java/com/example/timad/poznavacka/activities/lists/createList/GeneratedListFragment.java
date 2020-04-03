@@ -592,97 +592,18 @@ public class GeneratedListFragment extends Fragment {
 
 
                 //checking for the right table
-                String newData[] = new String[userParametersCount];
-                int classificationPointer = 0;
-
-                Element infoBox = null;
-
                 if (doc != null && doc.head().hasText()) {
-                    boolean redirects = false;
-                    try {
-                        Elements rawTables = doc.getElementsByTag("table");
-                        redirects = true;
-                        for (Element table :
-                                rawTables) {
-                            if (languageURL.equals("en") || languageURL.equals("cs")) {
-                                if (table.id().contains("info")) {
-                                    Timber.d("does contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").contains("info")) {
-                                    Timber.d("does contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                }
-
-                            } else if (languageURL.equals("de")) {
-
-                                if (table.id().contains("taxo") || table.id().contains("Taxo")) {
-                                    Timber.d("does contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").contains("taxo")) {
-                                    Timber.d("does contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.id().toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain id info = " + table.id());
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                } else if (table.attr("class").toLowerCase().contains("info")) {
-                                    Log.d(TAG, "does contain class info = " + table.attr("class"));
-                                    infoBox = table.selectFirst("tbody");
-                                    redirects = false;
-                                    break;
-                                }
-                            }
-
-                        }
-
-                    } catch (NullPointerException e) {
-                        //rozcestník
-                        redirects = true;
-                        e.printStackTrace();
+                    String[] newData = new String[userParametersCount];
+                    ArrayList<Element> infoTables = getInfoTables(doc);
+                    if (infoTables.size() == 0) {
+                        continue;
+                    } else {
+                        newData = harvestInfo(infoTables);
                     }
-
-
-                    //if it is a redirecting site
-                    if (redirects) {
-                        ArrayList redirectedSiteAndTable = redirect_getTable(doc);
-                        if (redirectedSiteAndTable.get(2).equals(false)) { //if new site is not found
-                            fragment.mZastupceArr.add(new Zastupce(userParametersCount, getResources().getDrawable(R.drawable.ic_image_black_24dp), "", fragment.capitalize(representative, languageURL)));
-                            publishProgress(representative);
-                            continue;
-                        } else {
-                            doc = (Document) redirectedSiteAndTable.get(0);
-                            infoBox = (Element) redirectedSiteAndTable.get(1);
-                        }
-                    }
-
-                    //harvesting the infoBox
-                    if (infoBox != null) {
-                        //special case german classification structure
-                        if (languageURL.equals("de")) {
-                            if (infoBox.getElementsByTag("table") != null) {
-                                Elements infoboxes = infoBox.getElementsByTag("table");
-                                infoBox = infoboxes.get(0);
-                            }
-                        }
-                        ArrayList harvestedInfoBox = harvestInfo(infoBox);
-                        newData = (String[]) harvestedInfoBox.get(0);
-                        Timber.d("1newData array is ->");
-                        for (String data :
-                                newData) {
-                            Timber.d("1newData array is -> " + data);
-                        }
-                        classificationPointer = (int) harvestedInfoBox.get(1);
-                            /*img = (Drawable) harvestedInfoBox.get(2);
-                            imageURL = (String) harvestedInfoBox.get(3);*/
+                    Timber.d("1newData array is ->");
+                    for (String data :
+                            newData) {
+                        Timber.d("1newData array is -> " + data);
                     }
 
                     //setting display name of representative
@@ -695,18 +616,8 @@ public class GeneratedListFragment extends Fragment {
                             displayNameOfRepresentative = doc.title().substring(0, doc.title().indexOf("(")).trim();
                         }
                     }
-
                     newData[userParametersCount - 1] = displayNameOfRepresentative;
-                    //Collections.reverse(newData);
 
-                    //loading into mZastupceArr
-
-                    //loading representative
-                    /*if (detectedWrongTable(classificationPointer)) { //if detected wrong table but on the correct site
-                        for (int i = 0; i < userParametersCount - 1; i++) {
-                            newData[i] = "";
-                        }
-                    }*/
                     if (img == null) {
                         //get only the image
                         ArrayList imgAndUrl = getImageFromSite(doc);
@@ -819,162 +730,54 @@ public class GeneratedListFragment extends Fragment {
             return returnDocAndInfobox;
         }
 
-        private ArrayList<String> harvestInfo(Element infoBox) {
+        private String[] harvestInfo(ArrayList<Element> infoTables) {
 
-            ArrayList returnList = new ArrayList();
-
-            //ArrayList<String> newData = new ArrayList<>();
             String[] newData = new String[userParametersCount];
-           /* Drawable img = null;
-            String imageURL = "";*/
-            int classificationPointer = 0;
-
             String[] dataPair = new String[2];
-            boolean imageDetected = false;
-            int trCounter = 0;
             GeneratedListFragment fragment = fragmentWeakReference.get();
 
+            for (Element infoTable :
+                    infoTables) {
 
-            //Element infoBox = doc.getElementsByTag("table").first().selectFirst("tbody");
-            Elements trs = infoBox.select("tr");
-            int trsWithoutColspan = 0;
-            int currentTrsWihtoutColspan = 0;
+                Elements trs = infoTable.select("tr");
 
-            //to check if all the info has been scanned through
-            for (Element tr :
-                    trs) {
-                if (!tr.getAllElements().hasAttr("colspan")) trsWithoutColspan++;
-            }
-
-            //actual scanning
-            for (Element tr :
-                    trs) {
-
-                trCounter++;
-                Timber.d("current tr = %s", trCounter);
-                if (!tr.getAllElements().hasAttr("colspan") && fragment.autoImportIsChecked && !(userScientificClassification.size() == 0)) {
-                    currentTrsWihtoutColspan++;
-                    String th = tr.children().first().text();
-                    if (languageURL.equals("de")) {
-                        if (th.contains(":")) {
+                //actual scanning
+                for (Element tr :
+                        trs) {
+                    if (tr.childrenSize() != 0 && tr.child(0).siblingElements().size() == 1 && fragment.autoImportIsChecked && !(userScientificClassification.size() == 0)) {
+                        String th = tr.children().first().text();/*
+                        if (languageURL.equals("de")) {
+                            if (th.contains(":")) {
+                                th = th.replace(":", "");
+                            }
+                        }*/
+                        if (th.isEmpty()) continue;
+                        if (th.trim().substring(th.length() - 1, th.length()).contentEquals(":")) {
                             th = th.replace(":", "");
                         }
-                    }
-                    dataPair[0] = th;
-                    Log.d(TAG, "found " + th);
-                    String td = tr.children().last().wholeText();
-                    dataPair[1] = td;
-                    Log.d(TAG, "found " + td);
-/*                    String[] rawData = tr.wholeText().split("\n");
+                        dataPair[0] = th;
+                        Log.d(TAG, "found " + th);
+                        String td = tr.children().last().wholeText();
+                        dataPair[1] = td;
+                        Log.d(TAG, "found " + td);
 
-                    if (rawData.length == 1) { //detected different table
-                        Timber.d("different table");
-                        for (int i = 0; i < userParametersCount - 1; i++) {
-                            newData.add("");
+                        dataPair[1] = beautifyValues(dataPair[1]);
+
+                        if (userScientificClassification.contains(dataPair[0])) {
+                            Timber.d("Adding classification at " + userScientificClassification.indexOf(dataPair[0]) + "with value " + dataPair[1]);
+                            newData[userScientificClassification.indexOf(dataPair[0])] = dataPair[1];
                         }
-                        break;
                     }
 
-                    if (dataPair[0].trim().isEmpty()) { //if first line is empty, idk why
-                        Timber.d("first line is empty");
-                        dataPair = dataPair.clone()[1].split("\n");
+                    Timber.d("newData array is ->");
+                    for (String data :
+                            newData) {
+                        Timber.d("newData array is -> " + data);
                     }
-
-                    //cleaning rawData to data
-                    ArrayList<String> data = new ArrayList<>();
-                    for (String piece :
-                            rawData) {
-                        if (!piece.trim().isEmpty()) data.add(piece);
-                    }
-                    Timber.d("data = %s", data.toString());*/
-
-                    //assigning the dataPair
-
-                    dataPair[1] = beautifyValues(dataPair[1]);
-
-                    /*Timber.d("dataPair[1] = %s", dataPair[1]);
-                    Timber.d("classPointer = " + classificationPointer);
-                    Timber.d(originalUserScientificClassification.get(classificationPointer) + " ?equals = " + dataPair[0]);
-                    Timber.d("userSciClass[0] = " + originalUserScientificClassification.get(0));*/
-
-                    if (userScientificClassification.contains(dataPair[0])) {
-                        Timber.d("Adding classification at " + userScientificClassification.indexOf(dataPair[0]) + "with value " + dataPair[1]);
-                        newData[userScientificClassification.indexOf(dataPair[0])] = dataPair[1];
-                    }
-
-                    /*if (userScientificClassification.get(0).equals(dataPair[0])) { //detected searched classification
-                        //trim latin etc.
-                        if (dataPair[1].contains("(")) {
-                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf(")") + 1).trim();
-                        }
-                        newData.add(dataPair[1]); //adding the specific classification
-                        Timber.d("adding new data to newData = " + dataPair[1]);
-
-                        userScientificClassification.remove(dataPair[0]);
-                        classificationPointer++;
-
-                    } else if (userScientificClassification.contains(dataPair[0])) { //detected needed classification but some were empty (not there)
-
-                        //generating empty values
-                        *//*Timber.d("userScientificClassification contains " + dataPair[0]);
-                        int tempPointer = classificationPointer;
-                        classificationPointer = userScientificClassification.indexOf(dataPair[0]);
-                        for (; tempPointer < classificationPointer; tempPointer++) {
-                            newData.add("");
-                            Timber.d("adding new data to newData = empty (not detected)");
-                        }*//*
-                        int temp = userScientificClassification.indexOf(dataPair[0]);
-                        for (int i = 0; i < temp; i++) {
-                            Timber.d("adding new data to newData = empty (not detected)");
-                            newData.add("");
-                        }
-
-                        userScientificClassification.remove(dataPair[0]);
-                        classificationPointer++;
-                        if (dataPair[1].contains("(")) {
-                            dataPair[1] = dataPair[1].substring(0, dataPair[1].indexOf("(")).trim();
-                        }
-                        newData.add(dataPair[1]);
-                        Timber.d("adding new data to newData = " + dataPair[1]);
-                    } else if (currentTrsWihtoutColspan == trsWithoutColspan) { //current tr is the last one with information
-                        Timber.d("Current tr is the last one with information.");
-                        //if (newData.size() <= (userParametersCount - 2)) {
-                        for (int i = newData.size(); i < userParametersCount - 1; i++) { //one of the last parameters was not detected
-                            Timber.d("one of last parameters not detected");
-                            newData.add("");
-                            //}
-                        *//*Timber.d("last parameter not detected");
-                        newData.add("");*//*
-                            //break;
-                        }
-                    }*/
-                    Timber.d("currentTrsWithoutColspan = " + currentTrsWihtoutColspan + ", trsWithoutColspan = " + trsWithoutColspan);
-
                 }
-
-
-                /*//get the image
-                else if (img == null) {
-                    ArrayList imgAndUrl = getImageFromTr(tr);
-                    img = (Drawable) imgAndUrl.get(0);
-                    imageURL = (String) imgAndUrl.get(1);
-                }*/
             }
-            /*for (int i = 0; i < newData.length; i++) {
-                if (newData[i].isEmpty()) {
 
-                }
-            }*/
-            Timber.d("newData array is ->");
-            for (String data :
-                    newData) {
-                Timber.d("newData array is -> " + data);
-            }
-            returnList.add(newData);
-            returnList.add(classificationPointer);
-            /*returnList.add(img);
-            returnList.add(imageURL);*/
-            return returnList;
+            return newData;
         }
 
         private String beautifyValues(String s) {
@@ -985,7 +788,9 @@ public class GeneratedListFragment extends Fragment {
             for (String piece :
                     s.split("\n")) {
                 if (!piece.trim().isEmpty()) {
-
+                    if (piece.contains("(")) {
+                        piece = piece.substring(0, piece.indexOf("("));
+                    }
                     data.add(piece);
 
                 }
@@ -1136,6 +941,67 @@ public class GeneratedListFragment extends Fragment {
                 return false;
             }
         }*/
+    }
+
+    private ArrayList<Element> getInfoTables(Document doc) {
+        ArrayList<Element> infoTables = new ArrayList<>();
+        boolean addTable = false;
+        Element classTable = null;
+        try {
+            Elements rawTables = doc.getElementsByTag("table");
+            for (Element table :
+                    rawTables) {
+
+                if (table.id().toLowerCase().contains("info")) {
+                    Log.d(TAG, "does contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("info")) {
+                    Log.d(TAG, "does contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.id().toLowerCase().contains("taxo")) {
+                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("taxo")) {
+                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.attr("class").toLowerCase().contains("sinottico")) {
+                    Log.d(TAG, "doesn't contain class info = " + table.attr("class"));
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (table.id().toLowerCase().contains("sinottico")) {
+                    Log.d(TAG, "doesn't contain id info = " + table.id());
+                    addTable = true;
+                    classTable = table;
+                    break;
+                } else if (languageURL.equals("fr") && table.selectFirst("tbody").child(0).childrenSize() == 2) {
+                    infoTables.add(table.selectFirst("tbody"));
+                }
+            }
+
+            if (addTable) {
+                Element tableToBeAdded = classTable.selectFirst("tbody");
+                if (tableToBeAdded.getElementsByTag("table") != null && tableToBeAdded.getElementsByTag("table").size() != 0) {
+                    Elements infoboxes = tableToBeAdded.getElementsByTag("table");
+                    infoTables.add(infoboxes.get(0));
+                }
+                infoTables.add(classTable.selectFirst("tbody"));
+            }
+
+        } catch (NullPointerException e) {
+            //rozcestník
+            e.printStackTrace();
+        }
+
+        return infoTables;
     }
 
     public void setOnClickListener() {

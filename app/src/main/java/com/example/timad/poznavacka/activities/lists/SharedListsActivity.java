@@ -427,8 +427,12 @@ public class SharedListsActivity extends AppCompatActivity {
                             Timber.d("query successful");
                             poznavackyDocs = task.getResult().getDocuments();
                             Timber.d("poznavackyDocs size = %s", poznavackyDocs.size());
-                            addDocsToScene();
-                            activateLoadMore();
+                            if (poznavackyDocs.size() == 0) {
+                                deactivateLoadMore();
+                            } else {
+                                addDocsToScene();
+                                activateLoadMore();
+                            }
                         }
                     }
                 });
@@ -560,8 +564,7 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
-    private void
-    deactivateLoadMore() {
+    private void deactivateLoadMore() {
         mSharedListAdapter.setLoadMore(new LoadMore() {
             @Override
             public void onLoadMore() {
