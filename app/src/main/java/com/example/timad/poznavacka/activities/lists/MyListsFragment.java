@@ -18,7 +18,7 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.RWAdapter;
 import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
-import com.example.timad.poznavacka.activities.PracticeActivity;
+import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;

@@ -83,7 +83,7 @@ import static com.example.timad.poznavacka.activities.lists.createList.CreateLis
  * create an instance of this fragment.
  */
 public class GeneratedListFragment extends Fragment {
-    private static final String TAG = "GeneratedListFragment";
+    public static final String TAG = "GeneratedListFragment";
 
 
     // the fragment initialization parameters

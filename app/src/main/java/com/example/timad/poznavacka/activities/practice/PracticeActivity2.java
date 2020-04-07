@@ -1,4 +1,4 @@
-package com.example.timad.poznavacka.activities;
+package com.example.timad.poznavacka.activities.practice;
 
 import android.content.Intent;
 import android.content.res.Resources;
@@ -9,10 +9,11 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
+import com.example.timad.poznavacka.activities.AccountActivity;
+import com.example.timad.poznavacka.activities.SwitchActivity;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.ads.AdRequest;
@@ -140,7 +141,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
         //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_white);
+        MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_filled_white);
         menuItem.setChecked(true);
 
         bottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -169,10 +170,7 @@ public class PracticeActivity2 extends AppCompatActivity {
                         startActivity(intent4);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
-
-
                 }
-
                 return false;
             }
         });

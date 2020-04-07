@@ -8,9 +8,9 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
+import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;

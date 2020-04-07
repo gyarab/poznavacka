@@ -8,6 +8,7 @@ import android.view.MenuItem;
 import com.example.timad.poznavacka.BottomNavigationViewHelper;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
+import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
