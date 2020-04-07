@@ -31,6 +31,7 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -417,22 +418,44 @@ public class MyExamsActivity extends AppCompatActivity {
     }
 
 
-    public static void addResultToDB(String activeTestID,ResultObjectDB data){
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(activeTestID)
-                .add(data)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
+    public static void addResultToDB(final String activeTestID,final ResultObjectDB data,final String userID,final String databaseTestID){
+        final FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final DocumentReference docRef = db.collection(userID).document(databaseTestID);
 
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
+        docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+            @Override
+            public void onSuccess(DocumentSnapshot documentSnapshot) {
+              boolean finished = documentSnapshot.getBoolean("finished");
 
-                    }
-                });
+              if(!finished){
+                  Query userExists = db.collection(activeTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                  userExists.get()
+                          .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                              @Override
+                              public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                  if (task.isSuccessful()) {
+                                      if(task.getResult().size()==0){
+                                          db.collection(activeTestID)
+                                                  .add(data)
+                                                  .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                      @Override
+                                                      public void onSuccess(DocumentReference documentReference) {
+
+                                                      }
+                                                  })
+                                                  .addOnFailureListener(new OnFailureListener() {
+                                                      @Override
+                                                      public void onFailure(@NonNull Exception e) {
+
+                                                      }
+                                                  });
+                                      }
+                                  }
+                              }
+                          });
+              }
+            }
+        });
 
     }
 
