@@ -14,7 +14,7 @@
     <string name="my_lists">My Lists</string>
     <string name="add_list">Add List</string>
     <string name="practice_list">Practice</string>
-    <string name="share_list">Share list</string>
+    <string name="share">Share</string>
     <string name="communication">Communication</string>
     <string name="contact_us">Contact us</string>
     <string name="pin">PIN</string>
@@ -69,5 +69,9 @@
     <string name="failed_to_remove_from_database">Failed to remove from database</string>
     <string name="generated_fragment_edit_text_view">Now, edit</string>
     <string name="save">Save</string>
-    <string name="cancel">CANCEL</string>
+    <string name="cancel">Cancel</string>
+    <string name="add_to_exams">Add to exams</string>
+    <string name="delete">Delete</string>
+    <string name="remove_from_database">Remove from shared database</string>
+    <string name="upload_to_database">Upload to shared database</string>
 </resources>

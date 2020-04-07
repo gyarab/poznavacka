@@ -31,20 +31,20 @@
             android:layout_marginStart="25dp"
             android:layout_marginTop="10dp"
             android:layout_toEndOf="@+id/img_prewiew"
+            android:hyphenationFrequency="normal"
             android:text="Title"
             android:textColor="@color/colorPrimaryDark"
             android:textStyle="bold"
-            android:hyphenationFrequency="normal"
             tools:targetApi="m" />
 
         <TextView
             android:id="@+id/itemText2"
             android:layout_width="150dp"
             android:layout_height="25dp"
-            android:layout_above="@+id/img_delete"
+            android:layout_above="@+id/buttons_linear_layout"
             android:layout_alignStart="@id/itemText1"
-            android:layout_toEndOf="@+id/img_prewiew"
             android:layout_marginBottom="5dp"
+            android:layout_toEndOf="@+id/img_prewiew"
 
             android:text="User Name"
             android:textColor="@color/colorPrimaryDark"
@@ -62,7 +62,7 @@
             android:textSize="12sp"
             android:textStyle="italic" />
 
-        <ImageView
+        <!--<ImageView
             android:id="@+id/img_test"
             android:layout_width="35dp"
             android:layout_height="35dp"
@@ -77,8 +77,6 @@
             android:layout_alignBottom="@id/img_delete"
             android:layout_toStartOf="@id/img_delete"
             android:layout_marginEnd="10dp"
-
-
             />
 
         <ImageView
@@ -97,7 +95,62 @@
             android:layout_alignStart="@id/itemText2"
             android:layout_alignBottom="@id/img_prewiew"
             app:srcCompat="@drawable/brain_dark"
-            />
+            />-->
+
+        <LinearLayout
+            android:id="@+id/buttons_linear_layout"
+            android:layout_width="wrap_content"
+            android:layout_height="35dp"
+            android:layout_alignStart="@id/itemText2"
+            android:layout_alignBottom="@id/img_prewiew"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/img_practice"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/brain_filled_dark_purple" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/img_test"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/img_share"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true" />
+
+            <Space
+                android:layout_width="0dp"
+                android:layout_height="1dp"
+                android:layout_weight="1" />
+
+            <ImageView
+                android:id="@+id/img_delete"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center"
+                android:adjustViewBounds="true"
+                app:srcCompat="@drawable/ic_delete_dark_purple_24dp" />
+
+        </LinearLayout>
 
         <!--        <ImageView
                     android:id="@+id/img_prewiew"

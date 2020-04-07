@@ -36,10 +36,10 @@
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden" />
         <activity
-            android:name=".activities.PracticeActivity"
+            android:name=".activities.practice.PracticeActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activities.PracticeActivity2"
+            android:name=".activities.practice.PracticeActivity2"
             android:screenOrientation="portrait" />
         <activity android:name=".activities.test.TestActivity" />
         <activity android:name=".FirestoreImpl" />

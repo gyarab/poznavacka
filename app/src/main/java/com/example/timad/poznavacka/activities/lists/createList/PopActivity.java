@@ -8,7 +8,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.AnimationUtils;
@@ -94,57 +93,52 @@ public class PopActivity extends Activity {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
         getWindow().setLayout((int) (width * 0.8), (int) (height * 0.8));
 
-        //getting the scientific classification selected by the user
-        //needs to be added from broad to specific
-
         final PopActivity.WikiSearchClassification WikiSearchClassification = new PopActivity.WikiSearchClassification(PopActivity.this);
         WikiSearchClassification.execute();
-/*
-        //REPLACE with classific selected by user
-        userScientificClassification.add("Říše");
-        userScientificClassification.add("Kmen");
-        userScientificClassification.add("Třída");
-        userScientificClassification.add("Řád");
-        userScientificClassification.add("Čeleď");
-        userScientificClassification.add("Rod");
-        userScientificClassification.add("Druh");
-        userParametersCount = 8; //REPLACE with number of params selected by user + 1
- */
 
         //DONEButton
         DONEButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Timber.d("DONE Clicked");
-                Log.d(TAG, "Log DONE Clicked");
-                userParametersCount = 1;
-                for (int i = 0; i < layout1.getChildCount(); i++) {
-                    View nextChild = layout1.getChildAt(i);
-
-                    if (nextChild instanceof CheckBox) {
-
-                        CheckBox check = (CheckBox) nextChild;
-                        if (check.isChecked()) {
-                            Timber.d("checbox text to be added = " + check.getText().toString());
-                            userScientificClassification.add(check.getText().toString());
-                            userParametersCount++;
-                        }
-                    }
-                }
-                reversedUserScientificClassification.addAll(userScientificClassification);
-                Collections.reverse(reversedUserScientificClassification);
-                reversedUserScientificClassification.add(0, "");
-
-                Intent returnIntent = new Intent();
-                returnIntent.putExtra("userParametersCount", userParametersCount);
-                returnIntent.putExtra("userScientificClassification", userScientificClassification);
-                returnIntent.putExtra("reversedUserScientificClassification", reversedUserScientificClassification);
-                setResult(Activity.RESULT_OK, returnIntent);
-                Timber.d("passing PopValues");
-
-                finish();
+                finishPop();
             }
         });
+    }
+
+    @Override
+    public void onBackPressed() {
+        finishPop();
+    }
+
+    private void finishPop() {
+        userParametersCount = 1;
+        for (int i = 0; i < layout1.getChildCount(); i++) {
+            View nextChild = layout1.getChildAt(i);
+
+            if (nextChild instanceof CheckBox) {
+
+                CheckBox check = (CheckBox) nextChild;
+                if (check.isChecked()) {
+                    Timber.d("checbox text to be added = %s", check.getText().toString());
+                    userScientificClassification.add(check.getText().toString());
+                    userParametersCount++;
+                }
+            }
+        }
+
+        reversedUserScientificClassification.addAll(userScientificClassification);
+        Collections.reverse(reversedUserScientificClassification);
+        reversedUserScientificClassification.add(0, "");
+
+        Intent returnIntent = new Intent();
+        returnIntent.putExtra("userParametersCount", userParametersCount);
+        returnIntent.putExtra("userScientificClassification", userScientificClassification);
+        returnIntent.putExtra("reversedUserScientificClassification", reversedUserScientificClassification);
+        setResult(Activity.RESULT_OK, returnIntent);
+        Timber.d("passing PopValues");
+
+        finish();
     }
 
     private class WikiSearchClassification extends AsyncTask<Void, String, Void> {

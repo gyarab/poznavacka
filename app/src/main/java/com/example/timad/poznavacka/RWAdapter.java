@@ -224,9 +224,9 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     pivh.shareImg.setEnabled(false);
                 } else {
                     if (currentPoznavackaInfo.isUploaded()) {
-                        pivh.shareImg.setImageResource(R.drawable.ic_file_upload_blue_24dp);
+                        pivh.shareImg.setImageResource(R.drawable.ic_share_blue_24dp);
                     } else {
-                        pivh.shareImg.setImageResource(R.drawable.ic_file_upload_dark_purple_24dp);
+                        pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                     }
                 }
 

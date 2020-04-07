@@ -31,7 +31,7 @@ import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AccountActivity;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
-import com.example.timad.poznavacka.activities.PracticeActivity;
+import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.ads.AdListener;
@@ -312,9 +312,9 @@ public class MyListsActivity extends AppCompatActivity {
 
                 if (!poznavackaIsUploaded) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                    builder.setTitle(R.string.app_name);
+                    builder.setTitle(R.string.share);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
-                    builder.setMessage("Do you want to share " + sActivePoznavacka.getName() + "?");
+                    builder.setMessage("Do you want to upload " + sActivePoznavacka.getName() + " to shared database?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
@@ -362,7 +362,7 @@ public class MyListsActivity extends AppCompatActivity {
                     btnNegative.setLayoutParams(layoutParams);
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                    builder.setTitle(R.string.app_name);
+                    builder.setTitle(R.string.remove_from_database);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
                     builder.setMessage("Do you want to remove " + sActivePoznavacka.getName() + " from shared database?");
                     builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
@@ -407,9 +407,9 @@ public class MyListsActivity extends AppCompatActivity {
             public void onDeleteClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                builder.setTitle(R.string.app_name);
+                builder.setTitle(R.string.delete);
                 builder.setIcon(R.drawable.ic_delete);
-                builder.setMessage("Do you really want to delete " + sActivePoznavacka.getName() + "?");
+                builder.setMessage("Do you want to delete " + sActivePoznavacka.getName() + "?");
                 builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Context context = getApplication();
@@ -455,9 +455,9 @@ public class MyListsActivity extends AppCompatActivity {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
                 if (SharedListsActivity.checkInternet(getApplication())) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                    builder.setTitle(R.string.exam);
-                    builder.setIcon(R.drawable.ic_test);
-                    builder.setMessage("Do you really want to put " + sActivePoznavacka.getName() + " into tests ?");
+                    builder.setTitle(R.string.add_to_exams);
+                    builder.setIcon(R.drawable.ic_school_black_24dp);
+                    builder.setMessage("Do you want to add " + sActivePoznavacka.getName() + " into exams?");
                     builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
