@@ -674,6 +674,9 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
@@ -683,6 +686,9 @@ public class MyListsActivity extends AppCompatActivity {
             savingNewList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+
+            sPoznavackaInfoArr.add(mUnifiedNativeAd);
+            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
         }
 
         @Override
@@ -852,6 +858,9 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Drawable drawable) {
             super.onPostExecute(drawable);
+            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
@@ -861,6 +870,8 @@ public class MyListsActivity extends AppCompatActivity {
             savingDownloadedList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+            sPoznavackaInfoArr.add(mUnifiedNativeAd);
+            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
         }
 
         @Override

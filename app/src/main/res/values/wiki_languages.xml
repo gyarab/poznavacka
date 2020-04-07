@@ -2,26 +2,26 @@
 <resources>
     <string-array name="language_array">
         <item>English</item>
-        <item>German</item>
         <item>Czech</item>
-        <!--
+        <item>German</item>
         <item>French</item>
         <item>Spanish</item>
+        <item>Portuguese</item>
+        <item>Italian</item>
+        <item>Polish</item>
+        <item>Swedish</item>
+        <item>Finnish</item>
+        <!--
         <item>Japanese</item>
         <item>Russian</item>
-        <item>Italian</item>
-        <item>Portuguese</item>
         <item>Arabic</item>
         <item>Persian</item>
-        <item>Polish</item>
         <item>Dutch</item>
         <item>Indonesian</item>
         <item>Ukrainian</item>
         <item>Hebrew</item>
-        <item>Swedish</item>
         <item>Korean</item>
         <item>Vietnamese</item>
-        <item>Finnish</item>
         -->
     </string-array>
 </resources>

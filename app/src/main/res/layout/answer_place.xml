@@ -33,7 +33,7 @@
             android:layout_marginStart="30sp"
             android:layout_toEndOf="@+id/parameter3"
             android:textColor="@color/black"
-            android:textColorHint="@color/black"
+            android:textColorHint="@color/hint_color"
             />
 
 
