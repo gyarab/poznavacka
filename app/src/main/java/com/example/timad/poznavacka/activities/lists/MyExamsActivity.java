@@ -36,6 +36,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class MyExamsActivity extends AppCompatActivity {
 
@@ -103,8 +104,24 @@ public class MyExamsActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                            clearResults(previewTestObjectArrayList1.get(position).getActiveTestID());
-                            removeTest(FirebaseAuth.getInstance().getCurrentUser().getUid(),previewTestObjectArrayList1.get(position).getDatabaseID(),position);
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference docRef = db.collection(previewTestObjectArrayList1.get(position).getUserID()).document(previewTestObjectArrayList1.get(position).getDatabaseID());
+
+                            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                    if(documentSnapshot.exists()) {
+                                        if (documentSnapshot.getBoolean("finished") || !documentSnapshot.getBoolean("started")) {
+                                            if (previewTestObjectArrayList1.get(position).isResultsEmpty()) {
+                                                clearResults(previewTestObjectArrayList1.get(position).getActiveTestID());
+                                            }
+                                            removeTest(FirebaseAuth.getInstance().getCurrentUser().getUid(), previewTestObjectArrayList1.get(position).getDatabaseID(), position);
+                                        }
+                                    }
+                                }
+                            });
+
 
                             dialog.dismiss();
                     }
@@ -135,13 +152,23 @@ public class MyExamsActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
-                           PreviewTestObject item = previewTestObjectArrayList1.get(position);
-                           currentCollectionResultID = item.getActiveTestID();
-                           FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            FirebaseFirestore db = FirebaseFirestore.getInstance();
+                            DocumentReference docRef = db.collection(previewTestObjectArrayList1.get(position).getUserID()).document(previewTestObjectArrayList1.get(position).getDatabaseID());
 
-                           if(item.isResultsEmpty()) {
-                               gotToResults();
-                           }
+                            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                    if(documentSnapshot.exists()){
+                                            PreviewTestObject item = previewTestObjectArrayList1.get(position);
+                                            currentCollectionResultID = item.getActiveTestID();
+                                            if(item.isResultsEmpty()) {
+                                                gotToResults();
+                                            }
+                                    }
+                                }
+                            });
+
                             dialog.dismiss();
                         }
                     }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -171,19 +198,32 @@ public class MyExamsActivity extends AppCompatActivity {
                         builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                DocumentReference docRef = db.collection(previewTestObjectArrayList1.get(position).getUserID()).document(previewTestObjectArrayList1.get(position).getDatabaseID());
 
+                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                                test.setStarted(true);
-                                String userID = test.getUserID();
-                                String documentName = test.getDatabaseID();
+                                       if(documentSnapshot.exists()){
+                                           if(documentSnapshot.getString("activeTestID").equals("")){
+                                               test.setStarted(true);
+                                               String userID = test.getUserID();
+                                               String documentName = test.getDatabaseID();
 
-                                setStarted_end(userID, documentName, position);
-                                mTestAdapter.notifyDataSetChanged();
+                                               setStarted_end(userID, documentName, position);
+                                               mTestAdapter.notifyDataSetChanged();
 
-                                //create document in ActiveTests database
-                                String content = test.getContent();
+                                               //create document in ActiveTests database
+                                               String content = test.getContent();
 
-                               StartingTestAction(position);
+                                               StartingTestAction(position);
+
+                                           }
+                                       }
+                                    }
+                                });
+
 
 
 
@@ -208,17 +248,34 @@ public class MyExamsActivity extends AppCompatActivity {
                         builder.setPositiveButton("yes", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                test.setFinished(true);
-                                String userID = test.getUserID();
-                                String documentName = test.getDatabaseID();
+                                FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                DocumentReference docRef = db.collection(previewTestObjectArrayList1.get(position).getUserID()).document(previewTestObjectArrayList1.get(position).getDatabaseID());
 
-                                setFinished(userID,documentName,position);
+                                docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                    @Override
+                                    public void onSuccess(DocumentSnapshot documentSnapshot) {
+
+                                        if(documentSnapshot.exists()){
+                                            if(!documentSnapshot.getBoolean("finished")){
+                                                test.setFinished(true);
+                                                String userID = test.getUserID();
+                                                String documentName = test.getDatabaseID();
+
+                                                setFinished(userID,documentName,position);
 
 
-                                String deactivateTest = test.getActiveTestID();
+                                                String deactivateTest = test.getActiveTestID();
 
-                                mTestAdapter.notifyDataSetChanged();
-                                deactivateTest(position);
+                                                mTestAdapter.notifyDataSetChanged();
+                                                deactivateTest(position);
+
+                                            }
+                                        }
+                                    }
+                                });
+
+
+
 
 
 
@@ -380,6 +437,7 @@ public class MyExamsActivity extends AppCompatActivity {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         DocumentReference docRef = db.collection(userID).document(documentName);
+
         docRef.update(
                 "testCode",testCode
         );
