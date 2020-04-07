@@ -64,12 +64,13 @@ public class UserResultActivity extends AppCompatActivity {
                         @Override
                         public void onComplete(@NonNull Task<QuerySnapshot> task) {
                             if (task.isSuccessful()) {
+                                createArr();
                                 for (QueryDocumentSnapshot document : task.getResult()) {
-                                    createArr();
-                                    String userName = document.getString("userID");
+                                    String userID = document.getString("userID");
                                     String result = document.getString("result");
+                                    String userName = document.getString("userName");
                                     String databaseID = document.getId();
-                                    PreviewResultObject item = new PreviewResultObject(userName,result,databaseID);
+                                    PreviewResultObject item = new PreviewResultObject(userID,result,databaseID,userName);
                                     previewResultObjects.add(item);
                                 }
                                 buildRecyclerview();

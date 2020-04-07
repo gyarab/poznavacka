@@ -46,7 +46,7 @@ public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultView
     @Override
     public void onBindViewHolder(@NonNull ResultViewHolder holder, int position) {
         PreviewResultObject item = mTestList.get(position);
-        holder.userName.setText(FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+        holder.userName.setText(item.getUserName());
         holder.result.setText(item.getResult());
 
 

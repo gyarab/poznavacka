@@ -106,52 +106,53 @@ public class TestUserActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(final DocumentSnapshot documentSnapshot) {
-                initializeZastupces(documentSnapshot.getString("content"));
-                index=0;
-                first = index;
-                if(zastupces.get(0).getParameter(0).isEmpty()){
-                    index++;
+                if(documentSnapshot.exists()) {
+                    initializeZastupces(documentSnapshot.getString("content"));
+                    index = 0;
                     first = index;
-                }
-                testViewer(index,last,first);
-                next.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                       index++;
-                       testViewer(index,last,first);
+                    if (zastupces.get(0).getParameter(0).isEmpty()) {
+                        index++;
+                        first = index;
                     }
-                });
-                previous.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        index--;
-                        testViewer(index,last,first);
-                    }
-                });
-                finishTest.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        TextView result = findViewById(R.id.result3);
-                        String finalResult ="";
-                        urResult=0;
-                        maxResult = zastupces.get(0).getParameters()*zastupces.size();
-                        for(int answer:tempResult){
-                            urResult+=answer;
-
+                    testViewer(index, last, first);
+                    next.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            index++;
+                            testViewer(index, last, first);
                         }
-                        Toast.makeText(getApplicationContext(), Arrays.toString(tempResult),Toast.LENGTH_SHORT).show();
-                        finalResult =  Integer.toString(urResult)+"/"+Integer.toString(maxResult);
-                        result.setText(finalResult);
-                        final ResultObjectDB item =  new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(),result.getText().toString());
-                        MyExamsActivity.updateResultsEmpty(documentSnapshot.getString("userID"),documentSnapshot.getString("testDBID"),getApplicationContext());
-                        MyExamsActivity.addResultToDB(documentSnapshot.getId(),item);
-                    }
-                });
+                    });
+                    previous.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            index--;
+                            testViewer(index, last, first);
+                        }
+                    });
+                    finishTest.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            TextView result = findViewById(R.id.result3);
+                            String finalResult = "";
+                            urResult = 0;
+                            maxResult = zastupces.get(0).getParameters() * zastupces.size();
+                            for (int answer : tempResult) {
+                                urResult += answer;
+
+                            }
+                            Toast.makeText(getApplicationContext(), Arrays.toString(tempResult), Toast.LENGTH_SHORT).show();
+                            finalResult = Integer.toString(urResult) + "/" + Integer.toString(maxResult);
+                            result.setText(finalResult);
+                            final ResultObjectDB item = new ResultObjectDB(FirebaseAuth.getInstance().getCurrentUser().getUid(), result.getText().toString(), FirebaseAuth.getInstance().getCurrentUser().getDisplayName());
+                            String userID = documentSnapshot.getString("userID");
+                            String databaseID = documentSnapshot.getString("testDBID");
+                            MyExamsActivity.updateResultsEmpty(userID, databaseID, getApplicationContext());
+                            MyExamsActivity.addResultToDB(documentSnapshot.getId(), item, userID, databaseID);
+                        }
+                    });
 
 
-
-
-
+                }
             }
             });
     }
