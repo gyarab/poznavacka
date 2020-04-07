@@ -425,35 +425,37 @@ public class MyExamsActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-              boolean finished = documentSnapshot.getBoolean("finished");
+                if (documentSnapshot.exists()) {
+                    boolean finished = documentSnapshot.getBoolean("finished");
 
-              if(!finished){
-                  Query userExists = db.collection(activeTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                  userExists.get()
-                          .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                              @Override
-                              public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                  if (task.isSuccessful()) {
-                                      if(task.getResult().size()==0){
-                                          db.collection(activeTestID)
-                                                  .add(data)
-                                                  .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                      @Override
-                                                      public void onSuccess(DocumentReference documentReference) {
+                    if (!finished) {
+                        Query userExists = db.collection(activeTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        userExists.get()
+                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                        if (task.isSuccessful()) {
+                                            if (task.getResult().size() == 0) {
+                                                db.collection(activeTestID)
+                                                        .add(data)
+                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                                            @Override
+                                                            public void onSuccess(DocumentReference documentReference) {
 
-                                                      }
-                                                  })
-                                                  .addOnFailureListener(new OnFailureListener() {
-                                                      @Override
-                                                      public void onFailure(@NonNull Exception e) {
+                                                            }
+                                                        })
+                                                        .addOnFailureListener(new OnFailureListener() {
+                                                            @Override
+                                                            public void onFailure(@NonNull Exception e) {
 
-                                                      }
-                                                  });
-                                      }
-                                  }
-                              }
-                          });
-              }
+                                                            }
+                                                        });
+                                            }
+                                        }
+                                    }
+                                });
+                    }
+                }
             }
         });
 
