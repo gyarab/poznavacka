@@ -232,46 +232,48 @@ public class SharedListsActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                if (item == null) {
-                    Timber.d("Item documentSnapshot docID=" + documentSnapshot.getId());
-                    Timber.d("Item documentSnapshot id=" + documentSnapshot.getString("id"));
-                    Timber.d("Item documentSnapshot name=" + documentSnapshot.getString("name"));
-                    Timber.d("Item " + documentSnapshot.getString("name") + " is null");
+                if (documentSnapshot.exists()) {
+                    item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                    if (item == null) {
+                        Timber.d("Item documentSnapshot docID=" + documentSnapshot.getId());
+                        Timber.d("Item documentSnapshot id=" + documentSnapshot.getString("id"));
+                        Timber.d("Item documentSnapshot name=" + documentSnapshot.getString("name"));
+                        Timber.d("Item " + documentSnapshot.getString("name") + " is null");
+                    }
+
+                    // Store images
+                    Context context = getApplication();
+                    String path = item.getId() + "/";
+                    File dir = new File(context.getFilesDir().getPath() + "/" + path);
+
+                    // Create folder
+                    try {
+                        dir.mkdir();
+                    } catch (Exception e) {
+                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                        e.printStackTrace();
+                        return;
+                    }
+
+                    if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
+                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                        return;
+                    } else {
+
+                        new DrawableFromUrlAsync(SharedListsActivity.this).execute();  //viz Async metoda dole
+
+                    }
+
+                    String pathPoznavacka = "poznavacka.txt";
+                    if (MyListsActivity.sPoznavackaInfoArr == null) {
+                        MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
+                    }
+                    MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                    MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+
+                    Log.d("Files", "Saved successfully");
+                    Toast.makeText(getApplication(), "Successfully saved " + item.getName(), Toast.LENGTH_SHORT).show();
                 }
-
-                // Store images
-                Context context = getApplication();
-                String path = item.getId() + "/";
-                File dir = new File(context.getFilesDir().getPath() + "/" + path);
-
-                // Create folder
-                try {
-                    dir.mkdir();
-                } catch (Exception e) {
-                    Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
-                    e.printStackTrace();
-                    return;
-                }
-
-                if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
-                    Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
-                    return;
-                } else {
-
-                    new DrawableFromUrlAsync(SharedListsActivity.this).execute();  //viz Async metoda dole
-
-                }
-
-                String pathPoznavacka = "poznavacka.txt";
-                if (MyListsActivity.sPoznavackaInfoArr == null) {
-                    MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
-                }
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
-                MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
-
-                Log.d("Files", "Saved successfully");
-                Toast.makeText(getApplication(), "Successfully saved " + item.getName(), Toast.LENGTH_SHORT).show();
             }
         });
 
