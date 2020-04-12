@@ -25,6 +25,8 @@ import com.google.firebase.auth.FirebaseUser;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import java.util.Locale;
+
 public class AccountActivity extends AppCompatActivity {
     private static final String TAG = "AccountActivity";
     TextView signedInAs;
@@ -116,7 +118,11 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
     }
+    public void setLocale() {
+        Locale defLoc = new Locale("en");
+        Locale.setDefault(defLoc);
 
+    }
 
 }
 
