@@ -34,6 +34,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.viewpager.widget.ViewPager;
 
+import java.util.Locale;
+
 public class AuthenticationActivity extends AppCompatActivity implements View.OnClickListener {
     private static final String TAG = "AuthenticationActivity";
 
@@ -216,5 +218,11 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
             }
         }
+    }
+
+    public void setLocale() {
+        Locale defLoc = new Locale("en");
+        Locale.setDefault(defLoc);
+
     }
 }
