@@ -424,7 +424,11 @@ public class MyListsActivity extends AppCompatActivity {
                                 if (sPositionOfActivePoznavackaInfo < 0) {
                                     sPositionOfActivePoznavackaInfo = 0;
                                 }
-                                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                                try {
+                                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                                }catch (Exception e ){
+                                    Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_SHORT).show();
+                                }
                             } else {
                                 sActivePoznavacka = null;
                             }
@@ -691,7 +695,7 @@ public class MyListsActivity extends AppCompatActivity {
             mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
         }
 
-        @Override
+       @Override
         protected Void doInBackground(Void... voids) {
 
             //changing getContext() to getApllicationContext()

@@ -135,7 +135,7 @@ public class TestUserActivity extends AppCompatActivity {
                             TextView result = findViewById(R.id.result3);
                             String finalResult = "";
                             urResult = 0;
-                            maxResult = zastupces.get(0).getParameters() * zastupces.size();
+                            maxResult = zastupces.get(0).getParameters() * (zastupces.size()-1);
                             for (int answer : tempResult) {
                                 urResult += answer;
 
@@ -166,8 +166,8 @@ public class TestUserActivity extends AppCompatActivity {
         }.getType();
         zastupces = gson.fromJson(content, cType);
         parametrs = zastupces.get(0).getParameters();
-        tempResult = new int[zastupces.size()*zastupces.get(0).getParameters()];
-        tempAnswer = new String[zastupces.size()*zastupces.get(0).getParameters()];
+        tempResult = new int[(zastupces.size()-1)*zastupces.get(0).getParameters()];
+        tempAnswer = new String[(zastupces.size()-1)*zastupces.get(0).getParameters()];
         last = zastupces.size()-1;
     }
     private void testViewer(int index,int last,int first) {
