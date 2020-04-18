@@ -1,6 +1,9 @@
 package com.example.timad.poznavacka.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.Locale;
@@ -31,6 +35,7 @@ public class AccountActivity extends AppCompatActivity {
     private static final String TAG = "AccountActivity";
     TextView signedInAs;
     Button signOutButton;
+    Button changeLanButton;
     FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
     @Override
@@ -39,8 +44,9 @@ public class AccountActivity extends AppCompatActivity {
         setContentView(R.layout.activity_account);
         signedInAs = findViewById(R.id.textview_signed_in_as);
         signOutButton = findViewById(R.id.button_sign_out);
-
+        changeLanButton = findViewById(R.id.changeLanButt);
         final GoogleSignInAccount acct = GoogleSignIn.getLastSignedInAccount(getApplication());
+
 
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView_Bar);
         //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
@@ -97,7 +103,12 @@ public class AccountActivity extends AppCompatActivity {
                 return false;
             }
         });
-
+        changeLanButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                lanDialog();
+            }
+        });
     }
 
     private void signOut() {
@@ -118,11 +129,40 @@ public class AccountActivity extends AppCompatActivity {
             }
         });
     }
-    public void setLocale() {
-        Locale defLoc = new Locale("en");
-        Locale.setDefault(defLoc);
 
+    public void lanDialog() {
+        final String[] vocaleList = {"English", "Čeština"};
+        AlertDialog.Builder alertBuider = new AlertDialog.Builder(AccountActivity.this);
+        alertBuider.setTitle("Choose language");
+        alertBuider.setSingleChoiceItems(vocaleList, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (which == 0) {
+                    //English
+                    setLocale("en");
+                    recreate();
+                } else if (which == 1) {
+                    //Czech
+                    setLocale("cz");
+                    recreate();
+                }
+
+            }
+        });
+        AlertDialog lDialog = alertBuider.create();
+        lDialog.show();
     }
 
+    private void setLocale(String loc) {
+        Locale locale = new Locale(loc);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My lang", loc);
+        editor.apply();
+    }
 }
 

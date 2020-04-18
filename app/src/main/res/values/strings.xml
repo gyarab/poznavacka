@@ -74,4 +74,5 @@
     <string name="delete">Delete</string>
     <string name="remove_from_database">Remove from shared database</string>
     <string name="upload_to_database">Upload to shared database</string>
+    <string name="change_language">Change language</string>
 </resources>
