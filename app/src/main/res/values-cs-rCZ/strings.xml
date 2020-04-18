@@ -11,58 +11,58 @@
     <string name="switch4">Ptáci - 2</string>
     <string name="switch5">Ptáci - 3</string>
     <string name="start_main_activity_button">GO</string>
-    <string name="new_list">New List</string>
-    <string name="my_lists">My Lists</string>
-    <string name="add_list">Add List</string>
+    <string name="new_list">Nová poznávačka</string>
+    <string name="my_lists">Moje poznávačky</string>
+    <string name="add_list">Přidej poznávačku</string>
     <string name="practice_list">procvičování</string>
     <string name="share">sdílet</string>
     <string name="communication">komunikace</string>
     <string name="contact_us">kontaktujte nás</string>
     <string name="pin">PIN</string>
 
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="select_list">Select the list first</string>
+    <string name="hello_blank_fragment">Ahoj, prázdný fragment</string>
+    <string name="select_list">Vyber nejdřív poznávačku</string>
     <string name="open">otevřít</string>
     <string name="close">zavřít</string>
     <string name="exam">Test</string>
     <string name="enter_pin_button">OK</string>
     <string name="account">uživatelský účet</string>
-    <string name="create_fragment_text"><u> • Split the representatives using the entered word or character, e.g. \"plus\" -> \"dog plus otter plus ...\" </u>\n • You have the option to speak in the text using the keyboard inbuilt speak-in function</string>
+    <string name="create_fragment_text"><u> • Rozdělte odkazy zadáním slova nebo znaku, např. B. "plus" -> "Hund plus Otter plus ..." </ u> \ n • Můžete namluvit  text pomocí integrované funkce záznamu.</string>
     <string name="create_button">VYTVOŘIT</string>
-    <string name="autoRadDruhSwitch">Generate classification</string>
+    <string name="autoRadDruhSwitch">Generovat klasifikaci</string>
     <string name="save_button">ULOŽIT</string>
-    <string name="wait_text">Please, wait for your teacher to start the exam</string>
+    <string name="wait_text">Prosím počkejte než bude test zahájen</string>
     <string name="pop_done">HOTOVO</string>
-    <string name="title_activity_pop">Auto-insert</string>
+    <string name="title_activity_pop">Automatické vložení</string>
     <string name="language_spinner_prompt">Jazyk</string>
-    <string name="image_dialog">Ulož obrrázek</string>
+    <string name="image_dialog">Ulož obrázek</string>
 
     <!-- Preference Titles -->
-    <string name="messages_header">Messages</string>
-    <string name="sync_header">Sync</string>
+    <string name="messages_header">Zprávy</string>
+    <string name="sync_header">Synchronizovat</string>
 
     <!-- Messages Preferences -->
     <string name="signature_title">Váš podpis</string>
-    <string name="reply_title">Default reply action</string>
+    <string name="reply_title">Defaultní odpověď</string>
 
     <!-- User -->
     <string name="user_not_signed_in">Nejste přihlášen</string>
     <string name="sign_out">Odhlásit se</string>
 
-    <string name="sync_title">Sync email periodically</string>
-    <string name="attachment_title">Download incoming attachments</string>
-    <string name="attachment_summary_on">Automatically download attachments for incoming emails</string>
-    <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="classification"><u><b>Classification</b></u></string>
-    <string name="text_wiki_import_description">Check classification to be generated</string>
-    <string name="title_input">Title</string>
-    <string name="dividing_word_character_input">Dividing sequence</string>
-    <string name="the_representatives_input">The representatives</string>
-    <string name="search_lists">Search lists online</string>
-    <string name="internet_connection_required">Internet connection required</string>
+    <string name="sync_title">Synchronizovat mail automaticky.</string>
+    <string name="attachment_title">Stáhnout příchozí přílohy.</string>
+    <string name="attachment_summary_on">Stahovat příchozí přílohy automaticky.</string>
+    <string name="attachment_summary_off">Stahovat přílohy pouze na žádost uživatele.</string>
+    <string name="classification"><u><b>Klasifikace</b></u></string>
+    <string name="text_wiki_import_description">Zkontrolovat klasifikaci k vytvoření</string>
+    <string name="title_input">Titulek</string>
+    <string name="dividing_word_character_input">Dělící sekvence</string>
+    <string name="the_representatives_input">Zástupci</string>
+    <string name="search_lists">Hledat poznávačky online.</string>
+    <string name="internet_connection_required">Je potřeba připojení k internetu</string>
     <string name="give_your_list_a_name">Pojmenuj list.</string>
-    <string name="representatives_text">Now, type the things you want to learn.\nDivide them by a comma ","</string>
-    <string name="generate_text_view">Lastly, do you want some additional info about the things you entered?</string>
+    <string name="representatives_text">Těď vložte věci, které se chcete naučit.Oddělte je pomocí ","</string>
+    <string name="generate_text_view">Nakonec, chce ještě nějaké informace?</string>
     <string name="user_select_language">Zaprvé, vyber si jazyk.</string>
     <string name="my_exams_title">Vaše testy</string>
     <string name="exams">Testy</string>
@@ -75,5 +75,5 @@
     <string name="delete">Vymazat</string>
     <string name="remove_from_database">Odstranit z databáze</string>
     <string name="upload_to_database">Uložit do databáze</string>
-    <string name="change_language">Change language</string>
+    <string name="change_language">Změň jazyk</string>
 </resources>
