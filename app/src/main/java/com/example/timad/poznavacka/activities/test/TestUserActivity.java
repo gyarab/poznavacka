@@ -50,6 +50,7 @@ public class TestUserActivity extends AppCompatActivity {
     private int maxResult;//max result = zastupces.size()*params
     private int urResult;//soucet tempResults
     public static int parametrs;
+    public static boolean noWikiParams;
     //recyclerview
     private RecyclerView mRecyclerView;
     static private ExamsAdapter mExamsAdapter;
@@ -64,6 +65,7 @@ public class TestUserActivity extends AppCompatActivity {
 
 
         if(SharedListsActivity.checkInternet(this)){
+            noWikiParams=true;
             next= findViewById(R.id.next3);
             previous = findViewById(R.id.previous3);
             finishTest = findViewById(R.id.finishTest3);
@@ -113,6 +115,7 @@ public class TestUserActivity extends AppCompatActivity {
                     if (zastupces.get(0).getParameter(0).isEmpty()) {
                         index++;
                         first = index;
+                        noWikiParams=false;
                     }
                     testViewer(index, last, first);
                     next.setOnClickListener(new View.OnClickListener() {
@@ -135,7 +138,10 @@ public class TestUserActivity extends AppCompatActivity {
                             TextView result = findViewById(R.id.result3);
                             String finalResult = "";
                             urResult = 0;
-                            maxResult = zastupces.get(0).getParameters() * zastupces.size();
+                            maxResult = zastupces.get(0).getParameters() * (zastupces.size()-1);
+                            if(noWikiParams){
+                                maxResult++;
+                            }
                             for (int answer : tempResult) {
                                 urResult += answer;
 
@@ -166,19 +172,33 @@ public class TestUserActivity extends AppCompatActivity {
         }.getType();
         zastupces = gson.fromJson(content, cType);
         parametrs = zastupces.get(0).getParameters();
-        tempResult = new int[zastupces.size()*zastupces.get(0).getParameters()];
-        tempAnswer = new String[zastupces.size()*zastupces.get(0).getParameters()];
+        if(noWikiParams){
+            tempResult = new int[(zastupces.size())*zastupces.get(0).getParameters()];
+            tempAnswer = new String[(zastupces.size())*zastupces.get(0).getParameters()];
+        }else {
+            tempResult = new int[(zastupces.size() - 1) * zastupces.get(0).getParameters()];
+            tempAnswer = new String[(zastupces.size()-1)*zastupces.get(0).getParameters()];
+        }
+
         last = zastupces.size()-1;
     }
     private void testViewer(int index,int last,int first) {
         if(first!=0){
             setResults(index);
             buildRecyclerView();
+
+        }else{
+            setResults2(index);
+            buildRecyclerView();
         }
         Zastupce item = zastupces.get(index);
         String imageUrl = item.getImageURL();
         ImageView img = findViewById(R.id.zastupceImage3);
-        Picasso.get().load(imageUrl).resize(500,500).onlyScaleDown().centerInside().error(R.drawable.ic_image).into(img);
+        try {
+            Picasso.get().load(imageUrl).resize(500, 500).onlyScaleDown().centerInside().error(R.drawable.ic_image).into(img);
+        }catch (Exception e){
+
+        }
         // previous button
         if (first == index) {
             previous.setEnabled(false);
@@ -212,6 +232,7 @@ public class TestUserActivity extends AppCompatActivity {
 
 
     }
+
     private void createAnswerArr(){
         answerObjectArrayList=new ArrayList<>();
     }
@@ -233,6 +254,16 @@ public class TestUserActivity extends AppCompatActivity {
         }
 
     }
+
+    private void setResults2(int Index){
+        createAnswerArr();
+        String fieldName = "Název";
+        String result = zastupces.get(index).getParameter(0);
+        AnswerObject item = new AnswerObject(result,fieldName);
+        answerObjectArrayList.add(item);
+    }
+
+
 
     /*
      TextView content = findViewById(R.id.content3);

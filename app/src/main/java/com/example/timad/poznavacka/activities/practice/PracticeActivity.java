@@ -9,6 +9,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
@@ -70,12 +71,17 @@ public class PracticeActivity extends AppCompatActivity {
 
             Type intArrType =  new TypeToken<ArrayList<Integer>>(){}.getType();
             String jsonInt = MyListsActivity.getSMC(context).readFile(path + "nenauceni.txt", true);
-            if(jsonInt.equals("") || jsonInt.isEmpty()) {
-                sNenauceniZastupci = fillArr();
-            } else {
-                sNenauceniZastupci = gson.fromJson(jsonInt, intArrType);
-            }
+            try {
+                if (jsonInt.equals("") || jsonInt.isEmpty()) {
 
+                    sNenauceniZastupci = fillArr();
+
+                } else {
+                    sNenauceniZastupci = gson.fromJson(jsonInt, intArrType);
+                }
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_SHORT).show();
+            }
             for (Zastupce z: sZastupceArrOrig) {
                 z.setImage(MyListsActivity.getSMC(context).readDrawable(path, z.getParameter(0), context));
             }
@@ -99,8 +105,8 @@ public class PracticeActivity extends AppCompatActivity {
             mButtonAll.setText("Practice all (" + count + ")");
             mButtonContinue.setText("Continue practicing (" + sNenauceniZastupci.size() + ")");
             if(sNenauceniZastupci.size() < 1){
-                //mButtonContinue.setEnabled(false);
-                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+                mButtonContinue.setEnabled(false);
+                /*Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
                 Bundle b = new Bundle();
                 b.putInt("key", ALL);
                 intent.putExtras(b);
@@ -112,7 +118,7 @@ public class PracticeActivity extends AppCompatActivity {
                 b.putInt("key", ALL);
                 intent.putExtras(b);
                 startActivity(intent);
-                finish();
+                finish();*/
             }
         }
 

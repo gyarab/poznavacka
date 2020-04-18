@@ -120,9 +120,11 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
         }else{
             holder.stop_startImg1.setImageResource(R.drawable.ic_stop);
         }
+        try {
+            Picasso.get().load(item.getPreviewImgUrl()).fit().error(R.drawable.ic_image).into(holder.previewImg1);
+        }catch (Exception e ){
 
-        Picasso.get().load(item.getPreviewImgUrl()).fit().error(R.drawable.ic_image).into(holder.previewImg1);
-
+        }
     }
 
     @Override

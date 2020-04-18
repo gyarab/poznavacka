@@ -53,11 +53,18 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
 
                 @Override
                 public void afterTextChanged(Editable s) {
+
                     int curr=(TestUserActivity.index-1)*TestUserActivity.parametrs+getAdapterPosition();
+                    int index = TestUserActivity.index;
+                    if(TestUserActivity.noWikiParams){
+                        curr=index;
+                        index++;
+                    }
                     if(getAdapterPosition()!=RecyclerView.NO_POSITION) {
+
                         if (s.toString().equals(mParams.get(getAdapterPosition()).getAnswer())&&TestUserActivity.tempResult[curr]==0){
-                            TestUserActivity.tempResult[(TestUserActivity.index-1)*TestUserActivity.parametrs+getAdapterPosition()]++;
-                            Toast.makeText(itemView.getContext(), Integer.toString(TestUserActivity.tempResult[(TestUserActivity.index-1)*TestUserActivity.parametrs+getAdapterPosition()]),Toast.LENGTH_SHORT).show();
+                            TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]++;
+                            Toast.makeText(itemView.getContext(), Integer.toString(TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]),Toast.LENGTH_SHORT).show();
                             result.setEnabled(false);
                         }else if(TestUserActivity.tempResult[curr]!=0&&TestUserActivity.tempResult[curr]!=1){
                             TestUserActivity.tempResult[curr]--;
@@ -91,8 +98,13 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
         AnswerObject item = mParams.get(position);
         holder.param.setText(item.getFieldName());
         int curr = (TestUserActivity.index - 1) * TestUserActivity.parametrs + position;
+        int index = TestUserActivity.index;
+        if(TestUserActivity.noWikiParams){
+            curr= index;
+            index++;
+        }
         try {
-            if (!TestUserActivity.tempAnswer[(TestUserActivity.index - 1) * TestUserActivity.parametrs + position].equals("")) {
+            if (!TestUserActivity.tempAnswer[(index- 1) * TestUserActivity.parametrs + position].equals("")) {
                 holder.result.setText(TestUserActivity.tempAnswer[curr]);
             }
             if(TestUserActivity.tempResult[curr]==1){

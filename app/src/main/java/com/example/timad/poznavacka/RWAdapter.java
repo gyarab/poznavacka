@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +9,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.gms.ads.formats.MediaView;
@@ -197,47 +199,54 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-        int viewType = getItemViewType(position);
-        switch (viewType) {
-            case UNIFIED_NATIVE_AD_VIEW_TYPE:
-                UnifiedNativeAd nativeAd = (UnifiedNativeAd) mPoznavackaInfoList.get(position);
-                populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) holder).getAdView());
-                break;
+        try {
+            int viewType = getItemViewType(position);
 
-            case MENU_ITEM_VIEW_TYPE:
-                //fall through
-            default:
-                PoznavackaInfoViewHolder pivh = (PoznavackaInfoViewHolder) holder;
-                PoznavackaInfo currentPoznavackaInfo = (PoznavackaInfo) mPoznavackaInfoList.get(position);
-                TextViewCompat.setAutoSizeTextTypeWithDefaults(pivh.textView1, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                TextViewCompat.setAutoSizeTextTypeWithDefaults(pivh.textView2, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-                pivh.textView1.setText(currentPoznavackaInfo.getName());
-                pivh.textView2.setText(currentPoznavackaInfo.getAuthor());
-                pivh.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
-                pivh.testImg.setImageResource(R.drawable.ic_school_dark_purple_24dp);
+            switch (viewType) {
+                case UNIFIED_NATIVE_AD_VIEW_TYPE:
+                    UnifiedNativeAd nativeAd = (UnifiedNativeAd) mPoznavackaInfoList.get(position);
+                    populateNativeAdView(nativeAd, ((UnifiedNativeAdViewHolder) holder).getAdView());
+                    break;
+
+                case MENU_ITEM_VIEW_TYPE:
+                    //fall through
+                default:
+                    PoznavackaInfoViewHolder pivh = (PoznavackaInfoViewHolder) holder;
+                    PoznavackaInfo currentPoznavackaInfo = (PoznavackaInfo) mPoznavackaInfoList.get(position);
+                    TextViewCompat.setAutoSizeTextTypeWithDefaults(pivh.textView1, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+                    TextViewCompat.setAutoSizeTextTypeWithDefaults(pivh.textView2, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
+
+                    pivh.textView1.setText(currentPoznavackaInfo.getName());
+                    pivh.textView2.setText(currentPoznavackaInfo.getAuthor());
+                    pivh.languageURL.setText(currentPoznavackaInfo.getLanguageURL());
+                    pivh.testImg.setImageResource(R.drawable.ic_school_dark_purple_24dp);
 
 
-                Drawable d = MyListsActivity.getSMC(pivh.prewiewImg.getContext()).readDrawable(currentPoznavackaInfo.getId() + "/", currentPoznavackaInfo.getPrewievImageLocation(), ((PoznavackaInfoViewHolder) holder).prewiewImg.getContext());
-                pivh.prewiewImg.setImageDrawable(d);
-                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-                if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
-                    pivh.shareImg.setEnabled(false);
-                } else {
-                    if (currentPoznavackaInfo.isUploaded()) {
-                        pivh.shareImg.setImageResource(R.drawable.ic_share_blue_24dp);
+                    Drawable d = MyListsActivity.getSMC(pivh.prewiewImg.getContext()).readDrawable(currentPoznavackaInfo.getId() + "/", currentPoznavackaInfo.getPrewievImageLocation(), ((PoznavackaInfoViewHolder) holder).prewiewImg.getContext());
+                    pivh.prewiewImg.setImageDrawable(d);
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+                        pivh.shareImg.setEnabled(false);
                     } else {
-                        pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                        if (currentPoznavackaInfo.isUploaded()) {
+                            pivh.shareImg.setImageResource(R.drawable.ic_share_blue_24dp);
+                        } else {
+                            pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                        }
                     }
-                }
 
 
-                if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
-                    //selected
-                    pivh.cView.setCardBackgroundColor(pivh.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
-                } else {
-                    //not selected
-                    pivh.cView.setCardBackgroundColor(pivh.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
-                }
+                    if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
+                        //selected
+                        pivh.cView.setCardBackgroundColor(pivh.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
+                    } else {
+                        //not selected
+                        pivh.cView.setCardBackgroundColor(pivh.prewiewImg.getResources().getColor(R.color.colorAccentSecond));
+                    }
+            }
+
+        }catch (Exception e){
+
         }
     }
 
