@@ -1,5 +1,6 @@
 package com.example.timad.poznavacka.activities;
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -144,7 +145,7 @@ public class AccountActivity extends AppCompatActivity {
                     recreate();
                 } else if (which == 1) {
                     //Czech
-                    setLocale("cz");
+                    setLocale("cs");
                     recreate();
                 }
 
@@ -161,8 +162,15 @@ public class AccountActivity extends AppCompatActivity {
         config.locale = locale;
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
         SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
-        editor.putString("My lang", loc);
+        editor.putString("My_Lang", loc);
         editor.apply();
+    }
+
+    // Loading language saved in preferncies
+    public void loadLocale() {
+        SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "");
+        setLocale(language);
     }
 }
 
