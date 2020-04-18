@@ -27,7 +27,7 @@
     <string name="exam">Test</string>
     <string name="enter_pin_button">OK</string>
     <string name="account">uživatelský účet</string>
-    <string name="create_fragment_text"><u> • Rozdělte odkazy zadáním slova nebo znaku, např. B. "plus" -> "Hund plus Otter plus ..." </ u> \ n • Můžete namluvit  text pomocí integrované funkce záznamu.</string>
+    <string name="create_fragment_text"> • Rozdělte odkazy zadáním slova nebo znaku, např. B. "plus" -> "Hund plus Otter plus ..." \ n • Můžete namluvit  text pomocí integrované funkce záznamu.</string>
     <string name="create_button">VYTVOŘIT</string>
     <string name="autoRadDruhSwitch">Generovat klasifikaci</string>
     <string name="save_button">ULOŽIT</string>
