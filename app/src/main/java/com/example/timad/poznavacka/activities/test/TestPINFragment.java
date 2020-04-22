@@ -56,6 +56,8 @@ public class TestPINFragment extends Fragment {
         return view;
     }
 
+
+
     private void goToTestActivity(){
        Intent intent = new Intent(getActivity(),TestUserActivity.class);
        startActivity(intent);

@@ -37,6 +37,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class MyExamsActivity extends AppCompatActivity {
 
@@ -217,18 +219,13 @@ public class MyExamsActivity extends AppCompatActivity {
                                                //create document in ActiveTests database
                                                String content = test.getContent();
 
-                                               StartingTestAction(position);
+                                               checkForHashCode(position,HashCode());
 
                                            }
                                        }
                                     }
                                 });
-
-
-
-
                                 //create collection userID+databaseID for user results
-
                                 dialog.dismiss();
                             }
                         }).setNegativeButton("no", new DialogInterface.OnClickListener() {
@@ -274,12 +271,6 @@ public class MyExamsActivity extends AppCompatActivity {
                                     }
                                 });
 
-
-
-
-
-
-
                                 //2 option load results to userID+userID as array of objects
 
 
@@ -303,6 +294,44 @@ public class MyExamsActivity extends AppCompatActivity {
         });
 
     }
+    private  String HashCode(){
+        List<String> arr = new ArrayList();
+        final String chars = "123456789";
+        String a = "a";
+        String b = "A";
+        for(char ch:chars.toCharArray()){
+            arr.add(Character.toString(ch));
+        }
+        Random rand = new Random();
+        String code = "";
+        for(int i =0;i<9;i++){
+            int x = rand.nextInt(chars.length()-1);
+            code+=arr.get(x);
+        }
+        return code;
+    }
+    private void checkForHashCode(final int position,final String code){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Query test = db.collection("ActiveTest").whereEqualTo("testCode", code);
+        test.get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            if(task.getResult().size()>0){
+                                checkForHashCode(position,HashCode());
+                            }else{
+                                StartingTestAction(position,code);
+                            }
+                        } else {
+                            Toast.makeText(getApplicationContext(),"cannot find test with this PIN",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+    }
+
+
     private  void createArrayList(){
         previewTestObjectArrayList =new ArrayList<>();
     }
@@ -326,12 +355,7 @@ public class MyExamsActivity extends AppCompatActivity {
                                String activeTestID = document.getString("activeTestID");
                                String testCode = document.getString("testCode");
                                boolean resultsEmpty = document.getBoolean("resultsEmpty");
-                               // String name = "lev";
-                              //  boolean started = false;
-                              //  String previewImageUrl = "https://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Lion_waiting_in_Namibia.jpg/1200px-Lion_waiting_in_Namibia.jpg";
-                              //  String databaseID = document.getId();
-                              //  String content = "xd";
-                              //  String userID= "xd";
+
                                 PreviewTestObject test = new PreviewTestObject(name,started,previewImageUrl,databaseID,userID,content,finished,activeTestID,testCode,resultsEmpty);
                                 previewTestObjectArrayList.add(test);
 
@@ -404,17 +428,21 @@ public class MyExamsActivity extends AppCompatActivity {
                 });
     }
 
-    private void StartingTestAction(final int position){
+    private void StartingTestAction(final int position,final String code){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
+      /*  DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
 
-                TestCodeObject data = documentSnapshot.toObject(TestCodeObject.class);
+                TestCodeObject data = documentSnapshot.toObject(TestCodeObject.class);*/
+
+
+
+                String testCode = code;
+
 
                 String content = previewTestObjectArrayList.get(position).getContent();
-                String testCode = data.getTestCode();
                 String userID = previewTestObjectArrayList.get(position).getUserID();
                 String testDBID = previewTestObjectArrayList.get(position).getDatabaseID();
 
@@ -427,11 +455,12 @@ public class MyExamsActivity extends AppCompatActivity {
 
                 DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
                 docRef.update(
-                        "testCode",Integer.toString(Integer.parseInt(data.getTestCode())+1)
-                        );
+                        "testCode",testCode
 
-            }
-        });
+                        );
+       // "testCode",Integer.toString(Integer.parseInt(data.getTestCode())+1)
+        //    }
+      //  });
     }
     private void setTestCodeTestDB(final String testCode,String userID,String documentName){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
