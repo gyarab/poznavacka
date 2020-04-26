@@ -167,8 +167,8 @@ public class StorageManagerClass {
     }
 
     /**
-     * Uloží obrázek.
-     * @param drawable obrázek, který má byýt uložen
+     * Uloží obrázek. Zdroj: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+     * @param drawable obrázek, který má být uložen
      * @param path cesta
      * @param name název
      * @return
@@ -191,7 +191,7 @@ public class StorageManagerClass {
     }
 
     /**
-     * Přečte obrázek z úložiště.
+     * Přečte obrázek z úložiště. Zdroj: https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
      * @param path cesta
      * @param name název obrázku
      * @param context
