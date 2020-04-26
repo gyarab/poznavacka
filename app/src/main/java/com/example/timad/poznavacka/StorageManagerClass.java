@@ -20,15 +20,28 @@ import java.io.IOException;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 
+/**
+ * Tříd starající se o soubory v zařízení.
+ */
 public class StorageManagerClass {
     private final String ENV_PATH;
     private final Gson GSON;
 
+    /**
+     * Konstruktor
+     * @param envPath - cesta, kde jsou uloženy soubory
+     */
     public StorageManagerClass(String envPath) {
         ENV_PATH = envPath + "/";
         GSON = new Gson();
     }
 
+    /**
+     * Přečte soubor
+     * @param path cesta k souboru
+     * @param create zda má vytvořit soubor, když neexistuje
+     * @return vrací obsah souboru v podobě Stringu
+     */
     public String readFile(String path, boolean create) {
         ArrayList<PoznavackaInfo> arr = new ArrayList<>();
         File txtFile = new File(ENV_PATH + path);
@@ -55,6 +68,10 @@ public class StorageManagerClass {
         return s.trim();
     }
 
+    /**
+     * Vytvoří soubor
+     * @param file
+     */
     private void createFile(File file) {
         FileWriter fw = null;
 
@@ -68,6 +85,11 @@ public class StorageManagerClass {
         }
     }
 
+    /**
+     * Aktualizuje informace o poznávačce
+     * @param path
+     * @param arrRaw
+     */
     public void updatePoznavackaFile(String path, ArrayList<Object> arrRaw) {
         ArrayList arr = new ArrayList();
         for (Object object :
@@ -103,6 +125,12 @@ public class StorageManagerClass {
         }
     }
 
+    /**
+     * Upraví obsah souboru.
+     * @param path
+     * @param name
+     * @param arr
+     */
     public void updateFile(String path, String name, ArrayList<Integer> arr) {
         File file = new File(ENV_PATH + path + name);
         FileWriter fw;
@@ -120,6 +148,10 @@ public class StorageManagerClass {
         }
     }
 
+    /**
+     * Smaže poznávačku ze zařízení.
+     * @param path
+     */
     public void deletePoznavacka(String path) {
         File directory = new File(ENV_PATH + path);
 
@@ -134,6 +166,13 @@ public class StorageManagerClass {
         }
     }
 
+    /**
+     * Uloží obrázek.
+     * @param drawable obrázek, který má byýt uložen
+     * @param path cesta
+     * @param name název
+     * @return
+     */
     public boolean saveDrawable(Drawable drawable, String path, String name) {
         BitmapDrawable bitmapDraw = (BitmapDrawable) drawable;
         Bitmap bitmap = bitmapDraw.getBitmap();
@@ -151,7 +190,13 @@ public class StorageManagerClass {
         return true;
     }
 
-    // https://stackoverflow.com/questions/17674634/saving-and-reading-bitmaps-images-from-internal-memory-in-android
+    /**
+     * Přečte obrázek z úložiště.
+     * @param path cesta
+     * @param name název obrázku
+     * @param context
+     * @return
+     */
     public Drawable readDrawable(String path, String name, Context context) {
         Bitmap bitmap = null;
 
@@ -164,6 +209,13 @@ public class StorageManagerClass {
         return new BitmapDrawable(context.getResources(), bitmap);
     }
 
+    /**
+     * Vytvoří soubor a zapíše do něj data.
+     * @param path
+     * @param name
+     * @param json
+     * @return
+     */
     public boolean createAndWriteToFile(String path, String name, String json) {
         File txtFile = new File(ENV_PATH + path + name + ".txt");
         FileWriter fw;

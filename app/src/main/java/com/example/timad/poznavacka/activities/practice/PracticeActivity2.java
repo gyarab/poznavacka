@@ -216,6 +216,9 @@ public class PracticeActivity2 extends AppCompatActivity {
 
     }
 
+    /**
+     * Inicializace grafických prvků
+     */
     private void init() {
         textView = findViewById(R.id.textName);
         fab_crossed = findViewById(R.id.floatingActionButton_crossed);
@@ -266,6 +269,9 @@ public class PracticeActivity2 extends AppCompatActivity {
         fab_crossed_text.setVisibility(View.INVISIBLE);
     }
 
+    /**
+     * Z balíčku, který jí byl předán, zjistí, zda je uživatel testován ze všech zástupců nebo jen z nezapamatovaných a podle toho nastaví parametry.
+     */
     private void initValues() {
         res = getResources();
 

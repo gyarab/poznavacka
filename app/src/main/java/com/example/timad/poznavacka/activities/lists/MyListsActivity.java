@@ -271,7 +271,9 @@ public class MyListsActivity extends AppCompatActivity {
             }
         });
 
-        /* RecyclerView */
+        /**
+         * Inicializace Recycler View
+         */
         mRecyclerView = findViewById(R.id.recyclerViewL);
         mRecyclerView.setHasFixedSize(true);
         mLManager = new LinearLayoutManager(getApplication());
@@ -284,7 +286,14 @@ public class MyListsActivity extends AppCompatActivity {
             loadNativeAd();
         }
 
+        /**
+         * nastavení Event Listenerů
+         */
         mAdapter.setOnItemClickListener(new RWAdapter.OnItemClickListener() {
+            /**
+             * Po kliknutí na položku v Recycler View nastaví ji jako aktivní
+             * @param position - pozice položky v poli
+             */
             @Override
             public void onItemClick(int position) {
                 sPositionOfActivePoznavackaInfo = position;
@@ -292,6 +301,10 @@ public class MyListsActivity extends AppCompatActivity {
                 mAdapter.notifyDataSetChanged();
             }
 
+            /**
+             * Po kliknutí na ikonku přenese uživatele do Practice Activity
+             * @param position - pozice položky v poli
+             */
             @Override
             public void onPracticeClick(final int position) {
                 sPositionOfActivePoznavackaInfo = position;
@@ -304,6 +317,10 @@ public class MyListsActivity extends AppCompatActivity {
                 finish();
             }
 
+            /**
+             * Po kliknutí na ikonku sdílet vyskočí dialogové okno, které se zeptá na potvrzení volby. Po potvrzení je Poznávačka sdílena.
+             * @param position - pozice položky v poli
+             */
             @Override
             public void onShareClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
@@ -403,6 +420,10 @@ public class MyListsActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * Zeptá se uživatele na potvrzení smazání Poznávačky. Po potvrzení je Poznávačka smazána ze zařízení.
+             * @param position - pozice položky v poli
+             */
             @Override
             public void onDeleteClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
@@ -454,6 +475,10 @@ public class MyListsActivity extends AppCompatActivity {
                 btnNegative.setLayoutParams(layoutParams);
             }
 
+            /**
+             * Po kliknutí na ikonu testu se zeptá na potvrzení o vytvoření testu. Když uživatel odpoví ano, tak je testen vytvořen.
+             * @param position - pozice položky v poli
+             */
             @Override
             public void onTestClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
@@ -539,7 +564,10 @@ public class MyListsActivity extends AppCompatActivity {
         });
     }
 
-
+    /**
+     * Inicializace Recycler View s polem Poznávaček. Poznávačky jsou načteny ze souborů na zařízení.
+     * @param context
+     */
     public static void init(Context context) {
         //initialization
         if (sPoznavackaInfoArr == null) {
@@ -565,9 +593,6 @@ public class MyListsActivity extends AppCompatActivity {
                 sPositionOfActivePoznavackaInfo = -1;
             }
         }
-
-        //RecyclerView
-
     }
 
     private void loadNativeAd() {
@@ -706,39 +731,6 @@ public class MyListsActivity extends AppCompatActivity {
             Gson gson = new Gson();
             Context context = getApplicationContext();
 
-
-            //DONE IN CREATE LIST ACTIVITY
-            /*String uuid = UUID.randomUUID().toString();
-            String path = uuid + "/";
-            File dir = new File(context.getFilesDir().getPath() + "/" + path);
-
-            // Create folder
-            try {
-                dir.mkdir();
-            } catch (Exception e) {
-                Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
-                return null;
-            }
-
-
-           // Saves images locally
-            for (Zastupce z : mZastupceArr) {
-                if (z.getImage() != null) {
-                    if (!MyListsActivity.getSMC(context).saveDrawable(z.getImage(), path, z.getParameter(0))) {
-                        Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                        return null;
-                    }
-                } else {
-                    // TODO exception for first thing
-
-                            *//*Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
-                            deletePoznavacka(dir);
-                            return;*//*
-                }
-                z.setImage(null);
-            }*/
-
             // Saving mZastupceArr
             String json = gson.toJson(mZastupceArr);
             //add to file
@@ -771,22 +763,6 @@ public class MyListsActivity extends AppCompatActivity {
             } else {
                 MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
             }
-
-            // Deletes everything base in folder
-                /*File[] files = c.getFilesDir().listFiles();
-                for (int i = 0; i < files.length; i++)
-                {
-                    if(files[i].isDirectory()){
-                        Log.d("Files", files[i].getPath() + " : " + files[i].getName());
-                        File[] files2 = files[i].listFiles();
-                        for (int x = 0; x < files2.length; x++) {
-                            //files2[x].delete();
-                        }
-                    }
-                    //files[i].delete();
-                }
-                Log.d("Files", "Deleted "+ files.length + " files");*/
-
             return null;
         }
     }

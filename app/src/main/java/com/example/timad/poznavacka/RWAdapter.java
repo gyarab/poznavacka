@@ -55,6 +55,9 @@ class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
     }
 }
 
+/**
+ * Kartička s informacemi o poznávačce a tlačítky k provedení akcí s poznávačkou.
+ */
 class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
     public TextView textView1;
     public TextView textView2;
@@ -66,6 +69,11 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
     public ImageView testImg;
     public CardView cView;
 
+    /**
+     * Konstruktor - inicializuje proměnné a Event Listenery.
+     * @param itemView
+     * @param listener
+     */
     PoznavackaInfoViewHolder(@NonNull View itemView, final RWAdapter.OnItemClickListener listener) {
         super(itemView);
         textView1 = itemView.findViewById(R.id.itemText1);
@@ -142,7 +150,7 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
 }
 
 /**
- * Pracuje s recyclerWiev
+ * Řídí Recycler View
  **/
 public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Object> mPoznavackaInfoList;
@@ -184,6 +192,12 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mPoznavackaInfoList = poznavackaInfoList;
     }
 
+    /**
+     * Vytvoření kartičky v Recycler View
+     * @param parent
+     * @param viewType
+     * @return
+     */
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
@@ -197,6 +211,11 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         return pivh;
     }
 
+    /**
+     * Přiřazení objektu ke kartičce.
+     * @param holder
+     * @param position
+     */
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         try {
@@ -301,6 +320,10 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         adView.setNativeAd(nativeAd);
     }
 
+    /**
+     * Vrací počet položek v Recycler View
+     * @return
+     */
     @Override
     public int getItemCount() {
         return mPoznavackaInfoList.size();

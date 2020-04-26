@@ -1,6 +1,8 @@
 package com.example.timad.poznavacka;
 
-/** Polozka v seznamu poznavacek **/
+/**
+ *  Polozka v seznamu poznavacek
+ */
 public class PoznavackaInfo {
     private String name;
     private String id;
@@ -11,12 +13,17 @@ public class PoznavackaInfo {
     private String languageURL;
     private boolean uploaded;
 
-/*    public PoznavackaInfo(String name, String id, String author){
-        this.name = name;
-        this.id = id;
-        this.author = author;
-    }*/
-
+    /**
+     * Konstruktor pro vytvoření poznávačky
+     * @param name
+     * @param id
+     * @param author
+     * @param authorsID
+     * @param prewievImageLocation
+     * @param prewievImageUrl
+     * @param languageURL
+     * @param uploaded
+     */
     public PoznavackaInfo(String name, String id, String author, String authorsID, String prewievImageLocation, String prewievImageUrl, String languageURL, boolean uploaded) {
         this.name = name;
         this.id = id;

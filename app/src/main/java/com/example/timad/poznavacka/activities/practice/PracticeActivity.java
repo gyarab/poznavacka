@@ -46,6 +46,10 @@ public class PracticeActivity extends AppCompatActivity {
 
     protected Resources res;
 
+    /**
+     * Načte Poznávačku ze zařízení, pokud není načtení.
+     * @param savedInstanceState
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,19 +110,6 @@ public class PracticeActivity extends AppCompatActivity {
             mButtonContinue.setText("Continue practicing (" + sNenauceniZastupci.size() + ")");
             if(sNenauceniZastupci.size() < 1){
                 mButtonContinue.setEnabled(false);
-                /*Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
-                Bundle b = new Bundle();
-                b.putInt("key", ALL);
-                intent.putExtras(b);
-                startActivity(intent);
-                finish();
-            } else if(sNenauceniZastupci.size() == sZastupceArrOrig.size()){
-                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
-                Bundle b = new Bundle();
-                b.putInt("key", ALL);
-                intent.putExtras(b);
-                startActivity(intent);
-                finish();*/
             }
         }
 
@@ -155,8 +146,6 @@ public class PracticeActivity extends AppCompatActivity {
                         startActivity(intent4);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
-
-
                 }
 
                 return false;
@@ -164,11 +153,18 @@ public class PracticeActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Nastavení Event Listenerů u tlačítek
+     */
     public void init(){
         mTextView = findViewById(R.id.textViewLoaded);
         mTextView.setText("");
         mButtonAll = findViewById(R.id.buttonAll);
         mButtonAll.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Po kliknutí na talčítko "testovat vše" spustí Practice Activity 2 s parametrem ALL.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
@@ -183,6 +179,10 @@ public class PracticeActivity extends AppCompatActivity {
 
         mButtonContinue = findViewById(R.id.buttonNotMem);
         mButtonContinue.setOnClickListener(new View.OnClickListener() {
+            /**
+             * Po kliknutí na talčítko "testovat nenaučená" spustí Practice Activity 2 s parametrem NOT_MEM.
+             * @param view
+             */
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
@@ -198,6 +198,10 @@ public class PracticeActivity extends AppCompatActivity {
         mLoaded = false;
     }
 
+    /**
+     * Vrátí array s nazapamatovanými zástupci do původního stavu, to znamená, že array naplní všemi Zástupci.
+     * @return
+     */
     public ArrayList<Integer> fillArr(){
         ArrayList<Integer> arr = new ArrayList<Integer>();
 
