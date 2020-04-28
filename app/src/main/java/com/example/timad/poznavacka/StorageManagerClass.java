@@ -70,7 +70,7 @@ public class StorageManagerClass {
 
     /**
      * Vytvoří soubor
-     * @param file
+     * @param file soubor, který je potřeba vytvořit
      */
     private void createFile(File file) {
         FileWriter fw = null;
@@ -87,7 +87,7 @@ public class StorageManagerClass {
 
     /**
      * Aktualizuje informace o poznávačce
-     * @param path
+     * @param path cesta k poznávačce
      * @param arrRaw
      */
     public void updatePoznavackaFile(String path, ArrayList<Object> arrRaw) {
@@ -127,9 +127,9 @@ public class StorageManagerClass {
 
     /**
      * Upraví obsah souboru.
-     * @param path
-     * @param name
-     * @param arr
+     * @param path cesta k souboru
+     * @param name název souboru
+     * @param arr pole, které je potřeba uložit
      */
     public void updateFile(String path, String name, ArrayList<Integer> arr) {
         File file = new File(ENV_PATH + path + name);
@@ -150,7 +150,7 @@ public class StorageManagerClass {
 
     /**
      * Smaže poznávačku ze zařízení.
-     * @param path
+     * @param path cesta
      */
     public void deletePoznavacka(String path) {
         File directory = new File(ENV_PATH + path);
@@ -171,7 +171,7 @@ public class StorageManagerClass {
      * @param drawable obrázek, který má být uložen
      * @param path cesta
      * @param name název
-     * @return
+     * @return vrací true, když obrázek byl uložen, jinak false
      */
     public boolean saveDrawable(Drawable drawable, String path, String name) {
         BitmapDrawable bitmapDraw = (BitmapDrawable) drawable;
@@ -195,7 +195,7 @@ public class StorageManagerClass {
      * @param path cesta
      * @param name název obrázku
      * @param context
-     * @return
+     * @return vrací obrázek načtený z úložiště
      */
     public Drawable readDrawable(String path, String name, Context context) {
         Bitmap bitmap = null;
@@ -211,9 +211,9 @@ public class StorageManagerClass {
 
     /**
      * Vytvoří soubor a zapíše do něj data.
-     * @param path
-     * @param name
-     * @param json
+     * @param path cesta k souboru
+     * @param name název souboru
+     * @param json String, která chceme uložit v souboru
      * @return
      */
     public boolean createAndWriteToFile(String path, String name, String json) {
