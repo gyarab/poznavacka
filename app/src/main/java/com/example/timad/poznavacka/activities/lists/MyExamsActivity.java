@@ -48,6 +48,7 @@ public class MyExamsActivity extends AppCompatActivity {
     private static ArrayList<PreviewTestObject> previewTestObjectArrayList;
     public static String currentCollectionResultID;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +65,11 @@ public class MyExamsActivity extends AppCompatActivity {
             }
         }
     }
+
+    /**
+     * Vymaže výsledky testu
+     * @param collectionID
+     */
     private void clearResults(final String collectionID){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(collectionID)
@@ -80,11 +86,20 @@ public class MyExamsActivity extends AppCompatActivity {
                     }
                 });
     }
+
+    /**
+     * Dostanetě do výsledků
+     */
     private void gotToResults(){
         Intent intent = new Intent(getApplication(), UserResultActivity.class);
         startActivity(intent);
     }
     //current focus
+
+    /**
+     * postaví recykler view
+     * @param previewTestObjectArrayList1
+     */
     private void buildRecyclerView(final ArrayList<PreviewTestObject> previewTestObjectArrayList1){
         mRecyclerView = findViewById(R.id.testView);
         mRecyclerView.setHasFixedSize(false);
@@ -142,7 +157,10 @@ public class MyExamsActivity extends AppCompatActivity {
         }
 
 
-
+            /**
+             * dostane tě do výsledků
+             * @param position
+             */
             @Override
             public void onResultsClick(final int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
@@ -187,6 +205,10 @@ public class MyExamsActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * začne skončí test
+             * @param position
+             */
             @Override
             public void onStart_EndClick(final int position) {
                 if (SharedListsActivity.checkInternet(getApplication())) {
@@ -294,6 +316,11 @@ public class MyExamsActivity extends AppCompatActivity {
         });
 
     }
+
+    /**
+     * vygeneruje unique kod
+     * @return
+     */
     private  String HashCode(){
         List<String> arr = new ArrayList();
         final String chars = "123456789";
@@ -310,6 +337,12 @@ public class MyExamsActivity extends AppCompatActivity {
         }
         return code;
     }
+
+    /**
+     * zjistí jestli kód je unique
+     * @param position
+     * @param code
+     */
     private void checkForHashCode(final int position,final String code){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -331,10 +364,18 @@ public class MyExamsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * vytvoří pole pro objekty
+     */
 
     private  void createArrayList(){
         previewTestObjectArrayList =new ArrayList<>();
     }
+
+    /**
+     * vyvolá testy z firebase
+     * @param userID
+     */
     private void fetchTests(final String userID){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(userID)
@@ -368,6 +409,13 @@ public class MyExamsActivity extends AppCompatActivity {
 
 
     }
+
+    /**
+     * dá vědět testu, že byla založená databáze testů
+     * @param userID
+     * @param testID
+     * @param context
+     */
     public static void updateResultsEmpty(String userID, String testID, Context  context){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         Toast.makeText(context,userID+","+testID,Toast.LENGTH_LONG).show();
@@ -378,11 +426,21 @@ public class MyExamsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * sestaví dohromady testovací aktivitu
+     * @param userID
+     */
     private void buildTestActivity(String userID) {
               createArrayList();
               fetchTests(userID);
     }
 
+    /**
+     * dá vědět fireabase, že test je ukončen
+     * @param userID
+     * @param documentName
+     * @param position
+     */
     private void setFinished(String userID,String documentName,int position){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -392,6 +450,13 @@ public class MyExamsActivity extends AppCompatActivity {
       );
 
     }
+
+    /**
+     * dá věědět firebase, že test se začal
+     * @param userID
+     * @param documentName
+     * @param position
+     */
     private void setStarted_end(String userID,String documentName,int position){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -401,6 +466,12 @@ public class MyExamsActivity extends AppCompatActivity {
         );
 
     }
+
+    /**
+     * přidá test do aktivních testů
+     * @param data
+     * @param position
+     */
     private void addToActiveTests(ActiveTestObject data,final int position){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -428,6 +499,11 @@ public class MyExamsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * začne testovací akci
+     * @param position
+     * @param code
+     */
     private void StartingTestAction(final int position,final String code){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
       /*  DocumentReference docRef = db.collection("CodeCounter").document("6UkZGRkDj3yKPJdwV5dn");
@@ -462,6 +538,13 @@ public class MyExamsActivity extends AppCompatActivity {
         //    }
       //  });
     }
+
+    /**
+     *
+     * @param testCode
+     * @param userID
+     * @param documentName
+     */
     private void setTestCodeTestDB(final String testCode,String userID,String documentName){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -472,6 +555,13 @@ public class MyExamsActivity extends AppCompatActivity {
         );
 
     }
+
+    /**
+     * přidá otkaz testu an jeho aktivační odkaz
+     * @param userID
+     * @param activeTestID
+     * @param position
+     */
     private void updateActiveTestID(String userID,String activeTestID,int position){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         String documentName = previewTestObjectArrayList.get(position).getDatabaseID();
@@ -480,6 +570,11 @@ public class MyExamsActivity extends AppCompatActivity {
                 "activeTestID",activeTestID
         );
     }
+
+    /**
+     * deaktivuje test
+     * @param position
+     */
     private void deactivateTest(final int position){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -504,7 +599,13 @@ public class MyExamsActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * prida výsledek testu do databáze
+     * @param activeTestID
+     * @param data
+     * @param userID
+     * @param databaseTestID
+     */
     public static void addResultToDB(final String activeTestID,final ResultObjectDB data,final String userID,final String databaseTestID){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         final DocumentReference docRef = db.collection(userID).document(databaseTestID);
@@ -548,6 +649,11 @@ public class MyExamsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * smaže výsledky v databázi
+     * @param activeTestID
+     * @param documentName
+     */
     public void deleteResults(String activeTestID,String documentName){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection(activeTestID).document(documentName)
@@ -571,6 +677,10 @@ public class MyExamsActivity extends AppCompatActivity {
 
 
     // in plan to be done later or already finished
+
+    /**
+     * akce provedená při zmačknutí vracecího se tlačítka na telefonu
+     */
     @Override
     public void onBackPressed() {
         Intent intent1 = new Intent(getApplication(), MyListsActivity.class);
@@ -578,6 +688,12 @@ public class MyExamsActivity extends AppCompatActivity {
         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
         finish();
     }
+
+    /**
+     * prida test do tesů
+     * @param userID
+     * @param data
+     */
     public static void addToTests(final String userID,final DBTestObject data ) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -598,6 +714,13 @@ public class MyExamsActivity extends AppCompatActivity {
 
 
     }
+
+    /**
+     * smaže test
+     * @param userID
+     * @param documentName
+     * @param position
+     */
     private void removeTest(final String userID, final String documentName, final int position) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 

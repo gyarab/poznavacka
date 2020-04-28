@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objekt testu zobrazený
+ */
 public class PreviewTestObject {
     private String name;
     private boolean started;

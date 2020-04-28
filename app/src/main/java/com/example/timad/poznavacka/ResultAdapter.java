@@ -12,6 +12,10 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import java.util.ArrayList;
 
+/**
+ * recycler view výsledků
+ */
+
 public class ResultAdapter extends RecyclerView.Adapter<ResultAdapter.ResultViewHolder> {
     private ArrayList<PreviewResultObject> mTestList;
 

@@ -17,6 +17,10 @@ public class TestAdapter extends RecyclerView.Adapter<TestAdapter.TestViewHolder
     private ArrayList<PreviewTestObject> mTestList;
     private TestAdapter.OnItemClickListener mListener;
 
+    /**
+     * recycler view
+     * @param listener
+     */
     public void setOnItemClickListener(TestAdapter.OnItemClickListener listener){
         mListener = listener;
     }

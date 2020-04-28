@@ -105,6 +105,9 @@ public class SharedListsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * akce při zmáčknutí vracecího tlačítka
+     */
     @Override
     public void onBackPressed() {
         Intent intent1 = new Intent(getApplication(), MyListsActivity.class);
@@ -113,6 +116,9 @@ public class SharedListsActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * postaví fragment na nohy
+     */
     private void buildSharedListFragment() {
         db = FirebaseFirestore.getInstance();
         user = FirebaseAuth.getInstance().getCurrentUser();
@@ -170,6 +176,10 @@ public class SharedListsActivity extends AppCompatActivity {
         });*/
     }
 
+    /**
+     * získá objekty z firebase
+     * @param searchText
+     */
     private void fetchFirstFirestoreSearch(final String searchText) {
         deactivateLoadMore();
         arrayList.clear();
@@ -201,6 +211,10 @@ public class SharedListsActivity extends AppCompatActivity {
                 });
     }
 
+    /**
+     * vyhledá v fireabse
+     * @param searchText
+     */
     private void fetchFirestoreSearch(final String searchText) {
         Timber.d("Fetching firestore search");
 
@@ -222,11 +236,19 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * vytvoří pole
+     */
     //vytvori arraylist
     static private void createArr() {
         arrayList = new ArrayList<>();
     }
 
+    /**
+     * stáhne poznávačku na zařízení
+     * @param userID
+     * @param docID
+     */
     private void pickDocument(final String userID, String docID) {
         DocumentReference docRef = db.collection("Users").document(userID).collection("Poznavacky").document(docID);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
@@ -279,7 +301,9 @@ public class SharedListsActivity extends AppCompatActivity {
 
     }
 
-
+    /**
+     * postaví recycler view
+     */
     private void buildRecyclerView() {
         Timber.d("Building recycler view");
         mRecyclerView = findViewById(R.id.downloadView);
@@ -296,7 +320,10 @@ public class SharedListsActivity extends AppCompatActivity {
 
 
         mSharedListAdapter.setOnItemClickListener(new SharedListAdapter.OnItemClickListener() {
-
+            /**
+             * stáhne poznávačku
+             * @param position
+             */
             @Override
             public void onDownloadClick(final int position) {
                 if (checkInternet(getApplication())) {
@@ -355,6 +382,10 @@ public class SharedListsActivity extends AppCompatActivity {
                 }
             }
 
+            /**
+             * smaže poznávačku
+             * @param position
+             */
             @Override
             public void onDeleteClick(final int position) {
                 if (checkInternet(getApplication())) {
@@ -407,6 +438,9 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * získane objekty z firestoru
+     */
     private void fetchFirstFirestore() {
         deactivateLoadMore();
         arrayList.clear();
@@ -452,6 +486,9 @@ public class SharedListsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * získane objekty z firestoru
+     */
     private void fetchFirestore() {
         Timber.d("Fetching firestore");
 
@@ -641,6 +678,11 @@ public class SharedListsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * přidá objekt do firestoru
+     * @param userID
+     * @param data
+     */
     public static void addToFireStore(String userID, final PoznavackaDbObject data) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         CollectionReference dbPoznavacka = db.collection("Users");
@@ -663,6 +705,11 @@ public class SharedListsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * zjistí připojení k internetu
+     * @param context
+     * @return
+     */
     public static boolean checkInternet(Context context) {
         boolean connected = false;
         ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);

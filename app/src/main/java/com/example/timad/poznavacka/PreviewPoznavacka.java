@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objekt poznavakca zobrazeny
+ */
 public class PreviewPoznavacka {
     private String imageRecource;
     private String name;

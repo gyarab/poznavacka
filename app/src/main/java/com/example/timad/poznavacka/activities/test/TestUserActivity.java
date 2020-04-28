@@ -72,6 +72,11 @@ public class TestUserActivity extends AppCompatActivity {
             loadContent(TestPINFragment.firebaseTestID);
         }
     }
+
+    /**
+     * akce provedená při zmáčknutí zpátečního tlačítka
+     */
+
     @Override
     public void onBackPressed() {
         if (SharedListsActivity.checkInternet(getApplication())) {
@@ -102,6 +107,11 @@ public class TestUserActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
         }
     }
+
+    /**
+     * inicializuje test
+     * @param documentName
+     */
     private void loadContent(final String documentName){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference docRef = db.collection("ActiveTest").document(documentName);
@@ -162,9 +172,18 @@ public class TestUserActivity extends AppCompatActivity {
             }
             });
     }
+
+    /**
+     * vytvoří pole typu zástupce
+     */
     private void createArr(){
         zastupces=new ArrayList<>();
     }
+
+    /**
+     * inicalizuje pole zástupce
+     * @param content
+     */
     private void initializeZastupces(String content){
         createArr();
         Gson gson = new Gson();
@@ -182,6 +201,13 @@ public class TestUserActivity extends AppCompatActivity {
 
         last = zastupces.size()-1;
     }
+
+    /**
+     * mění stránky testu
+     * @param index
+     * @param last
+     * @param first
+     */
     private void testViewer(int index,int last,int first) {
         if(first!=0){
             setResults(index);
@@ -220,6 +246,9 @@ public class TestUserActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * vytvoří recycler view
+     */
     private void buildRecyclerView(){
         mRecyclerView = findViewById(R.id.examView3);
         mRecyclerView.setHasFixedSize(false);
@@ -233,10 +262,17 @@ public class TestUserActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * vytvoří pole odpovědí
+     */
     private void createAnswerArr(){
         answerObjectArrayList=new ArrayList<>();
     }
 
+    /**
+     * nastaví výsledek
+     * @param index
+     */
     private void setResults(int index){
         createAnswerArr();
 
@@ -255,6 +291,10 @@ public class TestUserActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * nastaví výsledek
+     * @param Index
+     */
     private void setResults2(int Index){
         createAnswerArr();
         String fieldName = "Název";

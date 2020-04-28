@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objek výsledku v databázi
+ */
 public class ResultObjectDB {
     private String userID;
     private String result;

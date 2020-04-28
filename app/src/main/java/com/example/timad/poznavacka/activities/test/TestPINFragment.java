@@ -57,11 +57,18 @@ public class TestPINFragment extends Fragment {
     }
 
 
-
+    /**
+     * dostane vás do testovací aktivity
+     */
     private void goToTestActivity(){
        Intent intent = new Intent(getActivity(),TestUserActivity.class);
        startActivity(intent);
     }
+
+    /**
+     * zjistí jestli ten test existuje
+     * @param PIN
+     */
     private void checkForTest(String PIN){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
