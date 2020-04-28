@@ -132,6 +132,7 @@ public class AccountActivity extends AppCompatActivity {
     }
 
     public void lanDialog() {
+        /*Alert dialog -- Method creates locale change dialog*/
         final String[] vocaleList = {"English", "Čeština"};
         AlertDialog.Builder alertBuider = new AlertDialog.Builder(AccountActivity.this);
         alertBuider.setTitle("Choose language");
@@ -154,7 +155,7 @@ public class AccountActivity extends AppCompatActivity {
         AlertDialog lDialog = alertBuider.create();
         lDialog.show();
     }
-
+    /* Method changes used String set*/
     private void setLocale(String loc) {
         Locale locale = new Locale(loc);
         Locale.setDefault(locale);
@@ -166,7 +167,7 @@ public class AccountActivity extends AppCompatActivity {
         editor.apply();
     }
 
-    // Loading language saved in preferncies
+    /*This method saves user prefered Locale, work is still in progress -> never used */
     public void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
         String language = prefs.getString("My_Lang", "");
