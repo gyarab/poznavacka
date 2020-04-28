@@ -746,7 +746,7 @@ public class SharedListsActivity extends AppCompatActivity {
             });
         }*/
 
-    private class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
+     private  class DrawableFromUrlAsync extends AsyncTask<Void, Void, Drawable> {
 
         private WeakReference<SharedListsActivity> fragmentWeakReference;
 

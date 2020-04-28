@@ -65,7 +65,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                     }
                     if(getAdapterPosition()!=RecyclerView.NO_POSITION) {
 
-                        if (s.toString().toLowerCase().equals(mParams.get(getAdapterPosition()).getAnswer().toLowerCase())&&TestUserActivity.tempResult[curr]==0){
+                        if (s.toString().toLowerCase().trim().equals(mParams.get(getAdapterPosition()).getAnswer().toLowerCase().trim())&&TestUserActivity.tempResult[curr]==0){
                             TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]++;
                            // Toast.makeText(itemView.getContext(), Integer.toString(TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]),Toast.LENGTH_SHORT).show();
                             result.setEnabled(false);
