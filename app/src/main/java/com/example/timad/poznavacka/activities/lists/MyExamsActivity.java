@@ -131,7 +131,7 @@ public class MyExamsActivity extends AppCompatActivity {
                                     if(documentSnapshot.exists()) {
                                         if (documentSnapshot.getBoolean("finished") || !documentSnapshot.getBoolean("started")) {
                                             if (previewTestObjectArrayList1.get(position).isResultsEmpty()) {
-                                                clearResults(previewTestObjectArrayList1.get(position).getActiveTestID());
+                                                clearResults(documentSnapshot.getId());
                                             }
                                             removeTest(FirebaseAuth.getInstance().getCurrentUser().getUid(), previewTestObjectArrayList1.get(position).getDatabaseID(), position);
                                         }
@@ -181,7 +181,7 @@ public class MyExamsActivity extends AppCompatActivity {
 
                                     if(documentSnapshot.exists()){
                                             PreviewTestObject item = previewTestObjectArrayList1.get(position);
-                                            currentCollectionResultID = item.getActiveTestID();
+                                            currentCollectionResultID = documentSnapshot.getId();
                                             if(item.isResultsEmpty()) {
                                                 gotToResults();
                                             }
@@ -617,14 +617,14 @@ public class MyExamsActivity extends AppCompatActivity {
                     boolean finished = documentSnapshot.getBoolean("finished");
 
                     if (!finished) {
-                        Query userExists = db.collection(activeTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
+                        Query userExists = db.collection(databaseTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
                         userExists.get()
                                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                                     @Override
                                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                         if (task.isSuccessful()) {
                                             if (task.getResult().size() == 0) {
-                                                db.collection(activeTestID)
+                                                db.collection(databaseTestID)
                                                         .add(data)
                                                         .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                                             @Override

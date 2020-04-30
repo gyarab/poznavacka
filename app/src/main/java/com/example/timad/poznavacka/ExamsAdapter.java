@@ -75,7 +75,7 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                         }
                     }
                     TestUserActivity.tempAnswer[curr]=result.getText().toString();
-                    Toast.makeText(itemView.getContext(),mParams.get(getAdapterPosition()).getAnswer()+","+s.toString(),Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(itemView.getContext(),mParams.get(getAdapterPosition()).getAnswer()+","+s.toString(),Toast.LENGTH_SHORT).show();
 
                 }
             });
