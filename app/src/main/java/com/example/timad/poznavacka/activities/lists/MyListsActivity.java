@@ -31,15 +31,9 @@ import com.example.timad.poznavacka.StorageManagerClass;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.AccountActivity;
 import com.example.timad.poznavacka.activities.AuthenticationActivity;
-import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.example.timad.poznavacka.activities.lists.createList.CreateListActivity;
+import com.example.timad.poznavacka.activities.practice.PracticeActivity;
 import com.example.timad.poznavacka.activities.test.TestActivity;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdLoader;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.formats.NativeAdOptions;
-import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -69,7 +63,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
@@ -114,10 +107,11 @@ public class MyListsActivity extends AppCompatActivity {
     private RelativeLayout noListsLayout;
     private static TourGuide mTourGuide;
 
-    public static InterstitialAd mInterstitialAd;
-    public static UnifiedNativeAd mUnifiedNativeAd;
     public static boolean initialized;
-    private AdLoader nativeAdLoader;
+    //TODO return
+    //public static InterstitialAd mInterstitialAd;
+    //public static UnifiedNativeAd mUnifiedNativeAd;
+    //private AdLoader nativeAdLoader;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -134,7 +128,8 @@ public class MyListsActivity extends AppCompatActivity {
         newListBTNProgressBar.setVisibility(View.INVISIBLE);
 
         if (savingNewList) {
-            showInterstitial();
+            //TODO return
+            //showInterstitial();
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -149,7 +144,8 @@ public class MyListsActivity extends AppCompatActivity {
             saveCreatedListAsync.execute();
 
         } else if (savingDownloadedList) {
-            showInterstitial();
+            //TODO return
+            //showInterstitial();
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -231,7 +227,8 @@ public class MyListsActivity extends AppCompatActivity {
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                        mInterstitialAd = new InterstitialAd(getApplication());
+                        //TODO return
+                        /*mInterstitialAd = new InterstitialAd(getApplication());
                         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
                         //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); //TODO return
                         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -245,7 +242,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 Timber.d("Interstitial shared lists ad loaded");
                             }
 
-                        });
+                        });*/
                         break;
                     case (R.id.action_create):
                         Intent intent1 = new Intent(getApplication(), CreateListActivity.class);
@@ -282,9 +279,10 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
+        //TODO return
+        /*if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
             loadNativeAd();
-        }
+        }*/
 
         /**
          * nastavení Event Listenerů
@@ -595,7 +593,8 @@ public class MyListsActivity extends AppCompatActivity {
         }
     }
 
-    private void loadNativeAd() {
+    //TODO return
+    /*private void loadNativeAd() {
 
         nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-3940256099942544/2247696110")
                 .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
@@ -619,10 +618,11 @@ public class MyListsActivity extends AppCompatActivity {
                         .build())
                 .build();
         nativeAdLoader.loadAd(new AdRequest.Builder().build());
-    }
+    }*/
 
-    private void showInterstitial() {
-        /*mInterstitialAd = new InterstitialAd(this);
+    //TODO return
+    /*private void showInterstitial() {
+     *//*mInterstitialAd = new InterstitialAd(this);
         //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); TEST
         mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -634,14 +634,14 @@ public class MyListsActivity extends AppCompatActivity {
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
 
-        });*/
+        });*//*
 
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
         } else {
             Timber.d("The interstitial wasn't loaded yet.");
         }
-    }
+    }*/
 
     private void initTourGuide() {
         mTourGuide = TourGuide.init(this).with(TourGuide.Technique.CLICK)
@@ -703,8 +703,9 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
-            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            //TODO return
+           /* sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());*/
 
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
@@ -716,8 +717,9 @@ public class MyListsActivity extends AppCompatActivity {
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
 
-            sPoznavackaInfoArr.add(mUnifiedNativeAd);
-            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            //TODO return
+            /*sPoznavackaInfoArr.add(mUnifiedNativeAd);
+            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());*/
         }
 
        @Override
@@ -838,8 +840,9 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Drawable drawable) {
             super.onPostExecute(drawable);
-            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
-            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            //TODO return
+            /*sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());*/
 
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
@@ -850,8 +853,9 @@ public class MyListsActivity extends AppCompatActivity {
             savingDownloadedList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
-            sPoznavackaInfoArr.add(mUnifiedNativeAd);
-            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            //TODO return
+            /*sPoznavackaInfoArr.add(mUnifiedNativeAd);
+            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());*/
         }
 
         @Override

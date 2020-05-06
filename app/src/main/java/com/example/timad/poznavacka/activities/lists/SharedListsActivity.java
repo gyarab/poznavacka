@@ -11,8 +11,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -27,9 +25,6 @@ import com.example.timad.poznavacka.PreviewPoznavacka;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SharedListAdapter;
 import com.example.timad.poznavacka.Zastupce;
-import com.google.android.gms.ads.AdListener;
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -67,7 +62,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
-import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
+//TODO return
+//import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
 
 
 public class SharedListsActivity extends AppCompatActivity {

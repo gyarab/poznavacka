@@ -10,13 +10,8 @@ import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
 import com.example.timad.poznavacka.Zastupce;
 import com.example.timad.poznavacka.activities.lists.MyListsActivity;
-import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.query.AdInfo;
-import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import java.io.File;
@@ -29,7 +24,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
-import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
+//import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
 
 public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
 
@@ -47,8 +42,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     private String path;
 
     private Fragment currentFragment;
-
-    private RewardedAd mRewardedAd;
+    //TODO return
+    //private RewardedAd mRewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,7 +79,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         getWindow().getDecorView().setBackgroundColor(getResources().getColor(R.color.colorPrimary));
     }
 
-    @Override
+    //TODO return
+/*    @Override
     protected void onStart() {
         super.onStart();
 
@@ -102,7 +98,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             }
         };
         mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);
-    }
+    }*/
 
     @Override
     protected void onSaveInstanceState(@NonNull Bundle outState) {
@@ -209,7 +205,9 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         } else {
             Timber.d("The interstitial wasn't loaded yet.");
         }*/
-        mInterstitialAd = new InterstitialAd(this);
+
+        //TODO return
+        /*mInterstitialAd = new InterstitialAd(this);
         //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); TODO return
         mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
@@ -239,7 +237,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             mRewardedAd.show(this, adCallback);
         } else {
             Timber.d("The rewarded ad wasn't loaded yet.");
-        }
+        }*/
     }
 
     public RewardedAd createAndLoadRewardedAd() {
