@@ -1,5 +1,9 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objekt pro odpověď
+ */
+
 public class AnswerObject {
     private String answer;
     private String fieldName;

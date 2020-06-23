@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * object kodu testu
+ */
 public class TestCodeObject {
     private String testCode;
 

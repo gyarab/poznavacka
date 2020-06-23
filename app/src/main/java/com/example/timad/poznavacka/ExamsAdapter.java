@@ -16,6 +16,9 @@ import com.example.timad.poznavacka.activities.test.TestUserActivity;
 
 import java.util.ArrayList;
 
+/**
+ * recycler view testu
+ */
 public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHolder>{
     private static ArrayList<AnswerObject> mParams;
     private onChangeTextListener mListener;
@@ -62,17 +65,17 @@ public class ExamsAdapter extends RecyclerView.Adapter<ExamsAdapter.ExamsViewHol
                     }
                     if(getAdapterPosition()!=RecyclerView.NO_POSITION) {
 
-                        if (s.toString().toLowerCase().equals(mParams.get(getAdapterPosition()).getAnswer().toLowerCase())&&TestUserActivity.tempResult[curr]==0){
+                        if (s.toString().toLowerCase().trim().equals(mParams.get(getAdapterPosition()).getAnswer().toLowerCase().trim())&&TestUserActivity.tempResult[curr]==0){
                             TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]++;
-                            Toast.makeText(itemView.getContext(), Integer.toString(TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]),Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(itemView.getContext(), Integer.toString(TestUserActivity.tempResult[(index-1)*TestUserActivity.parametrs+getAdapterPosition()]),Toast.LENGTH_SHORT).show();
                             result.setEnabled(false);
                         }else if(TestUserActivity.tempResult[curr]!=0&&TestUserActivity.tempResult[curr]!=1){
                             TestUserActivity.tempResult[curr]--;
-                            Toast.makeText(itemView.getContext(),Integer.toString(TestUserActivity.tempResult[curr]),Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(itemView.getContext(),Integer.toString(TestUserActivity.tempResult[curr]),Toast.LENGTH_SHORT).show();
                         }
                     }
                     TestUserActivity.tempAnswer[curr]=result.getText().toString();
-                    Toast.makeText(itemView.getContext(),mParams.get(getAdapterPosition()).getAnswer()+","+s.toString(),Toast.LENGTH_SHORT).show();
+                  //  Toast.makeText(itemView.getContext(),mParams.get(getAdapterPosition()).getAnswer()+","+s.toString(),Toast.LENGTH_SHORT).show();
 
                 }
             });

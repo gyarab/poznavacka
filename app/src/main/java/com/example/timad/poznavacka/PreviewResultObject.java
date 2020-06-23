@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objekt výsledku zobrazený
+ */
 public class PreviewResultObject {
     private String userID;
     private String result;

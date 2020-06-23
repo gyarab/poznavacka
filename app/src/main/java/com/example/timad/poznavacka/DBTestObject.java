@@ -1,5 +1,8 @@
 package com.example.timad.poznavacka;
 
+/**
+ * objekt testu v databázi
+ */
 public class DBTestObject {
     private String name;
     private String classification;
