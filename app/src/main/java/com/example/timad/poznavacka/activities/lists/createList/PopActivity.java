@@ -129,7 +129,7 @@ public class PopActivity extends Activity {
 
         reversedUserScientificClassification.addAll(userScientificClassification);
         Collections.reverse(reversedUserScientificClassification);
-        reversedUserScientificClassification.add(0, "");
+        //reversedUserScientificClassification.add(0, "");
 
         Intent returnIntent = new Intent();
         returnIntent.putExtra("userParametersCount", userParametersCount);

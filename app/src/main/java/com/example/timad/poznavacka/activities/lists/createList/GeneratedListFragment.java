@@ -30,6 +30,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.timad.poznavacka.BuildConfig;
+
+import com.example.timad.poznavacka.ClassificationData;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
@@ -118,7 +120,7 @@ public class GeneratedListFragment extends Fragment {
     private RecyclerView mRecyclerView;
     private ZastupceAdapter mAdapter;
     private RecyclerView.LayoutManager mLManager;
-    private ArrayList<Zastupce> mZastupceArr;
+    private ArrayList<Object> mZastupceArr;
 
     public GeneratedListFragment() {
         // Required empty public constructor
@@ -132,7 +134,6 @@ public class GeneratedListFragment extends Fragment {
      * @param autoImportIsChecked Parameter 1.
      * @return A new instance of fragment GeneratedListFragment.
      */
-    // TODO: Rename and change types and number of parameters
     public static GeneratedListFragment newInstance(ArrayList<String> representatives, Boolean autoImportIsChecked, int userParametersCount, ArrayList<String> userScientificClassification, ArrayList<String> reversedUserScientificClassification, String languageURL) {
         GeneratedListFragment fragment = new GeneratedListFragment();
         Bundle args = new Bundle();
@@ -150,16 +151,33 @@ public class GeneratedListFragment extends Fragment {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState != null) {
-            mZastupceArr = savedInstanceState.getParcelableArrayList("MZASTUPCEARR");
-            //TODO restore
+            ClassificationData classificationData = savedInstanceState.getParcelable("CLASSIFICATIONDATA");
+            ArrayList<Zastupce> zastupces = savedInstanceState.getParcelableArrayList("ZASTUPCES");
+            if (mZastupceArr == null) {
+                mZastupceArr = new ArrayList<>();
+            }
+            if (classificationData != null) {
+                mZastupceArr.add(classificationData);
+            }
+            mZastupceArr.addAll(zastupces);
         }
     }
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putParcelableArrayList("MZASTUPCEARR", mZastupceArr);
-        //TODO save
+        if (mZastupceArr != null && !mZastupceArr.isEmpty()) {
+            if (mZastupceArr.get(0) instanceof ClassificationData) {
+                outState.putParcelable("CLASSIFICATIONDATA", (ClassificationData) mZastupceArr.get(0));
+                mZastupceArr.remove(0);
+                ArrayList<Zastupce> zastupces = (ArrayList<Zastupce>) mZastupceArr.clone();
+                outState.putParcelableArrayList("ZASTUPCES", zastupces);
+            } else {
+                outState.putParcelable("CLASSIFICATIONDATA", null);
+                ArrayList<Zastupce> zastupces = (ArrayList<Zastupce>) mZastupceArr.clone();
+                outState.putParcelableArrayList("ZASTUPCES", zastupces);
+            }
+        }
     }
 
     @SuppressLint("SourceLockedOrientationActivity")
@@ -179,10 +197,10 @@ public class GeneratedListFragment extends Fragment {
             Timber.d(TAG + "originalUserScientificClassification = " + originalUserScientificClassification.toString());
         }
 
-        if (userParametersCount < 4) {
-            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        if (userParametersCount < 3) {
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         } else {
-            Objects.requireNonNull(getActivity()).setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+            requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
         }
     }
 
@@ -191,7 +209,7 @@ public class GeneratedListFragment extends Fragment {
     public void onStart() {
         super.onStart();
 
-        btnSAVE = Objects.requireNonNull(getView()).findViewById(R.id.button_save_new);
+        btnSAVE = requireView().findViewById(R.id.button_save_new);
         if (listCreated) {
             btnSAVE.setVisibility(View.VISIBLE);
         } else {
@@ -271,7 +289,7 @@ public class GeneratedListFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_generated_list, container, false);
     }
 
-    public void onButtonPressed(ArrayList<Zastupce> mZastupceArr) {
+    public void onButtonPressed(ArrayList<Object> mZastupceArr) {
         if (mListener != null) {
             mListener.onSave(mZastupceArr);
         }
@@ -377,7 +395,7 @@ public class GeneratedListFragment extends Fragment {
      * >Communicating with Other Fragments</a> for more information.
      */
     public interface OnFragmentInteractionListener {
-        void onSave(ArrayList<Zastupce> mZastupceArr);
+        void onSave(ArrayList<Object> mZastupceArr);
     }
 
     private class WikiSearchRepresentatives extends AsyncTask<Void, String, Void> {
@@ -393,14 +411,13 @@ public class GeneratedListFragment extends Fragment {
             final GeneratedListFragment fragment = fragmentWeakReference.get();
 
             if (!fragment.loadingRepresentative) {
-                fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-                Timber.d("Classification 1 added");
                 fragment.loadingRepresentative = true;
+                if (fragment.mZastupceArr.isEmpty()) {
+                    fragment.mZastupceArr.add(new ClassificationData(reversedUserScientificClassification));
+                    Timber.d("Classification added");
+                }
                 publishProgress("");
             }
-
-            /*fragment.mZastupceArr.add(new Zastupce(userParametersCount, reversedUserScientificClassification));
-            Timber.d("Classification 2 added");*/
 
             allRepresentatives:
             for (String representative :
@@ -928,7 +945,7 @@ public class GeneratedListFragment extends Fragment {
             connection.connect();
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
-            return new BitmapDrawable(Objects.requireNonNull(fragment.getActivity()).getResources(), bitmap);
+            return new BitmapDrawable(fragment.requireActivity().getResources(), bitmap);
         }
 
 /*        public boolean isInternetAvailable() {
@@ -1008,7 +1025,7 @@ public class GeneratedListFragment extends Fragment {
         mAdapter.setOnItemClickListener(new ZastupceAdapter.OnItemClickListener() {
             @Override
             public void onViewClick(final int position) {
-                Zastupce currentZastupce = mZastupceArr.get(position);
+                Zastupce currentZastupce = (Zastupce) mZastupceArr.get(position);
                 final String[] userImgURL = new String[1];
 
                 if (SharedListsActivity.checkInternet(getActivity())) {
@@ -1070,7 +1087,7 @@ public class GeneratedListFragment extends Fragment {
 
             @Override
             public void onDeleteClick(int position) {
-                Zastupce currentZastupce = mZastupceArr.get(position);
+                Object currentZastupce = mZastupceArr.get(position);
                 mZastupceArr.remove(position);
                 mAdapter.notifyItemRemoved(position);
             }
@@ -1097,8 +1114,10 @@ public class GeneratedListFragment extends Fragment {
                 return null;
             }
             Timber.d("ImgURL is %s", imgURL);
-            mZastupceArr.get(position).setImage(img);
-            mZastupceArr.get(position).setImageURL(imgURL);
+            Zastupce mZastupce = (Zastupce) mZastupceArr.get(position);
+            mZastupce.setImage(img);
+            mZastupce.setImageURL(imgURL);
+            mZastupceArr.set(position, mZastupce);
             newImageImported = true;
             return null;
         }
@@ -1122,7 +1141,7 @@ public class GeneratedListFragment extends Fragment {
             InputStream input = connection.getInputStream();
             Bitmap bitmap = BitmapFactory.decodeStream(input);
             Timber.d("Obrazek stahnut");
-            return new BitmapDrawable(Objects.requireNonNull(getActivity()).getResources(), bitmap);
+            return new BitmapDrawable(requireActivity().getResources(), bitmap);
         }
     }
 }

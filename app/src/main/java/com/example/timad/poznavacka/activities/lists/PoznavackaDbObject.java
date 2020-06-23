@@ -4,6 +4,7 @@ public class PoznavackaDbObject {
     private String name;
     private String id;
     private String content;
+    private String classification;
     private String authorsName;
     private String authorsID;
     private String headImageUrl;
@@ -11,9 +12,10 @@ public class PoznavackaDbObject {
     private String languageURL;
     private long timeUploaded;
 
-    public PoznavackaDbObject(String name, String id, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL, long timeUploaded) {
+    public PoznavackaDbObject(String name, String id, String classification, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL, long timeUploaded) {
         this.name = name;
         this.id = id;
+        this.classification = classification;
         this.content = content;
         this.authorsName = authorsName;
         this.authorsID = authorsID;
@@ -100,5 +102,11 @@ public class PoznavackaDbObject {
         this.languageURL = languageURL;
     }
 
+    public String getClassification() {
+        return classification;
+    }
 
+    public void setClassification(String classification) {
+        this.classification = classification;
+    }
 }

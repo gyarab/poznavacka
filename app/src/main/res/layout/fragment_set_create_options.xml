@@ -78,7 +78,7 @@
         android:layout_marginBottom="20dp"
         android:backgroundTint="@color/colorAccent"
         android:textColor="@color/text_color"
-        android:text="Create"
+        android:text="@string/create"
 
         android:theme="@style/AppTheme.ExtendedFloatingActionButton"
         style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton" />
@@ -94,7 +94,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginBottom="20dp"
         android:background="@drawable/cancel_bg"
-        android:text="CANCEL"
+        android:text="@string/cancel_create"
         android:textColor="@color/colorGrey" />
 
 </RelativeLayout>

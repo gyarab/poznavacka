@@ -42,6 +42,7 @@ public class AccountActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadLocale();
         setContentView(R.layout.activity_account);
         signedInAs = findViewById(R.id.textview_signed_in_as);
         signOutButton = findViewById(R.id.button_sign_out);
@@ -52,11 +53,11 @@ public class AccountActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bottomNavView_Bar);
         //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
-        MenuItem menuItem = menu.getItem(3);
+        MenuItem menuItem = menu.getItem(2);
         menuItem.setChecked(true);
 
         if (acct != null) {
-            signedInAs.setText("Signed in as " + user.getDisplayName());
+            signedInAs.setText(getString(R.string.signed_in_as) + " " + user.getDisplayName());
         } else {
             signedInAs.setText(R.string.user_not_signed_in);
         }
@@ -87,11 +88,11 @@ public class AccountActivity extends AppCompatActivity {
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
-                    case R.id.nav_test:
+                    /*case R.id.nav_test:
                         Intent intent3 = new Intent(AccountActivity.this, TestActivity.class);
                         startActivity(intent3);
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                        break;
+                        break;*/
 
                     case R.id.nav_account:
                         /*Intent intent4 = new Intent(ListsActivity.this, AccountActivity.class);
@@ -170,7 +171,7 @@ public class AccountActivity extends AppCompatActivity {
     /*This method saves user prefered Locale, work is still in progress -> never used */
     public void loadLocale() {
         SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
-        String language = prefs.getString("My_Lang", "");
+        String language = prefs.getString("My_Lang", "en");
         setLocale(language);
     }
 }

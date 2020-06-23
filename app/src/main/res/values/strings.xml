@@ -75,4 +75,12 @@
     <string name="remove_from_database">Remove from shared database</string>
     <string name="upload_to_database">Upload to shared database</string>
     <string name="change_language">Change language</string>
+    <string name="practice_all">Practice all (</string>
+    <string name="continue_practice">Continue practice (</string>
+    <string name="signed_in_as">Signed in as</string>
+    <string name="download">Download</string>
+    <string name="create">Create</string>
+    <string name="knew_it">Knew it</string>
+    <string name="didn_t_know">Didn\'t know</string>
+    <string name="cancel_create">CANCEL</string>
 </resources>

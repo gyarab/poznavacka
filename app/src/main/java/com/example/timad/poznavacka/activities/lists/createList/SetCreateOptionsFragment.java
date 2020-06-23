@@ -90,7 +90,7 @@ public class SetCreateOptionsFragment extends Fragment {
         reversedUserScientificClassification = new ArrayList<>();*/
 
         //button
-        btnNext = Objects.requireNonNull(getView()).findViewById(R.id.button_create_new);
+        btnNext = requireView().findViewById(R.id.button_create_new);
 
         btnNext.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -123,10 +123,8 @@ public class SetCreateOptionsFragment extends Fragment {
                 if (isChecked) {
                     autoImportIsChecked = true;
                     Intent intent = new Intent(getContext(), PopActivity.class);
-                    //startActivity(intent);
                     startActivityForResult(intent, 1);
                 } else {
-                    Toast.makeText(getContext(), "Select language first", Toast.LENGTH_SHORT).show();
                     autoImportSwitch.setChecked(false);
                     autoImportIsChecked = false;
                 }
@@ -140,6 +138,11 @@ public class SetCreateOptionsFragment extends Fragment {
         userParametersCount = data.getIntExtra("userParametersCount", 1);
         userScientificClassification = data.getStringArrayListExtra("userScientificClassification");
         reversedUserScientificClassification = data.getStringArrayListExtra("reversedUserScientificClassification");
+
+        if (userScientificClassification == null || userScientificClassification.size() == 0) {
+            autoImportSwitch.setChecked(false);
+            autoImportIsChecked = false;
+        }
     }
 
     @Override

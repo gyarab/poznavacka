@@ -5,6 +5,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 
+import com.example.timad.poznavacka.ClassificationData;
 import com.example.timad.poznavacka.LockableViewPager;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.SectionsPageAdapter;
@@ -42,7 +43,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     public static ArrayList<String> representatives;
     public static String languageURL;
     private boolean autoImportIsChecked;
-    private ArrayList<Zastupce> mZastupceArr;
+    private ArrayList<Object> mZastupceArr;
 
     private String path;
 
@@ -88,8 +89,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     protected void onStart() {
         super.onStart();
 
-        mRewardedAd = new RewardedAd(this, "ca-app-pub-3940256099942544/5224354917"); //TEST
-        //TODO return ca-app-pub-2924053854177245/2892047910
+        mRewardedAd = new RewardedAd(this, "ca-app-pub-2924053854177245/2892047910");
+        //Test add ca-app-pub-3940256099942544/5224354917
         RewardedAdLoadCallback rewardedAdLoadCallback = new RewardedAdLoadCallback() {
             @Override
             public void onRewardedAdLoaded() {
@@ -209,9 +210,10 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         } else {
             Timber.d("The interstitial wasn't loaded yet.");
         }*/
+
         mInterstitialAd = new InterstitialAd(this);
-        //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); TODO return
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); Test add
+        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         mInterstitialAd.setAdListener(new AdListener() {
@@ -244,8 +246,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     public RewardedAd createAndLoadRewardedAd() {
         RewardedAd rewardedAd = new RewardedAd(this,
-                "ca-app-pub-3940256099942544/5224354917"); //TEST
-        //ca-app-pub-2924053854177245/2892047910 TODO Return this
+                "ca-app-pub-2924053854177245/2892047910");
+        //ca-app-pub-3940256099942544/5224354917 Test add
 
         RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
             @Override
@@ -263,7 +265,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     }
 
     @Override
-    public void onSave(ArrayList<Zastupce> mZastupceArr) {
+    public void onSave(ArrayList<Object> mZastupceArr) {
         this.mZastupceArr = mZastupceArr;
 
         String uuid = UUID.randomUUID().toString();
@@ -275,7 +277,16 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         Intent intent0 = new Intent(getApplicationContext(), MyListsActivity.class);
         intent0.putExtra("AUTOIMPORTISCHECKED", autoImportIsChecked);
         intent0.putExtra("TITLE", title);
-        intent0.putExtra("MZASTUPCEARR", mZastupceArr);
+        //intent0.putExtra("MZASTUPCEARR", mZastupceArr);
+        ArrayList<Zastupce> zastupces = (ArrayList<Zastupce>) mZastupceArr.clone();
+        if (mZastupceArr.get(0) instanceof ClassificationData) {
+            intent0.putExtra("CLASSIFICATIONDATA", (ClassificationData) mZastupceArr.get(0));
+            mZastupceArr.remove(0);
+            intent0.putExtra("ZASTUPCES", zastupces);
+        } else {
+            intent0.putExtra("CLASSIFICATIONDATA", new ClassificationData((ArrayList<String>) null));
+            intent0.putExtra("ZASTUPCES", zastupces);
+        }
         intent0.putExtra("PATH", path);
         intent0.putExtra("UUID", uuid);
         intent0.putExtra("LANGUAGEURL", languageURL);
@@ -293,18 +304,16 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             dir.mkdir(); //creates folder
 
             // Saves images locally
-            for (Zastupce z : mZastupceArr) {
-                if (z.getImage() != null) {
-                    if (!MyListsActivity.getSMC(getApplicationContext()).saveDrawable(z.getImage(), path, z.getParameter(0))) {
-                        return null;
+            for (Object o : mZastupceArr) {
+                if (o instanceof Zastupce) {
+                    Zastupce z = (Zastupce) o;
+                    if (z.getImage() != null) {
+                        if (!MyListsActivity.getSMC(getApplicationContext()).saveDrawable(z.getImage(), path, z.getParameter(0))) {
+                            return null;
+                        }
                     }
-                } else {
-                    // TODO exception for first thing
-                            /*Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show(); EDIT
-                            deletePoznavacka(dir);
-                            return;*/
+                    z.setImage(null);
                 }
-                z.setImage(null);
             }
 
             return null;

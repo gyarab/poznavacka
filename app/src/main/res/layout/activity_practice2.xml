@@ -19,9 +19,11 @@
                 android:id="@+id/textName"
                 style="@style/ShadowText"
                 android:layout_width="match_parent"
-                android:layout_height="260dp"
+                android:layout_height="220dp"
                 android:layout_marginTop="0dp"
                 android:gravity="center"
+                android:layout_marginStart="15dp"
+                android:layout_marginEnd="15dp"
                 android:hyphenationFrequency="normal"
                 android:lineSpacingMultiplier="1.2"
                 android:text="@string/app_name"
@@ -106,7 +108,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Knew it"
+                android:text="@string/knew_it"
                 android:textColor="@color/text_color"
 
                 android:textSize="20sp"
@@ -132,7 +134,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
-                android:text="Didn't know"
+                android:text="@string/didn_t_know"
                 android:textColor="@color/text_color"
 
                 android:textSize="20sp"
@@ -184,12 +186,12 @@
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
                 ads:adSize="BANNER"
-                ads:adUnitId="ca-app-pub-3940256099942544/6300978111"
+                ads:adUnitId="ca-app-pub-2924053854177245/9719495936"
                 ads:layout_constraintBottom_toBottomOf="parent"
                 ads:layout_constraintStart_toStartOf="parent"
                 ads:layout_constraintEnd_toEndOf="parent" />
 
-            <!--ca-app-pub-2924053854177245/9719495936 TODO return-->
+            <!--ca-app-pub-3940256099942544/6300978111 TEST add-->
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>

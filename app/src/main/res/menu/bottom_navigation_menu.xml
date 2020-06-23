@@ -11,10 +11,10 @@
         android:icon="@drawable/ic_view_list_black_24dp"
         android:title="@string/my_lists" />
 
-    <item
+    <!--<item
         android:id="@+id/nav_test"
         android:icon="@drawable/ic_school_black_24dp"
-        android:title="@string/exam" />
+        android:title="@string/exam" />-->
 
     <item
         android:id="@+id/nav_account"

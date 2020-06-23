@@ -1,9 +1,9 @@
 package com.example.timad.poznavacka;
 
-import android.app.Application;
 import android.content.Context;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,23 +11,44 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Space;
+import android.widget.TextView;
+
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.ZastupceViewHolder> {
+public class ZastupceAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private static String TAG = "ZastupceAdapter";
     private static final int EDITTEXT_WIDTH = 250;
 
-    private static ArrayList<Zastupce> mZastupceList;
+    private static ArrayList<Object> mZastupceList;
     private static int mParameters;
     private static int[] mIds;
 
     private OnItemClickListener listener;
+
+    // Classification item view type.
+    private static final int CLASSIFICATION_ITEM_VIEW_TYPE = 0;
+
+    // Classic zastupce item view type.
+    private static final int ZASTUPCE_ITEM_VIEW_TYPE = 1;
+
+    @Override
+    public int getItemViewType(int position) {
+
+        Object recyclerViewItem = mZastupceList.get(position);
+        if (recyclerViewItem instanceof Zastupce) {
+            return ZASTUPCE_ITEM_VIEW_TYPE;
+        }
+        return CLASSIFICATION_ITEM_VIEW_TYPE;
+    }
 
     public interface OnItemClickListener {
         void onViewClick(int position);
@@ -41,13 +62,11 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
 
     public static class ZastupceViewHolder extends RecyclerView.ViewHolder {
-        public ImageView zastupceImage;
-        public ArrayList<EditText> editTArr;
-        public ImageButton deleteButton;
+        ImageView zastupceImage;
+        ArrayList<EditText> editTArr;
+        ImageButton deleteButton;
 
-        //image  --   https://stackoverflow.com/a/41479670/10746262
-
-        public ZastupceViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
+        ZastupceViewHolder(@NonNull View itemView, final OnItemClickListener listener) {
             super(itemView);
             editTArr = new ArrayList<>();
             for (int x = 0; x < mParameters; x++) {
@@ -61,7 +80,7 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
 
                     @Override
                     public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                        mZastupceList.get(getAdapterPosition()).setParameter(editTArr.get(pos).getText().toString(), pos);
+                        ((Zastupce) mZastupceList.get(getAdapterPosition())).setParameter(editTArr.get(pos).getText().toString(), pos);
                     }
 
                     @Override
@@ -97,95 +116,53 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
                     }
                 }
             });
-
-            /*for (int i = 0; i < mParameters; i++){
-                // https://stackoverflow.com/questions/31844373/saving-edittext-content-in-recyclerview
-                editTArr.get(i).addTextChangedListener(new TextWatcher() {
-
-                });
-            }*/
         }
     }
 
-    private View createCardView(ViewGroup parent) {
+    static class ClassificationViewHolder extends RecyclerView.ViewHolder {
+        ArrayList<TextView> textViewArr;
+
+        /**
+         * Konstruktor - inicializuje proměnné.
+         *
+         * @param itemView
+         */
+        ClassificationViewHolder(@NonNull View itemView) {
+            super(itemView);
+            textViewArr = new ArrayList<>();
+            for (int x = 0; x < mParameters - 1; x++) {
+                textViewArr.add(x, (TextView) itemView.findViewById(mIds[x]));
+            }
+        }
+    }
+
+    private View createClassificationCardView(ViewGroup parent) {
+        CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.classification, parent, false);
+        LinearLayout ll = (LinearLayout) cardView.getChildAt(0);
+        Context context = parent.getContext();
+
+        /*Space space = new Space(context);
+        space.setLayoutParams(new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                1f
+        ));
+        space.setMinimumHeight(300);
+        space.setMinimumWidth(EDITTEXT_WIDTH);
+        //space.setId(mIds[0]);
+        ll.addView(space);*/
+
+        createClassificationTexts(context, ll, mParameters);
+        return cardView;
+    }
+
+    private View createZastupceCardView(ViewGroup parent) {
         CardView cardView = (CardView) LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
         LinearLayout ll = (LinearLayout) cardView.getChildAt(0);
         Context context = parent.getContext();
 
         //ll.setWeightSum(mParameters + 1);
-        createEditTexts(context, ll, 0, mParameters);
-
-        // Scrollview DELETE
-        /*HorizontalScrollView scroll = new HorizontalScrollView(context);
-        scroll.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                4f
-        ));
-        ll.addView(scroll);
-
-        if(scroll == null){
-            Log.d("WELP", "No scrollview");
-        }
-
-        LinearLayout horiz = new LinearLayout(context);
-        horiz.setLayoutParams(new LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                1f
-        ));
-        horiz.setWeightSum(mParameters);
-        horiz.setOrientation(LinearLayout.HORIZONTAL);
-        scroll.addView(horiz);*/
-
-        //createEditTexts(context, ll, 0, mParameters);
-
-        /*int length = 4; // Set number of edit text's in row CHANGE
-        //Log.d("WELP", "mParameters: " + mParameters + " ");
-        if(mParameters < length + 1) {
-            ll.setWeightSum(mParameters + 1);
-            createEditTexts(context, ll, 0, mParameters);
-        } else {
-            int count = mParameters / length; // no of cols
-            if(mParameters % length > 0){
-                count++;
-            }
-
-            ll.setWeightSum(mParameters + 1);
-
-            LinearLayout vert = new LinearLayout(context);
-            vert.setLayoutParams(new LinearLayout.LayoutParams(
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.MATCH_PARENT,
-                    4f
-
-            ));
-            vert.setOrientation(LinearLayout.VERTICAL);
-            vert.setWeightSum(count);
-            ll.addView(vert);
-
-            for (int i = 0; i < count; i++){
-                //Log.d("WELP", "Count/Cols: " + count);
-                LinearLayout horiz = new LinearLayout(context);
-                horiz.setLayoutParams(new LinearLayout.LayoutParams(
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        LinearLayout.LayoutParams.MATCH_PARENT,
-                        1f
-                ));
-                horiz.setOrientation(LinearLayout.HORIZONTAL);
-                vert.addView(horiz);
-
-                int end; // no of edit texts in 1 row
-                if((i + 1) * length > mParameters){
-                    end = mParameters;
-                } else {
-                    end = ((i + 1) * length);
-                }
-                horiz.setWeightSum(end - (i * length));
-
-                createEditTexts(context, horiz, i * length, end);
-            }
-        }*/
+        createEditTexts(context, ll, mParameters);
 
         ImageView imgV = new ImageView(parent.getContext());
         imgV.setLayoutParams(new LinearLayout.LayoutParams(
@@ -215,8 +192,8 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         return cardView;
     }
 
-    private void createEditTexts(Context context, LinearLayout ll, int start, int end) {
-        for (int i = start; i < end; i++) {
+    private void createEditTexts(Context context, LinearLayout ll, int numOfEditTexts) {
+        for (int i = 0; i < numOfEditTexts; i++) {
             //Log.d("WELP", "Button: " + i);
             EditText editT = new EditText(context);
             editT.setLayoutParams(new LinearLayout.LayoutParams(
@@ -233,15 +210,59 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
         }
     }
 
-    @NonNull
-    @Override
-    public ZastupceViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.zastupce, parent, false);
-        ZastupceViewHolder ipvh = new ZastupceViewHolder(createCardView(parent), listener);
-        return ipvh;
+    private void createClassificationTexts(Context context, LinearLayout ll, int mParameters) {
+        for (int i = 0; i < mParameters - 1; i++) {
+            TextView textView = new TextView(context);
+            textView.setLayoutParams(new LinearLayout.LayoutParams(
+                    LinearLayout.LayoutParams.WRAP_CONTENT,
+                    LinearLayout.LayoutParams.MATCH_PARENT,
+                    1f
+            ));
+            textView.setTextSize(14);
+            textView.setWidth(EDITTEXT_WIDTH);
+            textView.setGravity(Gravity.START);
+            textView.setId(mIds[i]);
+            ll.addView(textView);
+        }
     }
 
-    public ZastupceAdapter(ArrayList<Zastupce> zastupceList, int parameters) {
+    @NonNull
+    @Override
+    public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case CLASSIFICATION_ITEM_VIEW_TYPE:
+                return new ClassificationViewHolder(createClassificationCardView(parent));
+        }
+        return new ZastupceViewHolder(createZastupceCardView(parent), listener);
+    }
+
+    @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        int viewType = getItemViewType(position);
+
+        switch (viewType) {
+            case CLASSIFICATION_ITEM_VIEW_TYPE:
+                ClassificationData currentClassification = (ClassificationData) mZastupceList.get(position);
+                ClassificationViewHolder cvh = (ClassificationViewHolder) holder;
+                for (int i = 0; i < mParameters - 1; i++) {
+                    cvh.textViewArr.get(i).setText(Objects.requireNonNull(currentClassification.getClassification()).get(i));
+                }
+                break;
+            case ZASTUPCE_ITEM_VIEW_TYPE:
+                //fall through
+            default:
+                Zastupce currentZastupce = (Zastupce) mZastupceList.get(position);
+                ZastupceViewHolder zvh = (ZastupceViewHolder) holder;
+                for (int i = 0; i < mParameters; i++) {
+                    zvh.editTArr.get(i).setText(currentZastupce.getParameter(i));
+                }
+                zvh.zastupceImage.setImageDrawable(currentZastupce.getImage()); // IMG
+                zvh.deleteButton.setImageDrawable(ResourcesCompat.getDrawable(zvh.deleteButton.getResources(), R.drawable.ic_cross_red_24dp, null));
+                zvh.deleteButton.setBackgroundColor(zvh.deleteButton.getResources().getColor(R.color.colorAccentSecond));
+        }
+    }
+
+    public ZastupceAdapter(ArrayList<Object> zastupceList, int parameters) {
         mZastupceList = zastupceList;
         mParameters = parameters;
         mIds = new int[mParameters + 1];
@@ -249,17 +270,6 @@ public class ZastupceAdapter extends RecyclerView.Adapter<ZastupceAdapter.Zastup
             mIds[i] = View.generateViewId();
             //Log.i("GenerateId", i + ": " + Integer.toString(mIds[i]));
         }
-    }
-
-    @Override
-    public void onBindViewHolder(@NonNull ZastupceViewHolder holder, int position) {
-        Zastupce currentZastupce = mZastupceList.get(position);
-        for (int i = 0; i < mParameters; i++) {
-            holder.editTArr.get(i).setText(currentZastupce.getParameter(i));
-        }
-        holder.zastupceImage.setImageDrawable(currentZastupce.getImage()); // IMG
-        holder.deleteButton.setImageDrawable(ResourcesCompat.getDrawable(holder.deleteButton.getResources(), R.drawable.ic_cross_red_24dp, null));
-        holder.deleteButton.setBackgroundColor(holder.deleteButton.getResources().getColor(R.color.colorAccentSecond));
     }
 
     public int getmParameters() {

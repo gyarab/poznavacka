@@ -43,15 +43,18 @@ public class StorageManagerClass {
      * @return vrací obsah souboru v podobě Stringu
      */
     public String readFile(String path, boolean create) {
-        ArrayList<PoznavackaInfo> arr = new ArrayList<>();
         File txtFile = new File(ENV_PATH + path);
         String s = "";
         String line;
-        FileReader fr;
-        BufferedReader br;
+        FileReader fr = null;
+        BufferedReader br = null;
 
         try {
-            fr = new FileReader(txtFile);
+            try {
+                fr = new FileReader(txtFile);
+            } catch (FileNotFoundException e) {
+                return null;
+            }
             br = new BufferedReader(fr);
             while ((line = br.readLine()) != null) {
                 s += line;

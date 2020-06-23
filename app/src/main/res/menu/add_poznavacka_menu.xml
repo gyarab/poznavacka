@@ -3,10 +3,10 @@
     <item
         android:id="@+id/action_download"
         android:icon="@drawable/ic_file_download_white_24dp"
-        android:title="Download" />
+        android:title="@string/download" />
     <item
         android:id="@+id/action_create"
         android:icon="@drawable/ic_create_white_24dp"
-        android:title="Create" />
+        android:title="@string/create" />
 
 </menu>

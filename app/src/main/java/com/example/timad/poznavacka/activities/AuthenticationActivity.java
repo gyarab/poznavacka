@@ -170,9 +170,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
     private void updateUI(FirebaseUser user) {
         if (user == null) {
             Toast.makeText(getApplicationContext(), "Error with authenticating in updateUI()", Toast.LENGTH_SHORT).show();
-            Intent intent0 = new Intent(getApplicationContext(), AuthenticationActivity.class); //TODO RETURN TO Authentication
-            //intent0.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-            //intent0.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            Intent intent0 = new Intent(getApplicationContext(), AuthenticationActivity.class);
             intent0.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             getApplicationContext().startActivity(intent0);
             finish();

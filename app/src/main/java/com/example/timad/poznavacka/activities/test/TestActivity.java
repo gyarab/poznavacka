@@ -57,10 +57,10 @@ public class TestActivity extends AppCompatActivity {
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
                         break;
 
-                    case R.id.nav_test:
+                    /*case R.id.nav_test:
                         /*Intent intent3 = new Intent(MainActivity.this, ActivityThree.class);
-                        startActivity(intent3);*/
-                        break;
+                        startActivity(intent3);*
+                        break;*/
 
                     case R.id.nav_account:
                         Intent intent4 = new Intent(TestActivity.this, AccountActivity.class);

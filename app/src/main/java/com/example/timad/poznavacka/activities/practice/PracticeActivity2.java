@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.example.timad.poznavacka.ClassificationData;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
 import com.example.timad.poznavacka.Zastupce;
@@ -24,10 +25,12 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.widget.TextViewCompat;
+import timber.log.Timber;
 
 public class PracticeActivity2 extends AppCompatActivity {
 
@@ -45,7 +48,7 @@ public class PracticeActivity2 extends AppCompatActivity {
 
     // Array with zastupci
     PoznavackaInfo mLoadedPoznavacka;
-    ArrayList<Zastupce> mZastupceArrOrig;
+    ArrayList<Object> mZastupceArrOrig;
     int parameterCount;
     boolean rad;
 
@@ -65,6 +68,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         init();
         initValues();
 
+        Timber.d("Here working");
         //hiding the scene
         fab_restart.hide();
 
@@ -83,7 +87,7 @@ public class PracticeActivity2 extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 hideScene();
-                if(pocetVsechZastupcu <= 1){
+                if (pocetVsechZastupcu <= 1) {
                     updateScene(currentZastupce);
                 } else {
                     updateScene(get_setRandomisedCurrentZastupce());
@@ -159,11 +163,11 @@ public class PracticeActivity2 extends AppCompatActivity {
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
                         break;
 
-                    case R.id.nav_test:
+                    /*case R.id.nav_test:
                         Intent intent3 = new Intent(PracticeActivity2.this, TestActivity.class);
                         startActivity(intent3);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        break;
+                        break;*/
 
                     case R.id.nav_account:
                         Intent intent4 = new Intent(PracticeActivity2.this, AccountActivity.class);
@@ -181,7 +185,7 @@ public class PracticeActivity2 extends AppCompatActivity {
         super.onPause();
 
         // Save state when leaving this activity before learning all
-        if(nenauceniZastupci.size() > 0){
+        if (nenauceniZastupci.size() > 0) {
             PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
             MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
         }
@@ -203,17 +207,15 @@ public class PracticeActivity2 extends AppCompatActivity {
     }
 
     private int get_setRandomisedCurrentZastupce() {
-        //if (pocetVsechZastupcu > 1) {
+        if (pocetVsechZastupcu <= 1) {
+            return currentZastupce;
+        }
         int randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
         while (nenauceniZastupci.get(randomisedCurrentZastupce) == currentZastupce) {
             randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
         }
         currentZastupce = nenauceniZastupci.get(randomisedCurrentZastupce);
         return currentZastupce;
-        /*} else {
-            return currentZastupce;
-        }*/
-
     }
 
     /**
@@ -229,25 +231,27 @@ public class PracticeActivity2 extends AppCompatActivity {
         sceneView = findViewById(R.id.sceneView);
         fab_checked_text = findViewById(R.id.floatingActionButton_checked_text);
         fab_crossed_text = findViewById(R.id.floatingActionButton_crossed_text);
+        Timber.plant(new Timber.DebugTree());
     }
 
     private void updateScene(int i) {
-        /*imageView.setImageDrawable(ResourcesCompat.getDrawable(res, getResources().getIdentifier("image" + i, "drawable", getPackageName()), null));
-        textView.setText(String.format("%s\n%s\n%s", tridy.get(i), rady.get(i), zastupci.get(i)));*/
-
+        Timber.d("Whats up");
         String s = "";
 
+        Timber.d("updateScene(): rad is %s", rad);
         for (int x = 0; x < parameterCount; x++) {
-            if(rad){
-                if(x > 0){
-                    s += mZastupceArrOrig.get(0).getParameter(x) + ": ";
+            Timber.d("updateScene(): parametersCount = %s", parameterCount);
+            if (rad) {
+                if (x > 0) {
+                    s += ((ClassificationData) mZastupceArrOrig.get(0)).getClassification().get(x - 1) + ": ";
+                    Timber.d("updateScene(): classification added - %s", s);
                 }
             }
-            s += mZastupceArrOrig.get(i).getParameter(x) + "\n";
+            s += ((Zastupce) mZastupceArrOrig.get(i)).getParameter(x) + "\n";
         }
 
         textView.setText(s);
-        imageView.setImageDrawable(mZastupceArrOrig.get(currentZastupce).getImage());
+        imageView.setImageDrawable(((Zastupce) mZastupceArrOrig.get(currentZastupce)).getImage());
     }
 
     private void showScene() {
@@ -277,18 +281,32 @@ public class PracticeActivity2 extends AppCompatActivity {
 
         TextViewCompat.setAutoSizeTextTypeWithDefaults(textView, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
         mZastupceArrOrig = PracticeActivity.sZastupceArrOrig;
+        for (Object o :
+                mZastupceArrOrig) {
+            if (o instanceof ClassificationData) {
+                Timber.d("initValues(): mZastupceArrOrig item is ClassificationData");
+            } else {
+                Timber.d("initValues(): mZastupceArrOrig item is Zastupce");
+            }
+        }
+        Timber.d("initValues(): mZastupceArrOrig");
         puvodniPocetVsechZastupcu = mZastupceArrOrig.size();
-        parameterCount = mZastupceArrOrig.get(0).getParameters();
-        rad = mZastupceArrOrig.get(0).getParameter(0).equals("") || mZastupceArrOrig.get(0).getParameter(0).isEmpty();
+        rad = mZastupceArrOrig.get(0) instanceof ClassificationData;
+        if (rad) {
+            parameterCount = ((ClassificationData) mZastupceArrOrig.get(0)).getClassification().size() + 1;
+        } else {
+            parameterCount = 1;
+        }
+        Timber.d("initValues(): parameterCount = %s", parameterCount);
 
         Bundle b = getIntent().getExtras();
         int value = -1;
-        if(b != null) {
+        if (b != null) {
             value = b.getInt("key");
         }
 
-        if(value == 1){ // ALL
-            if(rad){
+        if (value == 1) { // ALL
+            if (rad) {
                 puvodniPocetVsechZastupcu -= 1;
             }
             pocetVsechZastupcu = puvodniPocetVsechZastupcu;
@@ -299,14 +317,14 @@ public class PracticeActivity2 extends AppCompatActivity {
         }
     }
 
-    private ArrayList<Integer> fillArr(){
+    private ArrayList<Integer> fillArr() {
         ArrayList<Integer> arr = new ArrayList<>();
-        if(rad) {
-            for (int i = 1; i < mZastupceArrOrig.size(); i++){
+        if (rad) {
+            for (int i = 1; i < mZastupceArrOrig.size(); i++) {
                 arr.add(i);
             }
         } else {
-            for (int i = 0; i < mZastupceArrOrig.size(); i++){
+            for (int i = 0; i < mZastupceArrOrig.size(); i++) {
                 arr.add(i);
             }
         }

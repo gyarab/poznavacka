@@ -1,6 +1,9 @@
 package com.example.timad.poznavacka.activities;
 
+import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
@@ -20,6 +23,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+
+import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -81,7 +86,7 @@ public class WelcomeActivity extends AppCompatActivity {
                             overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                             finish();
                         }
-                    }, SPLASH_TIME_OUT);
+                    }, 0); //Splash time
                 }
             });
         }

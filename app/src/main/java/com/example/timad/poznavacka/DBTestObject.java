@@ -2,6 +2,7 @@ package com.example.timad.poznavacka;
 
 public class DBTestObject {
     private String name;
+    private String classification;
     private String content;
     private String userID;
     private String previewImageUrl;
@@ -14,8 +15,9 @@ public class DBTestObject {
     public DBTestObject() {
     }
 
-    public DBTestObject(String name, String content, String userID, String previewImageUrl, boolean started, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
+    public DBTestObject(String name, String classification, String content, String userID, String previewImageUrl, boolean started, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
         this.name = name;
+        this.classification = classification;
         this.content = content;
         this.userID = userID;
         this.previewImageUrl = previewImageUrl;
@@ -24,6 +26,14 @@ public class DBTestObject {
         this.activeTestID = activeTestID;
         this.testCode = testCode;
         this.resultsEmpty = resultsEmpty;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     public String getName() {

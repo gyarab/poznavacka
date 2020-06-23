@@ -3,6 +3,8 @@ package com.example.timad.poznavacka.activities.lists;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -23,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.timad.poznavacka.ClassificationData;
 import com.example.timad.poznavacka.DBTestObject;
 import com.example.timad.poznavacka.PoznavackaInfo;
 import com.example.timad.poznavacka.R;
@@ -60,6 +63,7 @@ import java.lang.reflect.Type;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Locale;
 import java.util.Objects;
 
 import androidx.annotation.NonNull;
@@ -85,7 +89,7 @@ public class MyListsActivity extends AppCompatActivity {
     public static boolean savingNewList;
     private boolean autoImportIsChecked;
     private String title;
-    private ArrayList<Zastupce> mZastupceArr;
+    private ArrayList<Object> mZastupceArr;
     private String path;
     private String uuid;
     private String languageURL;
@@ -115,9 +119,9 @@ public class MyListsActivity extends AppCompatActivity {
     private static TourGuide mTourGuide;
 
     public static InterstitialAd mInterstitialAd;
-    public static UnifiedNativeAd mUnifiedNativeAd;
+    //public static UnifiedNativeAd mUnifiedNativeAd;
     public static boolean initialized;
-    private AdLoader nativeAdLoader;
+    //private AdLoader nativeAdLoader;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -127,6 +131,7 @@ public class MyListsActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        loadLanguage();
         setContentView(R.layout.activity_lists);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
         newListBTN = findViewById(R.id.fabSpeedDial);
@@ -141,10 +146,20 @@ public class MyListsActivity extends AppCompatActivity {
             Intent newListIntent = getIntent();
             autoImportIsChecked = newListIntent.getBooleanExtra("AUTOIMPORTISCHECKED", false);
             title = newListIntent.getStringExtra("TITLE");
-            mZastupceArr = newListIntent.getParcelableArrayListExtra("MZASTUPCEARR"); //TODO THIS
             path = newListIntent.getStringExtra("PATH");
             uuid = newListIntent.getStringExtra("UUID");
             languageURL = newListIntent.getStringExtra("LANGUAGEURL");
+
+            ClassificationData classificationData = newListIntent.getParcelableExtra("CLASSIFICATIONDATA");
+            ArrayList<Zastupce> zastupces = newListIntent.getParcelableArrayListExtra("ZASTUPCES");
+            mZastupceArr = new ArrayList<>();
+            assert classificationData != null;
+            if (classificationData.getClassification() != (ArrayList<String>) null) {
+                mZastupceArr.add(classificationData);
+            }
+            assert zastupces != null;
+            mZastupceArr.addAll(zastupces);
+
             SaveCreatedListAsync saveCreatedListAsync = new SaveCreatedListAsync();
             saveCreatedListAsync.execute();
 
@@ -160,15 +175,13 @@ public class MyListsActivity extends AppCompatActivity {
 
             SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
             saveDownloadedListAsync.execute();
+        } else if (sPositionOfActivePoznavackaInfo == -1) {
+            initTourGuide();
         }
 
         if (!initialized) {
             init(getApplication());
             initialized = false;
-        }
-
-        if (sPositionOfActivePoznavackaInfo == -1) {
-            initTourGuide();
         }
 
         /*//initialization
@@ -231,9 +244,10 @@ public class MyListsActivity extends AppCompatActivity {
                         Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
                         startActivity(intent0);
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+
                         mInterstitialAd = new InterstitialAd(getApplication());
-                        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //TEST
-                        //mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080"); //TODO return
+                        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+                        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
                         mInterstitialAd.loadAd(new AdRequest.Builder().build());
                         Timber.d("Interstitial shared lists ad loaded");
 
@@ -260,7 +274,7 @@ public class MyListsActivity extends AppCompatActivity {
             }
         });
 
-        examEFAB = findViewById(R.id.exams_btn);
+        /*examEFAB = findViewById(R.id.exams_btn); //TODO return exams
         examEFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -269,7 +283,7 @@ public class MyListsActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                 finish();
             }
-        });
+        });*/
 
         /**
          * Inicializace Recycler View
@@ -282,9 +296,10 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
+        //TODO return
+        /*if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
             loadNativeAd();
-        }
+        }*/
 
         /**
          * nastavení Event Listenerů
@@ -308,7 +323,7 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public void onPracticeClick(final int position) {
                 sPositionOfActivePoznavackaInfo = position;
-                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
                 mAdapter.notifyDataSetChanged();
 
                 Intent myIntent = new Intent(getApplication(), PracticeActivity.class);
@@ -340,9 +355,10 @@ public class MyListsActivity extends AppCompatActivity {
 
                                 //remote upload
                                 String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
+                                String classification = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
                                 if (!(user.getUid() == null)) {
                                     Timber.d("Adding to firestore");
-                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
+                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
                                 } else {
                                     Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
                                     startActivity(intent0);
@@ -491,6 +507,7 @@ public class MyListsActivity extends AppCompatActivity {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
 
+                            String classification = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
                             String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
                             String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
                             String name = sActivePoznavacka.getName();
@@ -498,7 +515,7 @@ public class MyListsActivity extends AppCompatActivity {
                             String previewImgUrl = sActivePoznavacka.getPrewievImageUrl();
                             boolean finished = false;
                             boolean resultsEmpty = false;
-                            DBTestObject data = new DBTestObject(name, content, userID, previewImgUrl, started, finished, "", "", resultsEmpty);
+                            DBTestObject data = new DBTestObject(name, classification, content, userID, previewImgUrl, started, finished, "", "", resultsEmpty);
                             MyExamsActivity.addToTests(userID, data);
                             //    MyTestActivity.addToTests(FirebaseAuth.getInstance().getCurrentUser().getUid(),data);
 
@@ -544,11 +561,11 @@ public class MyListsActivity extends AppCompatActivity {
                 startActivity(intent1);*/
                         break;
 
-                    case R.id.nav_test:
+                    /*case R.id.nav_test:
                         Intent intent3 = new Intent(MyListsActivity.this, TestActivity.class);
                         startActivity(intent3);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        break;
+                        break;*/
 
                     case R.id.nav_account:
                         Intent intent4 = new Intent(MyListsActivity.this, AccountActivity.class);
@@ -595,6 +612,18 @@ public class MyListsActivity extends AppCompatActivity {
         }
     }
 
+    private void loadLanguage() {
+        SharedPreferences prefs = getApplication().getSharedPreferences("Settings", MODE_PRIVATE);
+        String language = prefs.getString("My_Lang", "en");
+        Locale locale = new Locale(language);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+    }
+
+    //TODO return
+    /*
     private void loadNativeAd() {
 
         nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-3940256099942544/2247696110")
@@ -619,12 +648,12 @@ public class MyListsActivity extends AppCompatActivity {
                         .build())
                 .build();
         nativeAdLoader.loadAd(new AdRequest.Builder().build());
-    }
+    }*/
 
     private void showInterstitial() {
-        /*mInterstitialAd = new InterstitialAd(this);
-        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); TEST
+        mInterstitialAd = new InterstitialAd(this);
         mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
 
         mInterstitialAd.setAdListener(new AdListener() {
@@ -634,7 +663,7 @@ public class MyListsActivity extends AppCompatActivity {
                 mInterstitialAd.loadAd(new AdRequest.Builder().build());
             }
 
-        });*/
+        });
 
         if (mInterstitialAd.isLoaded()) {
             mInterstitialAd.show();
@@ -703,9 +732,13 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
-            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
 
+            //TODO return
+           /* if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
+                sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+                mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            }
+*/
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
@@ -716,55 +749,95 @@ public class MyListsActivity extends AppCompatActivity {
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
 
-            sPoznavackaInfoArr.add(mUnifiedNativeAd);
-            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            //TODO return
+/*            if (mUnifiedNativeAd != null) {
+                sPoznavackaInfoArr.add(mUnifiedNativeAd);
+                mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            }*/
         }
 
        @Override
         protected Void doInBackground(Void... voids) {
 
             //changing getContext() to getApllicationContext()
-            //changing getApplication() to getApplication()
-            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+           //changing getApplication() to getApplication()
+           final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-            // Store images
-            Gson gson = new Gson();
-            Context context = getApplicationContext();
+           // Store images
+           Gson gson = new Gson();
+           Context context = getApplicationContext();
 
-            // Saving mZastupceArr
-            String json = gson.toJson(mZastupceArr);
-            //add to file
-            String userName = user.getDisplayName();
+           //add to file
+           String userName = user.getDisplayName();
 
-            String userID = null;
-            if (user != null) {
-                userID = user.getUid();
-            } else {
-                Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
-                startActivity(intent0);
-                finish();
-            }
+           String userID = null;
+           if (user != null) {
+               userID = user.getUid();
+           } else {
+               Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
+               startActivity(intent0);
+               finish();
+           }
 
-            // Add to database
-            //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
-            //SharedListsFragment.addToFireStore("Poznavacka", item);
-            //Log.d("Files", json);
-            if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
-                Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                return null;
-            }
+           //check for classification
+           if (mZastupceArr.get(0) instanceof ClassificationData) {
+               //no idea why there are more classificationData items
+               int index = 1;
+               while (true) {
+                   if (mZastupceArr.get(index) instanceof ClassificationData) {
+                       mZastupceArr.remove(index);
+                   } else {
+                       break;
+                   }
+               }
 
-            String pathPoznavacka = "poznavacka.txt";
-            if (MyListsActivity.sPoznavackaInfoArr == null) {
-                MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
-            }
-            if (autoImportIsChecked) {
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(1).getParameter(0), mZastupceArr.get(1).getImageURL(), languageURL, false));
-            } else {
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, mZastupceArr.get(0).getParameter(0), mZastupceArr.get(0).getImageURL(), languageURL, false));
-            }
-            return null;
-        }
+               //saving classification
+               String jsonClassification = gson.toJson((ClassificationData) mZastupceArr.get(0));
+               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid + "classification", jsonClassification)) {
+                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                   return null;
+               }
+
+               //saving zastupces
+               ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+               for (int i = 1; i < mZastupceArr.size(); i++) {
+                   zastupceArr.add((Zastupce) mZastupceArr.get(i));
+               }
+               String jsonZastupces = gson.toJson(zastupceArr);
+               // Add to database
+               //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
+               //SharedListsFragment.addToFireStore("Poznavacka", item);
+               //Log.d("Files", json);
+               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, jsonZastupces)) {
+                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                   return null;
+               }
+
+               MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, false));
+           } else {
+               // Saving mZastupceArr
+               ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+               for (Object zastupce :
+                       mZastupceArr) {
+                   zastupceArr.add((Zastupce) zastupce);
+               }
+
+               String json = gson.toJson(zastupceArr);
+               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
+                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                   return null;
+               }
+
+               MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, false));
+           }
+
+           String pathPoznavacka = "poznavacka.txt";
+           if (MyListsActivity.sPoznavackaInfoArr == null) {
+               MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
+           }
+
+           return null;
+       }
     }
 
     private class SaveDownloadedListAsync extends AsyncTask<Void, Void, Void> {
@@ -808,7 +881,7 @@ public class MyListsActivity extends AppCompatActivity {
                         e.printStackTrace();
                         return;
                     }
-
+                    MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId() + "classification", item.getClassification());
                     if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
                         Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                         return;
@@ -838,8 +911,11 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Drawable drawable) {
             super.onPostExecute(drawable);
-            sPoznavackaInfoArr.remove(mUnifiedNativeAd);
-            mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            //TODO return
+/*            if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
+                sPoznavackaInfoArr.remove(mUnifiedNativeAd);
+                mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            }*/
 
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
@@ -850,8 +926,11 @@ public class MyListsActivity extends AppCompatActivity {
             savingDownloadedList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
-            sPoznavackaInfoArr.add(mUnifiedNativeAd);
-            mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            //TODO return
+/*            if (mUnifiedNativeAd != null) {
+                sPoznavackaInfoArr.add(mUnifiedNativeAd);
+                mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
+            }*/
         }
 
         @Override
