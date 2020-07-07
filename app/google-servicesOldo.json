@@ -15,14 +15,6 @@
       },
       "oauth_client": [
         {
-          "client_id": "882289086797-uctnfjonbq05lk30mtljq1hrkpqid2lo.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.adamec.timotej",
-            "certificate_hash": "cc643a920f563c68b163a58e489ba07f154510a5"
-          }
-        },
-        {
           "client_id": "882289086797-7talfmk0oai8uqfj9ji8q7fstglc9p5i.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -53,17 +45,57 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:882289086797:android:91876b2892400ac7576704",
+        "mobilesdk_app_id": "1:882289086797:android:e87daef6e596b1da576704",
         "android_client_info": {
-          "package_name": "com.adamec.timotej.poznavacka"
+          "package_name": "com.example.timad.poznavacka"
         }
       },
       "oauth_client": [
         {
-          "client_id": "882289086797-iusih2hvc8u4mec3mf3kul787siksnn7.apps.googleusercontent.com",
+          "client_id": "882289086797-8pgpdqsmurf6bnca8fe4kovmn2rh2cc9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.adamec.timotej.poznavacka",
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "b71cd547ba81934a4ec40371590585f335bdce75"
+          }
+        },
+        {
+          "client_id": "882289086797-0s3man2jteb85kejv8bueaebtejfj677.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "dce12a0c8a2cc20ceb02f83f498014b02b1a1d29"
+          }
+        },
+        {
+          "client_id": "882289086797-h7l330v7fdocvr2h0i77bfoo2o6jmfnm.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "d19d353d1121088d9f008aee2184b27cc2c9bac1"
+          }
+        },
+        {
+          "client_id": "882289086797-qklc1nd5ee3phvkljlttbrrji2bq5t4d.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "2fb58dd53e1553a2b4a308ce879b926fd9a0677c"
+          }
+        },
+        {
+          "client_id": "882289086797-hvh8jumi3se8c6m3n66dupe84hsnphgo.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
+            "certificate_hash": "f81bbaab97ddf17b2ac13553abfe4efcba453895"
+          }
+        },
+        {
+          "client_id": "882289086797-eqik54dq8cu7757f5c6cnon66qn6v1fp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.timad.poznavacka",
             "certificate_hash": "68e5184f9b6638ade60baa48eb163c98864defde"
           }
         },
@@ -86,7 +118,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-2924053854177245~1305178669"
     }
   ],
   "configuration_version": "1"
