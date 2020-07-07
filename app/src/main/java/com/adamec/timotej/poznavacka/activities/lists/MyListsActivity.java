@@ -171,7 +171,10 @@ public class MyListsActivity extends AppCompatActivity {
 
             SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
             saveDownloadedListAsync.execute();
-        } else if (sPositionOfActivePoznavackaInfo == -1 || sPoznavackaInfoArr.isEmpty()) {
+        } else if (sPoznavackaInfoArr == null || sPositionOfActivePoznavackaInfo == -1 || sPoznavackaInfoArr.isEmpty()) {
+            if (sPoznavackaInfoArr == null) {
+                sPoznavackaInfoArr = new ArrayList<>();
+            }
             initTourGuide();
         }
 

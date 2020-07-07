@@ -113,6 +113,12 @@ public class PracticeActivity2 extends AppCompatActivity {
                     textView.setVisibility(View.VISIBLE);
                     textView.setText(null);
 
+                    Timber.d("nenauceniZastupci size = %s", nenauceniZastupci.size());
+                    for (Integer i :
+                            nenauceniZastupci) {
+                        Timber.d("nenauceniZastupci current int = %s", i);
+                        Timber.d("nenauceniZastupci ze vsech zastupcu = %s", ((Zastupce) mZastupceArrOrig.get(i)).getParameter(0));
+                    }
                     nenauceniZastupci.removeAll(Collections.singleton(currentZastupce));
                     PracticeActivity.sNenauceniZastupci = nenauceniZastupci;
                     MyListsActivity.getSMC(getApplicationContext()).updateFile(PracticeActivity.sLoadedPoznavacka.getId() + "/", "nenauceni.txt", nenauceniZastupci);
@@ -205,9 +211,9 @@ public class PracticeActivity2 extends AppCompatActivity {
     }
 
     private int get_setRandomisedCurrentZastupce() {
-        if (pocetVsechZastupcu <= 1) {
+        /*if (pocetVsechZastupcu <= 1) {
             return currentZastupce;
-        }
+        }*/
         int randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
         while (nenauceniZastupci.get(randomisedCurrentZastupce) == currentZastupce) {
             randomisedCurrentZastupce = new Random().nextInt(pocetVsechZastupcu);
