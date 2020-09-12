@@ -1,5 +1,6 @@
 package com.adamec.timotej.poznavacka.activities.lists;
 
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -34,8 +35,8 @@ import com.adamec.timotej.poznavacka.StorageManagerClass;
 import com.adamec.timotej.poznavacka.Zastupce;
 import com.adamec.timotej.poznavacka.activities.AccountActivity;
 import com.adamec.timotej.poznavacka.activities.AuthenticationActivity;
-import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity;
 import com.adamec.timotej.poznavacka.activities.lists.createList.CreateListActivity;
+import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -43,7 +44,6 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
-import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -74,7 +74,6 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
@@ -82,6 +81,8 @@ import tourguide.tourguide.Overlay;
 import tourguide.tourguide.Pointer;
 import tourguide.tourguide.ToolTip;
 import tourguide.tourguide.TourGuide;
+
+import static android.app.PendingIntent.FLAG_UPDATE_CURRENT;
 
 public class MyListsActivity extends AppCompatActivity {
 
@@ -347,6 +348,25 @@ public class MyListsActivity extends AppCompatActivity {
                 boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
 
                 if (!poznavackaIsUploaded) {
+                    if (upload()) {
+                        String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
+                        Intent sendIntent = new Intent();
+                        sendIntent.setAction(Intent.ACTION_SEND);
+                        sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+                        sendIntent.setType("text/plain");
+
+                        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0,
+                                new Intent(getApplicationContext(), MyBroadcastReceiver.class),
+                                FLAG_UPDATE_CURRENT);
+
+                        Intent chooser = Intent.createChooser(sendIntent, null, pi.getIntentSender());
+                        startActivity(chooser);
+                    }
+
+                    //Intent shareIntent = Intent.createChooser(sendIntent, null, pi.getIntentSender());
+                    //startActivity(shareIntent);
+
+                    /*
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.share);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
@@ -396,7 +416,7 @@ public class MyListsActivity extends AppCompatActivity {
                     LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
                     layoutParams.weight = 20;
                     btnPositive.setLayoutParams(layoutParams);
-                    btnNegative.setLayoutParams(layoutParams);
+                    btnNegative.setLayoutParams(layoutParams);*/
                 } else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.remove_from_database);
@@ -467,8 +487,8 @@ public class MyListsActivity extends AppCompatActivity {
                                 }
                                 try {
                                     sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
-                                }catch (Exception e ){
-                                    Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_SHORT).show();
+                                } catch (Exception e) {
+                                    Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 sActivePoznavacka = null;
@@ -587,6 +607,7 @@ public class MyListsActivity extends AppCompatActivity {
 
     /**
      * Inicializace Recycler View s polem Poznávaček. Poznávačky jsou načteny ze souborů na zařízení.
+     *
      * @param context
      */
     public static void init(Context context) {
@@ -762,88 +783,88 @@ public class MyListsActivity extends AppCompatActivity {
             }
         }
 
-       @Override
+        @Override
         protected Void doInBackground(Void... voids) {
 
             //changing getContext() to getApllicationContext()
-           //changing getApplication() to getApplication()
-           final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+            //changing getApplication() to getApplication()
+            final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-           // Store images
-           Gson gson = new Gson();
-           Context context = getApplicationContext();
+            // Store images
+            Gson gson = new Gson();
+            Context context = getApplicationContext();
 
-           //add to file
-           String userName = user.getDisplayName();
+            //add to file
+            String userName = user.getDisplayName();
 
-           String userID = null;
-           if (user != null) {
-               userID = user.getUid();
-           } else {
-               Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
-               startActivity(intent0);
-               finish();
-           }
+            String userID = null;
+            if (user != null) {
+                userID = user.getUid();
+            } else {
+                Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
+                startActivity(intent0);
+                finish();
+            }
 
-           //check for classification
-           if (mZastupceArr.get(0) instanceof ClassificationData) {
-               //no idea why there are more classificationData items
-               int index = 1;
-               while (true) {
-                   if (mZastupceArr.get(index) instanceof ClassificationData) {
-                       mZastupceArr.remove(index);
-                   } else {
-                       break;
-                   }
-               }
+            //check for classification
+            if (mZastupceArr.get(0) instanceof ClassificationData) {
+                //no idea why there are more classificationData items
+                int index = 1;
+                while (true) {
+                    if (mZastupceArr.get(index) instanceof ClassificationData) {
+                        mZastupceArr.remove(index);
+                    } else {
+                        break;
+                    }
+                }
 
-               //saving classification
-               String jsonClassification = gson.toJson((ClassificationData) mZastupceArr.get(0));
-               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid + "classification", jsonClassification)) {
-                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                   return null;
-               }
+                //saving classification
+                String jsonClassification = gson.toJson((ClassificationData) mZastupceArr.get(0));
+                if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid + "classification", jsonClassification)) {
+                    Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    return null;
+                }
 
-               //saving zastupces
-               ArrayList<Zastupce> zastupceArr = new ArrayList<>();
-               for (int i = 1; i < mZastupceArr.size(); i++) {
-                   zastupceArr.add((Zastupce) mZastupceArr.get(i));
-               }
-               String jsonZastupces = gson.toJson(zastupceArr);
-               // Add to database
-               //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
-               //SharedListsFragment.addToFireStore("Poznavacka", item);
-               //Log.d("Files", json);
-               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, jsonZastupces)) {
-                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                   return null;
-               }
+                //saving zastupces
+                ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+                for (int i = 1; i < mZastupceArr.size(); i++) {
+                    zastupceArr.add((Zastupce) mZastupceArr.get(i));
+                }
+                String jsonZastupces = gson.toJson(zastupceArr);
+                // Add to database
+                //PoznavackaDbObject item = new PoznavackaDbObject(title, uuid, json,userName);
+                //SharedListsFragment.addToFireStore("Poznavacka", item);
+                //Log.d("Files", json);
+                if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, jsonZastupces)) {
+                    Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    return null;
+                }
 
-               MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, false));
-           } else {
-               // Saving mZastupceArr
-               ArrayList<Zastupce> zastupceArr = new ArrayList<>();
-               for (Object zastupce :
-                       mZastupceArr) {
-                   zastupceArr.add((Zastupce) zastupce);
-               }
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, false));
+            } else {
+                // Saving mZastupceArr
+                ArrayList<Zastupce> zastupceArr = new ArrayList<>();
+                for (Object zastupce :
+                        mZastupceArr) {
+                    zastupceArr.add((Zastupce) zastupce);
+                }
 
-               String json = gson.toJson(zastupceArr);
-               if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
-                   Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
-                   return null;
-               }
+                String json = gson.toJson(zastupceArr);
+                if (!MyListsActivity.getSMC(context).createAndWriteToFile(path, uuid, json)) {
+                    Toast.makeText(getApplication(), "Failed to save " + title, Toast.LENGTH_SHORT).show();
+                    return null;
+                }
 
-               MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, false));
-           }
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, false));
+            }
 
-           String pathPoznavacka = "poznavacka.txt";
-           if (MyListsActivity.sPoznavackaInfoArr == null) {
-               MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
-           }
+            String pathPoznavacka = "poznavacka.txt";
+            if (MyListsActivity.sPoznavackaInfoArr == null) {
+                MyListsActivity.getSMC(context).readFile(pathPoznavacka, true);
+            }
 
-           return null;
-       }
+            return null;
+        }
     }
 
     private class SaveDownloadedListAsync extends AsyncTask<Void, Void, Void> {
@@ -976,7 +997,36 @@ public class MyListsActivity extends AppCompatActivity {
         }
     }
 
+    public boolean upload() {
+        if (SharedListsActivity.checkInternet(getApplication())) {
+            FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
+            //remote upload
+            String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
+            String classification = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
+            if (!(user.getUid() == null)) {
+                Timber.d("Adding to firestore");
+                SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
+            } else {
+                Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
+                startActivity(intent0);
+                finish();
+                return false;
+            }
+
+            //local change
+            sActivePoznavacka.setUploaded(true);
+            getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+
+            //Toast toast = Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT);
+            //toast.show();
+            return true;
+
+        } else {
+            Toast.makeText(getApplication(), "No internet", Toast.LENGTH_SHORT).show();
+            return false;
+        }
+    }
 
 
 
