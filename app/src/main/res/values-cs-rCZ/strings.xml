@@ -61,7 +61,7 @@
     <string name="search_lists">Hledat online</string>
     <string name="internet_connection_required">Je potřeba připojení k internetu</string>
     <string name="give_your_list_a_name">Pojmenuj seznam.</string>
-    <string name="representatives_text">Těď vložte věci, které se chcete naučit.Oddělte je pomocí ","</string>
+    <string name="representatives_text">Těď vložte věci, které se chcete naučit. Oddělte je pomocí ","</string>
     <string name="generate_text_view">Chcete vygenerovat klasifikaci? (třída, řád, apod.)</string>
     <string name="user_select_language">Vyber jazyk.</string>
     <string name="my_exams_title">Vaše testy</string>

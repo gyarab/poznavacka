@@ -37,8 +37,13 @@ import com.adamec.timotej.poznavacka.activities.AuthenticationActivity;
 import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity;
 import com.adamec.timotej.poznavacka.activities.lists.createList.CreateListActivity;
 import com.google.android.gms.ads.AdListener;
+import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.formats.NativeAdOptions;
+import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -115,9 +120,9 @@ public class MyListsActivity extends AppCompatActivity {
     private static TourGuide mTourGuide;
 
     public static InterstitialAd mInterstitialAd;
-    //public static UnifiedNativeAd mUnifiedNativeAd;
+    public static UnifiedNativeAd mUnifiedNativeAd;
     public static boolean initialized;
-    //private AdLoader nativeAdLoader;
+    private AdLoader nativeAdLoader;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -254,7 +259,7 @@ public class MyListsActivity extends AppCompatActivity {
                             @Override
                             public void onAdClosed() {
                                 // Load the next interstitial.
-                                //mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                                mInterstitialAd.loadAd(new AdRequest.Builder().build());
                                 Timber.d("Interstitial shared lists ad loaded");
                             }
 
@@ -296,9 +301,9 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
 
         //TODO return
-        /*if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
+        if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
             loadNativeAd();
-        }*/
+        }
 
         /**
          * nastavení Event Listenerů
@@ -622,10 +627,11 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     //TODO return
-    /*
+
     private void loadNativeAd() {
 
-        nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-3940256099942544/2247696110")
+        //nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-3940256099942544/2247696110") TEST
+        nativeAdLoader = new AdLoader.Builder(getApplication(), "ca-app-pub-2924053854177245/6546317855")
                 .forUnifiedNativeAd(new UnifiedNativeAd.OnUnifiedNativeAdLoadedListener() {
                     @Override
                     public void onUnifiedNativeAdLoaded(UnifiedNativeAd unifiedNativeAd) {
@@ -639,6 +645,7 @@ public class MyListsActivity extends AppCompatActivity {
                     @Override
                     public void onAdFailedToLoad(int errorCode) {
                         // Handle the failure by logging, altering the UI, and so on.
+                        MobileAds.initialize(getApplication());
                     }
                 })
                 .withNativeAdOptions(new NativeAdOptions.Builder()
@@ -647,7 +654,7 @@ public class MyListsActivity extends AppCompatActivity {
                         .build())
                 .build();
         nativeAdLoader.loadAd(new AdRequest.Builder().build());
-    }*/
+    }
 
     private void showInterstitial() {
         mInterstitialAd = new InterstitialAd(this);
@@ -733,11 +740,11 @@ public class MyListsActivity extends AppCompatActivity {
             super.onPostExecute(aVoid);
 
             //TODO return
-           /* if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
+            if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
                 sPoznavackaInfoArr.remove(mUnifiedNativeAd);
                 mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
             }
-*/
+
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
@@ -749,10 +756,10 @@ public class MyListsActivity extends AppCompatActivity {
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
 
             //TODO return
-/*            if (mUnifiedNativeAd != null) {
+            if (mUnifiedNativeAd != null) {
                 sPoznavackaInfoArr.add(mUnifiedNativeAd);
                 mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
-            }*/
+            }
         }
 
        @Override
@@ -911,10 +918,10 @@ public class MyListsActivity extends AppCompatActivity {
         protected void onPostExecute(Drawable drawable) {
             super.onPostExecute(drawable);
             //TODO return
-/*            if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
+            if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
                 sPoznavackaInfoArr.remove(mUnifiedNativeAd);
                 mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
-            }*/
+            }
 
             String pathPoznavacka = "poznavacka.txt";
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
@@ -926,10 +933,10 @@ public class MyListsActivity extends AppCompatActivity {
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
             //TODO return
-/*            if (mUnifiedNativeAd != null) {
+            if (mUnifiedNativeAd != null) {
                 sPoznavackaInfoArr.add(mUnifiedNativeAd);
                 mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
-            }*/
+            }
         }
 
         @Override

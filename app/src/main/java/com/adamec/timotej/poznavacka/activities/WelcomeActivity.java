@@ -18,6 +18,8 @@ import com.google.firebase.auth.FirebaseUser;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import timber.log.Timber;
+
 
 public class WelcomeActivity extends AppCompatActivity {
     int SPLASH_TIME_OUT = 100;
@@ -32,7 +34,9 @@ public class WelcomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.plant(new Timber.DebugTree());
         setContentView(R.layout.activity_welcome);
+        Timber.d("WelcomeActivity: onCreate()");
 
         /*welcomeLogo = findViewById(R.id.welcome_logo);
         new Handler().postDelayed(new Runnable() {
@@ -50,20 +54,28 @@ public class WelcomeActivity extends AppCompatActivity {
     }
 
     private void initializeMyLists() {
+        Timber.d("WelcomeActivity: initializeMyLists()");
         MyListsActivity.initialized = true;
         MyListsActivity.init(getApplication());
     }
 
     private void updateUI(FirebaseUser user) {
+        Timber.d("WelcomeActivity: updateUI()");
         if (user == null) {
-
+            Timber.d("WelcomeActivity: updateUI(), user = null");
             Intent intent0 = new Intent(WelcomeActivity.this, AuthenticationActivity.class);
             startActivity(intent0);
             overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
             finish();
 
         } else {
-            MobileAds.initialize(getApplication(), new OnInitializationCompleteListener() {
+            Timber.d("WelcomeActivity: updateUI(), user != null");
+            MobileAds.initialize(getApplication());
+            Intent intent0 = new Intent(WelcomeActivity.this, MyListsActivity.class);
+            startActivity(intent0);
+            overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+            finish();
+            /*MobileAds.initialize(getApplication(), new OnInitializationCompleteListener() {
                 @Override
                 public void onInitializationComplete(InitializationStatus initializationStatus) {
                     initializeMyLists();
@@ -71,6 +83,7 @@ public class WelcomeActivity extends AppCompatActivity {
                     new Handler().postDelayed(new Runnable() {
                         @Override
                         public void run() {
+                            Timber.d("WelcomeActivity: updateUI(), user != null, postDelayed -> run()");
                             Intent intent0 = new Intent(WelcomeActivity.this, MyListsActivity.class);
                             startActivity(intent0);
                             overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
@@ -78,7 +91,8 @@ public class WelcomeActivity extends AppCompatActivity {
                         }
                     }, 0); //Splash time
                 }
-            });
+
+            });*/
         }
     }
 }
