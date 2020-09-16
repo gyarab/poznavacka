@@ -291,6 +291,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
         intent0.putExtra("LANGUAGEURL", languageURL);
         startActivity(intent0);
         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+        finish();
     }
 
     private class SaveImagesAsync extends AsyncTask<Void, Void, Void> {
