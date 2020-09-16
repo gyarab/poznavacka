@@ -9,7 +9,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.ClassificationData;
 import com.adamec.timotej.poznavacka.PoznavackaInfo;
@@ -176,7 +175,7 @@ public class PracticeActivity extends AppCompatActivity {
                 sNenauceniZastupci = gson.fromJson(jsonInt, intArrType);
             }
         } catch (Exception e) {
-            Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
         for (Object z : sZastupceArrOrig) {
             if (z instanceof Zastupce) {

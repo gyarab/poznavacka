@@ -70,6 +70,8 @@
     <string name="generated_fragment_edit_text_view">Now, edit</string>
     <string name="save">Save</string>
     <string name="cancel">Cancel</string>
+    <string name="do_you_want_to_delete">"Do you want to delete "</string>
+    <string name="yes">Yes</string>
     <string name="add_to_exams">Add to exams</string>
     <string name="delete">Delete</string>
     <string name="remove_from_database">Remove from shared database</string>

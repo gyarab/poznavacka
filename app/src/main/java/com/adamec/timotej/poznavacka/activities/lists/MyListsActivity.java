@@ -142,6 +142,7 @@ public class MyListsActivity extends AppCompatActivity {
 
         if (savingNewList) {
             showInterstitial();
+
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -234,6 +235,9 @@ public class MyListsActivity extends AppCompatActivity {
             public boolean onPrepareMenu(NavigationMenu navigationMenu) {
                 if (!SharedListsActivity.checkInternet(getApplicationContext())) {
                     Toast.makeText(getApplicationContext(), "Not connected to internet", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (savingDownloadedList || savingNewList) {
                     return false;
                 }
                 if (mTourGuide != null) {
@@ -421,8 +425,8 @@ public class MyListsActivity extends AppCompatActivity {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.remove_from_database);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
-                    builder.setMessage("Do you want to remove " + sActivePoznavacka.getName() + " from shared database?");
-                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    builder.setMessage(getString(R.string.do_you_want_to_delete) + sActivePoznavacka.getName() + " from shared database?");
+                    builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             // Sharing of poznavacka
                             if (SharedListsActivity.checkInternet(getApplication())) {
@@ -436,13 +440,13 @@ public class MyListsActivity extends AppCompatActivity {
                                 getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
                             } else {
-                                Toast.makeText(getApplication(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getApplication(), "No internet, connect please!", Toast.LENGTH_SHORT).show();
                             }
 
                             dialog.dismiss();
                         }
                     });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int id) {
                             dialog.dismiss();
                         }
@@ -470,8 +474,8 @@ public class MyListsActivity extends AppCompatActivity {
                 AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                 builder.setTitle(R.string.delete);
                 builder.setIcon(R.drawable.ic_delete);
-                builder.setMessage("Do you want to delete " + sActivePoznavacka.getName() + "?");
-                builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                builder.setMessage(getString(R.string.do_you_want_to_delete) + sActivePoznavacka.getName() + "?");
+                builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         Context context = getApplication();
                         getSMC(context).deletePoznavacka(sActivePoznavacka.getId() + "/");
@@ -488,7 +492,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 try {
                                     sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                                 } catch (Exception e) {
-                                    Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+                                    //Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                                 }
                             } else {
                                 sActivePoznavacka = null;
@@ -498,7 +502,7 @@ public class MyListsActivity extends AppCompatActivity {
                         dialog.dismiss();
                     }
                 });
-                builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
                     }
@@ -555,7 +559,7 @@ public class MyListsActivity extends AppCompatActivity {
                     alert.show();
 
                 } else {
-                    Toast.makeText(getApplication(), "reconnect!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getApplication(), "Connect to internet!", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -727,7 +731,7 @@ public class MyListsActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                Toast.makeText(getApplication(), R.string.removed_from_database, Toast.LENGTH_SHORT).show();
+                                //Toast.makeText(getApplication(), R.string.removed_from_database, Toast.LENGTH_SHORT).show();
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -753,7 +757,7 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -770,7 +774,7 @@ public class MyListsActivity extends AppCompatActivity {
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
             Log.d("Files", "Saved successfully");
-            Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
 
             savingNewList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
@@ -877,7 +881,7 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -948,7 +952,7 @@ public class MyListsActivity extends AppCompatActivity {
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
             Log.d("Files", "Saved successfully");
-            Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
+            //Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
 
             savingDownloadedList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
@@ -1028,10 +1032,15 @@ public class MyListsActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onBackPressed() {
+        Intent a = new Intent(Intent.ACTION_MAIN);
+        a.addCategory(Intent.CATEGORY_HOME);
+        a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(a);
+    }
 
-
-
-/*        //fragments navigation
+    /*        //fragments navigation
         mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
         mViewPager = (ViewPager) findViewById(R.id.container);
         setupViewPager(mViewPager);

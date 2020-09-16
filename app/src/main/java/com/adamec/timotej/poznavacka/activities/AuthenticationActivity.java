@@ -8,7 +8,6 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.R;
 import com.adamec.timotej.poznavacka.activities.lists.MyListsActivity;
@@ -86,9 +85,9 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
         if (requestCode == MY_PERMISSIONS_REQUEST_READ_STORAGE) {
             if (grantResutlts.length > 0
                     && grantResutlts[0] == PackageManager.PERMISSION_GRANTED) {
-                Toast.makeText(this, "granted", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "granted", Toast.LENGTH_LONG).show();
             } else {
-                Toast.makeText(this, "not granted perrmission to read and write to external storage", Toast.LENGTH_LONG).show();
+                //Toast.makeText(this, "not granted perrmission to read and write to external storage", Toast.LENGTH_LONG).show();
             }
         }
     }
@@ -169,7 +168,7 @@ public class AuthenticationActivity extends AppCompatActivity implements View.On
 
     private void updateUI(FirebaseUser user) {
         if (user == null) {
-            Toast.makeText(getApplicationContext(), "Error with authenticating in updateUI()", Toast.LENGTH_SHORT).show();
+            //Toast.makeText(getApplicationContext(), "Error with authenticating in updateUI()", Toast.LENGTH_SHORT).show();
             Intent intent0 = new Intent(getApplicationContext(), AuthenticationActivity.class);
             intent0.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
             getApplicationContext().startActivity(intent0);

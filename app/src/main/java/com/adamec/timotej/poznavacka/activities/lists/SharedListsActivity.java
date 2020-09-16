@@ -478,6 +478,8 @@ public class SharedListsActivity extends AppCompatActivity {
                     poznavackyDocs) {
                 arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
             }
+        } else {
+            deactivateLoadMore();
         }
         mSharedListAdapter.notifyDataSetChanged();
         mSharedListAdapter.setLoaded();

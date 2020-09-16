@@ -83,7 +83,13 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 //lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
                 if (!isLoading) {
                     if (loadMore != null) {
-                        loadMore.onLoadMore();
+                        recyclerView.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                loadMore.onLoadMore();
+                            }
+                        });
+                        //loadMore.onLoadMore();
                         isLoading = true;
                     }
                 }
@@ -159,7 +165,6 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
                 viewHolder.mImageView3.setEnabled(false);
             }
 
-
             viewHolder.mImageView2.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -171,15 +176,14 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
                 }
             });
+
             viewHolder.mImageView3.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int position = viewHolder.getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
                         listener.onDeleteClick(position);
-
                     }
-
                 }
             });
 
