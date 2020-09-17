@@ -36,7 +36,8 @@
             android:name="com.adamec.timotej.poznavacka.activities.lists.MyListsActivity"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"
-            android:noHistory="true" />
+            android:noHistory="true"
+            android:screenOrientation="portrait" />
         <activity
             android:name="com.adamec.timotej.poznavacka.activities.practice.PracticeActivity"
             android:screenOrientation="portrait" />

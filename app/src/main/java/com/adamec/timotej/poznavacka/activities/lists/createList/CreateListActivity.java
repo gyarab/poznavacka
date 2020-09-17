@@ -48,7 +48,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
     private Fragment currentFragment;
 
-    private RewardedAd mRewardedAd;
+    //TODO return Ad
+    //private RewardedAd mRewardedAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,7 +89,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
     protected void onStart() {
         super.onStart();
 
-        mRewardedAd = new RewardedAd(this, "ca-app-pub-2924053854177245/2892047910");
+        //TODO return Ad
+        /*mRewardedAd = new RewardedAd(this, "ca-app-pub-2924053854177245/2892047910");
         //Test add ca-app-pub-3940256099942544/5224354917
         RewardedAdLoadCallback rewardedAdLoadCallback = new RewardedAdLoadCallback() {
             @Override
@@ -101,7 +103,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
                 super.onRewardedAdFailedToLoad(i);
             }
         };
-        mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);
+        mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);*/
     }
 
     @Override
@@ -224,7 +226,8 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
 
         });
 
-        if (mRewardedAd.isLoaded()) {
+        //TODO return Ad
+        /*if (mRewardedAd.isLoaded()) {
             RewardedAdCallback adCallback = new RewardedAdCallback() {
                 @Override
                 public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
@@ -240,7 +243,7 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             mRewardedAd.show(this, adCallback);
         } else {
             Timber.d("The rewarded ad wasn't loaded yet.");
-        }
+        }*/
     }
 
     public RewardedAd createAndLoadRewardedAd() {

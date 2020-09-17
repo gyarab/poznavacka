@@ -182,12 +182,15 @@ public class MyListsActivity extends AppCompatActivity {
             if (sPoznavackaInfoArr == null) {
                 sPoznavackaInfoArr = new ArrayList<>();
             }
-            initTourGuide();
         }
 
         if (!initialized) {
             init(getApplication());
-            initialized = false;
+            initialized = true;
+
+            if (sPoznavackaInfoArr == null || sPositionOfActivePoznavackaInfo == -1 || sPoznavackaInfoArr.isEmpty()) {
+                initTourGuide();
+            }
         }
 
         /*//initialization
@@ -616,17 +619,20 @@ public class MyListsActivity extends AppCompatActivity {
      */
     public static void init(Context context) {
         //initialization
-        if (sPoznavackaInfoArr == null) {
-            Gson gson = new Gson();
-            String s = getSMC(context).readFile("poznavacka.txt", true);
+        Timber.d("init poznavacka info array from device");
 
-            if (s != null) {
-                if (!s.isEmpty()) {
-                    Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
-                    }.getType();
-                    sPoznavackaInfoArr = gson.fromJson(s, cType);
-                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
-                    sPositionOfActivePoznavackaInfo = 0;
+        //if (sPoznavackaInfoArr != null) {
+        Timber.d("init poznavacka info array is null");
+        Gson gson = new Gson();
+        String s = getSMC(context).readFile("poznavacka.txt", true);
+
+        if (s != null) {
+            if (!s.isEmpty()) {
+                Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
+                }.getType();
+                sPoznavackaInfoArr = gson.fromJson(s, cType);
+                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
+                sPositionOfActivePoznavackaInfo = 0;
                 } else {
                     sPoznavackaInfoArr = new ArrayList<>();
                     sPositionOfActivePoznavackaInfo = -1;
@@ -635,10 +641,11 @@ public class MyListsActivity extends AppCompatActivity {
                     noListsLayout.setVisibility(View.VISIBLE);*/
                 }
             } else {
-                sPoznavackaInfoArr = new ArrayList<>();
+            Timber.d("init poznavacka info array from device");
+            sPoznavackaInfoArr = new ArrayList<>();
                 sPositionOfActivePoznavackaInfo = -1;
             }
-        }
+        //}
     }
 
     private void loadLanguage() {

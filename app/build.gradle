@@ -16,10 +16,10 @@ android {
             keyAlias = 'release'
             keyPassword 'android'
             storePassword 'android'
-            storeFile file('C:\\Users\\timad\\.android\\release.keystore')
+            storeFile file('C:\\Users\\Timad\\.android\\release.keystore')
         }
         debug {
-            storeFile file('C:\\Users\\timad\\.android\\debug.keystore')
+            storeFile file('C:\\Users\\Timad\\.android\\debug.keystore')
             storePassword 'android'
             keyAlias = 'AndroidDebugKey'
             keyPassword 'android'
@@ -30,7 +30,7 @@ android {
         applicationId "com.adamec.timotej.poznavacka"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 6
+        versionCode 7
         versionName "1.2"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
