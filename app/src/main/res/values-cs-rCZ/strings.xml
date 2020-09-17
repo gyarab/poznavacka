@@ -88,4 +88,6 @@
     <string name="after_search_for">Až stáhneš appku, najdi můj seznam -></string>
     <string name="do_you_want_to_delete">"Chcete vymazat "</string>
     <string name="yes">Ano</string>
+    <string name="oh_its_empty_in_here">Ou, je to tu prázdný</string>
+    <string name="click_to_add_new_list">Klikni a přidej nový seznam</string>
 </resources>

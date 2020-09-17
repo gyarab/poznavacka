@@ -713,8 +713,8 @@ public class MyListsActivity extends AppCompatActivity {
     private void initTourGuide() {
         mTourGuide = TourGuide.init(this).with(TourGuide.Technique.CLICK)
                 .setPointer(new Pointer())
-                .setToolTip(new ToolTip().setTitle("Oh, it's empty in here")
-                        .setDescription("Click to add new list")
+                .setToolTip(new ToolTip().setTitle(getString(R.string.oh_its_empty_in_here))
+                        .setDescription(getString(R.string.click_to_add_new_list))
                         .setGravity(Gravity.TOP))
                 .playOn(newListBTN);
         mTourGuide.setOverlay(new Overlay());
