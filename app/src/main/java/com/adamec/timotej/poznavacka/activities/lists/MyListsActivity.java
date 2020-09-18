@@ -356,75 +356,14 @@ public class MyListsActivity extends AppCompatActivity {
 
                 if (!poznavackaIsUploaded) {
                     if (upload()) {
-                        String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
-                        Intent sendIntent = new Intent();
-                        sendIntent.setAction(Intent.ACTION_SEND);
-                        sendIntent.putExtra(Intent.EXTRA_TEXT, message);
-                        sendIntent.setType("text/plain");
-
-                        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0,
-                                new Intent(getApplicationContext(), MyBroadcastReceiver.class),
-                                FLAG_UPDATE_CURRENT);
-
-                        Intent chooser = Intent.createChooser(sendIntent, null, pi.getIntentSender());
-                        startActivity(chooser);
+                        shareIntent();
                     }
-
-                    //Intent shareIntent = Intent.createChooser(sendIntent, null, pi.getIntentSender());
-                    //startActivity(shareIntent);
-
-                    /*
-                    AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
-                    builder.setTitle(R.string.share);
-                    builder.setIcon(R.drawable.ic_share_black_24dp);
-                    builder.setMessage("Do you want to upload " + sActivePoznavacka.getName() + " to shared database?");
-                    builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            // Sharing of poznavacka
-                            if (SharedListsActivity.checkInternet(getApplication())) {
-                                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                                //remote upload
-                                String content = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + ".txt", false);
-                                String classification = getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
-                                if (!(user.getUid() == null)) {
-                                    Timber.d("Adding to firestore");
-                                    SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
-                                } else {
-                                    Intent intent0 = new Intent(getApplication(), AuthenticationActivity.class);
-                                    startActivity(intent0);
-                                    finish();
-                                }
-
-                                //local change
-                                sActivePoznavacka.setUploaded(true);
-                                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
-
-                                Toast toast = Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT);
-                                toast.show();
-                            } else {
-                                Toast.makeText(getApplication(), "ur not connected, connect please!", Toast.LENGTH_SHORT).show();
-                            }
-
-                            dialog.dismiss();
-                        }
-                    });
-                    builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.dismiss();
-                        }
-                    });
-                    AlertDialog alert = builder.create();
-                    alert.show();
-
-                    Button btnPositive = alert.getButton(AlertDialog.BUTTON_POSITIVE);
-                    Button btnNegative = alert.getButton(AlertDialog.BUTTON_NEGATIVE);
-
-                    LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) btnPositive.getLayoutParams();
-                    layoutParams.weight = 20;
-                    btnPositive.setLayoutParams(layoutParams);
-                    btnNegative.setLayoutParams(layoutParams);*/
                 } else {
+                    shareIntent();
+                }
+
+                //Deletion from database
+                /*} else {
                     AlertDialog.Builder builder = new AlertDialog.Builder(MyListsActivity.this);
                     builder.setTitle(R.string.remove_from_database);
                     builder.setIcon(R.drawable.ic_share_black_24dp);
@@ -464,7 +403,7 @@ public class MyListsActivity extends AppCompatActivity {
                     layoutParams.weight = 20;
                     btnPositive.setLayoutParams(layoutParams);
                     btnNegative.setLayoutParams(layoutParams);
-                }
+                }*/
             }
 
             /**
@@ -633,18 +572,18 @@ public class MyListsActivity extends AppCompatActivity {
                 sPoznavackaInfoArr = gson.fromJson(s, cType);
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
                 sPositionOfActivePoznavackaInfo = 0;
-                } else {
-                    sPoznavackaInfoArr = new ArrayList<>();
-                    sPositionOfActivePoznavackaInfo = -1;
+            } else {
+                sPoznavackaInfoArr = new ArrayList<>();
+                sPositionOfActivePoznavackaInfo = -1;
                     /*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
                     noListsLayout = findViewById(R.id.no_lists_layout);
                     noListsLayout.setVisibility(View.VISIBLE);*/
-                }
-            } else {
+            }
+        } else {
             Timber.d("init poznavacka info array from device");
             sPoznavackaInfoArr = new ArrayList<>();
-                sPositionOfActivePoznavackaInfo = -1;
-            }
+            sPositionOfActivePoznavackaInfo = -1;
+        }
         //}
     }
 
@@ -919,7 +858,11 @@ public class MyListsActivity extends AppCompatActivity {
                         e.printStackTrace();
                         return;
                     }
-                    MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId() + "classification", item.getClassification());
+
+                    if (item.getClassification() != null) {
+                        MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId() + "classification", item.getClassification());
+                    }
+
                     if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
                         Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
                         return;
@@ -1037,6 +980,21 @@ public class MyListsActivity extends AppCompatActivity {
             Toast.makeText(getApplication(), "No internet", Toast.LENGTH_SHORT).show();
             return false;
         }
+    }
+
+    private void shareIntent() {
+        String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
+        Intent sendIntent = new Intent();
+        sendIntent.setAction(Intent.ACTION_SEND);
+        sendIntent.putExtra(Intent.EXTRA_TEXT, message);
+        sendIntent.setType("text/plain");
+
+        PendingIntent pi = PendingIntent.getBroadcast(getApplicationContext(), 0,
+                new Intent(getApplicationContext(), MyBroadcastReceiver.class),
+                FLAG_UPDATE_CURRENT);
+
+        Intent chooser = Intent.createChooser(sendIntent, null, pi.getIntentSender());
+        startActivity(chooser);
     }
 
     @Override
