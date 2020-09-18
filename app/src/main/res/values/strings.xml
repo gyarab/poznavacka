@@ -86,6 +86,8 @@
     <string name="didn_t_know">Didn\'t know</string>
     <string name="cancel_create">CANCEL</string>
     <string name="i_created_list">I\'ve just created a list to learn from for our next exam!</string>
-    <string name="app_url_store" translatable="false">https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka</string>
+    <string name="app_url_store" translatable="false">https://play.app.goo.gl/?link=https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka</string>
     <string name="after_search_for">After you download the app, go search for this -></string>
+    <string name="oh_its_empty_in_here">Oh, it\'s empty in here</string>
+    <string name="click_to_add_new_list">Click to add new list</string>
 </resources>
