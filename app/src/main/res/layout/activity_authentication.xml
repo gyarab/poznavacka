@@ -6,11 +6,21 @@
     android:id="@+id/activity_authentication"
     android:background="@color/colorPrimary">
 
+    <ImageView
+        android:id="@+id/welcome_logo"
+        android:layout_width="300dp"
+        android:layout_height="300dp"
+        android:layout_marginTop="70dp"
+        android:layout_centerHorizontal="true"
+        android:src="@drawable/poznavacka_logo" />
+
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_centerInParent="true" />
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/welcome_logo"
+        android:layout_marginTop="70dp" />
 
 
 </RelativeLayout>
