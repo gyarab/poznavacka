@@ -90,4 +90,6 @@
     <string name="yes">Ano</string>
     <string name="oh_its_empty_in_here">Ou, je to tu prázdný</string>
     <string name="click_to_add_new_list">Klikni a přidej novou poznávačku</string>
+    <string name="poznavacka">Poznávačka</string>
+    <string name="learn_for_exam">Připrav se na poznávačku s Memimg!</string>
 </resources>

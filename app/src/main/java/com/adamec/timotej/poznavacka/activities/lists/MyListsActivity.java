@@ -11,6 +11,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -52,6 +53,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.android.material.internal.NavigationMenu;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.dynamiclinks.DynamicLink;
+import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -357,15 +360,15 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public void onShareClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
-
                 boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
+                String link = createDeepLink(sActivePoznavacka);
 
                 if (!poznavackaIsUploaded) {
                     if (upload()) {
-                        shareIntent();
+                        shareIntent(link);
                     }
                 } else {
-                    shareIntent();
+                    shareIntent(link);
                 }
 
                 //Deletion from database
@@ -561,6 +564,31 @@ public class MyListsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    private String createDeepLink(PoznavackaInfo poznavackaId) {
+        DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka"))
+                .setDomainUriPrefix("https://memimgapp.page.link")
+                // Open links with this app on Android
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                .setGoogleAnalyticsParameters(
+                        new DynamicLink.GoogleAnalyticsParameters.Builder()
+                                .setSource("shareSource")
+                                .setMedium("shareMedium")
+                                .setCampaign("shareCampaign")
+                                .build())
+                .setSocialMetaTagParameters(
+                        new DynamicLink.SocialMetaTagParameters.Builder()
+                                .setTitle(getString(R.string.poznavacka) + " " + poznavackaId.getName())
+                                .setDescription(String.valueOf(R.string.learn_for_exam))
+                                .build())
+                .buildDynamicLink();
+
+        //TODO DEEP LINK
+
+        Uri dynamicLinkUri = dynamicLink.getUri();
+        return String.valueOf(dynamicLinkUri);
     }
 
     /**
@@ -994,8 +1022,9 @@ public class MyListsActivity extends AppCompatActivity {
         }
     }
 
-    private void shareIntent() {
-        String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
+    private void shareIntent(String link) {
+        //String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
+        String message = getString(R.string.i_created_list) + "\n\n" + link;
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, message);

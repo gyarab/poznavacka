@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.adamec.timotej.poznavacka">
 
     <uses-permission android:name="android.permission.INTERNET" />
@@ -69,7 +70,8 @@
             android:name="com.adamec.timotej.poznavacka.activities.lists.createList.CreateListActivity"
             android:configChanges="orientation|screenSize|keyboardHidden"
             android:windowSoftInputMode="stateVisible|adjustResize" />
-        <receiver android:name=".activities.lists.MyBroadcastReceiver" />
+
+        <receiver android:name="com.adamec.timotej.poznavacka.activities.lists.MyBroadcastReceiver" />
     </application>
 
 </manifest>

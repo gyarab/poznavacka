@@ -14,8 +14,6 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
 
@@ -242,7 +240,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     Drawable d = MyListsActivity.getSMC(pivh.prewiewImg.getContext()).readDrawable(currentPoznavackaInfo.getId() + "/", currentPoznavackaInfo.getPrewievImageLocation(), ((PoznavackaInfoViewHolder) holder).prewiewImg.getContext());
                     pivh.prewiewImg.setImageDrawable(d);
-                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    /*FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
                     if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
                         pivh.shareImg.setEnabled(false);
                     } else {
@@ -251,7 +249,8 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                         } else {
                             pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                         }
-                    }
+                    }*/
+                    pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
 
 
                     if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
