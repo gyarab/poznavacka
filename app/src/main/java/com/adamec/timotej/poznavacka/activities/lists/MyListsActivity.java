@@ -1,5 +1,6 @@
 package com.adamec.timotej.poznavacka.activities.lists;
 
+import android.app.Activity;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -139,6 +140,11 @@ public class MyListsActivity extends AppCompatActivity {
         newListBTN = findViewById(R.id.fabSpeedDial);
         newListBTNProgressBar = findViewById(R.id.fabSpeedDialProgressBar);
         newListBTNProgressBar.setVisibility(View.INVISIBLE);
+
+        SharedPreferences prefs = getSharedPreferences("Settings", Activity.MODE_PRIVATE);
+        if (!prefs.contains("My_Lang")) {
+            lanDialog();
+        }
 
         if (savingNewList) {
             showInterstitial();
@@ -521,6 +527,9 @@ public class MyListsActivity extends AppCompatActivity {
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.nav_practice:
+                        if (savingDownloadedList || savingNewList) {
+                            break;
+                        }
                         Intent intent0 = new Intent(MyListsActivity.this, PracticeActivity.class);
                         startActivity(intent0);
                         overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
@@ -538,6 +547,9 @@ public class MyListsActivity extends AppCompatActivity {
                         break;*/
 
                     case R.id.nav_account:
+                        if (savingDownloadedList || savingNewList) {
+                            break;
+                        }
                         Intent intent4 = new Intent(MyListsActivity.this, AccountActivity.class);
                         startActivity(intent4);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
@@ -1003,6 +1015,45 @@ public class MyListsActivity extends AppCompatActivity {
         a.addCategory(Intent.CATEGORY_HOME);
         a.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(a);
+    }
+
+    public void lanDialog() {
+        /*Alert dialog -- Method creates locale change dialog*/
+        final String[] vocaleList = {"English", "Čeština"};
+        AlertDialog.Builder alertBuider = new AlertDialog.Builder(this);
+        alertBuider.setTitle("Choose language");
+        alertBuider.setSingleChoiceItems(vocaleList, -1, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                if (which == 0) {
+                    //English
+                    setLocale("en");
+                    initialized = false;
+                    recreate();
+                } else if (which == 1) {
+                    //Czech
+                    setLocale("cs");
+                    initialized = false;
+                    recreate();
+                }
+
+            }
+        });
+        AlertDialog lDialog = alertBuider.create();
+        lDialog.show();
+    }
+
+    /* Method changes used String set*/
+    private void setLocale(String loc) {
+        Locale locale = new Locale(loc);
+        Locale.setDefault(locale);
+        Configuration config = new Configuration();
+        config.locale = locale;
+        getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
+        SharedPreferences.Editor editor = getSharedPreferences("Settings", MODE_PRIVATE).edit();
+        editor.putString("My_Lang", loc);
+        editor.apply();
     }
 
     /*        //fragments navigation
