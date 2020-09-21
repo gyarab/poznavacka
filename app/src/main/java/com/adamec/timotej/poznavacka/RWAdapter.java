@@ -14,6 +14,14 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -21,6 +29,8 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import timber.log.Timber;
 
 //ad holder
 class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
@@ -67,6 +77,7 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
 
     /**
      * Konstruktor - inicializuje proměnné a Event Listenery.
+     *
      * @param itemView
      * @param listener
      */
@@ -191,6 +202,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Vytvoření kartičky v Recycler View
+     *
      * @param parent
      * @param viewType
      * @return
@@ -210,6 +222,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Přiřazení objektu ke kartičce.
+     *
      * @param holder
      * @param position
      */
@@ -240,7 +253,8 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
                     Drawable d = MyListsActivity.getSMC(pivh.prewiewImg.getContext()).readDrawable(currentPoznavackaInfo.getId() + "/", currentPoznavackaInfo.getPrewievImageLocation(), ((PoznavackaInfoViewHolder) holder).prewiewImg.getContext());
                     pivh.prewiewImg.setImageDrawable(d);
-                    /*FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                    /*
                     if (!user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
                         pivh.shareImg.setEnabled(false);
                     } else {
@@ -250,7 +264,12 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                         }
                     }*/
-                    pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                    if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())
+                            || doesExistInFirestore(currentPoznavackaInfo)) {
+                        pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                    } else {
+                        pivh.shareImg.setEnabled(false);
+                    }
 
 
                     if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
@@ -265,6 +284,12 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         } catch (Exception e) {
 
         }
+    }
+
+    private boolean doesExistInFirestore(PoznavackaInfo currentPoznavackaInfo) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        DocumentReference poznavackaReference = db.collection("Users").document(currentPoznavackaInfo.getAuthorsID()).collection("Poznavacky").document(currentPoznavackaInfo.getId());
+        return poznavackaReference.get().isSuccessful();
     }
 
     private void populateNativeAdView(UnifiedNativeAd nativeAd,
@@ -320,6 +345,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     /**
      * Vrací počet položek v Recycler View
+     *
      * @return
      */
     @Override

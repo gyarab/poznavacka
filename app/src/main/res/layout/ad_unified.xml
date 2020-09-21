@@ -1,12 +1,16 @@
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="10dp"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:theme="@style/Theme.MaterialComponents"
-    card_view:cardCornerRadius="@dimen/cardview_default_radius"
-    card_view:cardElevation="@dimen/cardview_default_elevation">
+    android:layout_marginStart="5dp"
+    android:layout_marginTop="7dp"
+    android:layout_marginEnd="5dp"
+    android:layout_marginBottom="7dp"
+    app:cardCornerRadius="20dp"
+    app:strokeColor="@color/black"
+    app:strokeWidth="2dp">
 
     <com.google.android.gms.ads.formats.UnifiedNativeAdView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/ad_view"
@@ -17,7 +21,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:background="#FFFFFF"
+            android:background="@color/colorAccentSecond"
             android:minHeight="50dp"
             android:orientation="vertical">
 
@@ -31,7 +35,9 @@
                 android:text="Ad"
                 android:background="#FFCC66"
                 android:width="15dp"
-                android:height="15dp" />
+                android:height="15dp"
+                android:layout_marginStart="2dp"
+                android:layout_marginTop="2dp" />
 
             <LinearLayout
                 android:layout_width="match_parent"

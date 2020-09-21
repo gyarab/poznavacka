@@ -360,15 +360,20 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public void onShareClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
+
                 boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
                 String link = createDeepLink(sActivePoznavacka);
 
-                if (!poznavackaIsUploaded) {
-                    if (upload()) {
+                if (SharedListsActivity.checkInternet(getApplicationContext())) {
+                    if (!poznavackaIsUploaded) {
+                        if (upload()) {
+                            shareIntent(link);
+                        }
+                    } else {
                         shareIntent(link);
                     }
                 } else {
-                    shareIntent(link);
+                    Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 }
 
                 //Deletion from database
