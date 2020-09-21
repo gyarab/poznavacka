@@ -14,14 +14,8 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 
@@ -29,7 +23,6 @@ import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import timber.log.Timber;
 
 //ad holder
@@ -210,6 +203,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        Timber.plant(new Timber.DebugTree());
         switch (viewType) {
             case UNIFIED_NATIVE_AD_VIEW_TYPE:
                 View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.ad_unified, parent, false);
@@ -287,9 +281,41 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private boolean doesExistInFirestore(PoznavackaInfo currentPoznavackaInfo) {
+        return false;
+        //TODO do after deep link
+        /*
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference poznavackaReference = db.collection("Users").document(currentPoznavackaInfo.getAuthorsID()).collection("Poznavacky").document(currentPoznavackaInfo.getId());
-        return poznavackaReference.get().isSuccessful();
+
+        Future<DocumentSnapshot> future = (Future<DocumentSnapshot>) poznavackaReference.get();
+
+        try {
+            DocumentSnapshot document = future.get();
+
+            if (document.exists()) {
+                Timber.d("doesExistInFirestore() is true");
+                return true;
+            } else {
+                Timber.d("doesExistInFirestore() is false");
+                return false;
+            }
+        } catch (ExecutionException e) {
+            Timber.d("doesExistInFirestore() is exception0");
+            e.printStackTrace();
+            return false;
+        } catch (InterruptedException e) {
+            Timber.d("doesExistInFirestore() is exception1");
+            e.printStackTrace();
+            return false;
+        }
+
+        /*
+        if (poznavackaReference.get().isSuccessful()) {
+            Timber.d("doesExistInFirestore() is true");
+        } else {
+            Timber.d("doesExistInFirestore() is false");
+        }*/
+        //return poznavackaReference.get().isSuccessful();
     }
 
     private void populateNativeAdView(UnifiedNativeAd nativeAd,

@@ -46,8 +46,10 @@ import com.google.android.gms.ads.InterstitialAd;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.internal.NavigationMenu;
@@ -55,6 +57,8 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.dynamiclinks.DynamicLink;
 import com.google.firebase.dynamiclinks.FirebaseDynamicLinks;
+import com.google.firebase.dynamiclinks.PendingDynamicLinkData;
+import com.google.firebase.dynamiclinks.ShortDynamicLink;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -100,9 +104,10 @@ public class MyListsActivity extends AppCompatActivity {
     private String uuid;
     private String languageURL;
 
+    private boolean savingFromDeeplink;
     public static boolean savingDownloadedList;
-    private String userIDfromGenerated;
-    private String docID;
+    private String userId_saving;
+    private String docId_saving;
 
     private PoznavackaDbObject item;
 
@@ -137,6 +142,7 @@ public class MyListsActivity extends AppCompatActivity {
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Timber.plant(new Timber.DebugTree());
         loadLanguage();
         setContentView(R.layout.activity_lists);
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
@@ -176,22 +182,15 @@ public class MyListsActivity extends AppCompatActivity {
             saveCreatedListAsync.execute();
 
         } else if (savingDownloadedList) {
-            showInterstitial();
-            newListBTNProgressBar.setVisibility(View.VISIBLE);
-            newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+            saveDownloadedList();
 
-            Intent newDownloadedListIntent = getIntent();
-            title = newDownloadedListIntent.getStringExtra("TITLE");
-            userIDfromGenerated = newDownloadedListIntent.getStringExtra("USERID");
-            docID = newDownloadedListIntent.getStringExtra("DOCID");
-
-            SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
-            saveDownloadedListAsync.execute();
         } else if (sPoznavackaInfoArr == null || sPositionOfActivePoznavackaInfo == -1 || sPoznavackaInfoArr.isEmpty()) {
             if (sPoznavackaInfoArr == null) {
                 sPoznavackaInfoArr = new ArrayList<>();
             }
         }
+
+        checkForDynamicLinks();
 
         if (!initialized) {
             init(getApplication());
@@ -359,22 +358,13 @@ public class MyListsActivity extends AppCompatActivity {
              */
             @Override
             public void onShareClick(final int position) {
-                sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
-
-                boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
-                String link = createDeepLink(sActivePoznavacka);
-
                 if (SharedListsActivity.checkInternet(getApplicationContext())) {
-                    if (!poznavackaIsUploaded) {
-                        if (upload()) {
-                            shareIntent(link);
-                        }
-                    } else {
-                        shareIntent(link);
-                    }
+                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
+                    createDeepLink(sActivePoznavacka);
                 } else {
                     Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 }
+
 
                 //Deletion from database
                 /*} else {
@@ -571,12 +561,66 @@ public class MyListsActivity extends AppCompatActivity {
         });
     }
 
-    private String createDeepLink(PoznavackaInfo poznavackaId) {
-        DynamicLink dynamicLink = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka"))
+    private void saveDownloadedList() {
+        showInterstitial();
+        newListBTNProgressBar.setVisibility(View.VISIBLE);
+        newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
+
+        if (!savingFromDeeplink) {
+            Intent newDownloadedListIntent = getIntent();
+            //title = newDownloadedListIntent.getStringExtra("TITLE");
+            userId_saving = newDownloadedListIntent.getStringExtra("USERID");
+            docId_saving = newDownloadedListIntent.getStringExtra("DOCID");
+        }
+
+        SaveDownloadedListAsync saveDownloadedListAsync = new SaveDownloadedListAsync();
+        saveDownloadedListAsync.execute();
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkForDynamicLinks();
+    }
+
+    private void checkForDynamicLinks() {
+        FirebaseDynamicLinks.getInstance().getDynamicLink(getIntent()).addOnSuccessListener(this, new OnSuccessListener<PendingDynamicLinkData>() {
+            @Override
+            public void onSuccess(PendingDynamicLinkData pendingDynamicLinkData) {
+                Timber.i("We have a dynamic link.");
+
+                Uri deepLink = null;
+                if (pendingDynamicLinkData != null) {
+                    deepLink = pendingDynamicLinkData.getLink();
+                }
+
+                if (deepLink != null) {
+                    Timber.i("Here's the deep link URL:\n%s", deepLink.toString());
+
+                    savingDownloadedList = true;
+                    savingFromDeeplink = true;
+                    userId_saving = deepLink.getQueryParameter("userId");
+                    Timber.d("Deep link userId = %s", userId_saving);
+                    docId_saving = deepLink.getQueryParameter("docId");
+                    Timber.d("Deep link docId = %s", docId_saving);
+                    saveDownloadedList();
+                }
+            }
+        })
+                .addOnFailureListener(this, new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Timber.e("Error retrieving dynamic link data.");
+                    }
+                });
+    }
+
+    private void createDeepLink(PoznavackaInfo poznavackaInfo) {
+        Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
+                .setLink(Uri.parse("https://stackoverflow.com/questions/38284518/firebase-dynamic-link-support-custom-parameters"))
+                //.setLink(Uri.parse("https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka/?userId=" + poznavackaInfo.getAuthorsID() + "&docId=" + poznavackaInfo.getId()))
                 .setDomainUriPrefix("https://memimgapp.page.link")
-                // Open links with this app on Android
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().setMinimumVersion(10).build())
                 .setGoogleAnalyticsParameters(
                         new DynamicLink.GoogleAnalyticsParameters.Builder()
                                 .setSource("shareSource")
@@ -585,15 +629,37 @@ public class MyListsActivity extends AppCompatActivity {
                                 .build())
                 .setSocialMetaTagParameters(
                         new DynamicLink.SocialMetaTagParameters.Builder()
-                                .setTitle(getString(R.string.poznavacka) + " " + poznavackaId.getName())
-                                .setDescription(String.valueOf(R.string.learn_for_exam))
+                                .setTitle(getString(R.string.poznavacka) + " - " + poznavackaInfo.getName())
+                                .setDescription(getString(R.string.learn_for_exam))
                                 .build())
-                .buildDynamicLink();
+                .buildShortDynamicLink(ShortDynamicLink.Suffix.SHORT)
+                .addOnCompleteListener(this, new OnCompleteListener<ShortDynamicLink>() {
+                    @Override
+                    public void onComplete(@NonNull Task<ShortDynamicLink> task) {
+                        if (task.isSuccessful()) {
+                            // Short link created
+                            Uri shortLink = task.getResult().getShortLink();
+                            Uri flowchartLink = task.getResult().getPreviewLink();
+                            Timber.d("short link = %s", shortLink);
+                            Timber.d("flow chart link = %s", flowchartLink);
 
-        //TODO DEEP LINK
-
-        Uri dynamicLinkUri = dynamicLink.getUri();
-        return String.valueOf(dynamicLinkUri);
+                            if (SharedListsActivity.checkInternet(getApplicationContext())) {
+                                if (!poznavackaInfo.isUploaded()) {
+                                    if (upload()) {
+                                        shareIntent(String.valueOf(shortLink));
+                                    }
+                                } else {
+                                    shareIntent(String.valueOf(shortLink));
+                                }
+                            } else {
+                                Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
+                            }
+                        } else {
+                            // Error
+                            // ...
+                        }
+                    }
+                });
     }
 
     /**
@@ -878,7 +944,7 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             FirebaseFirestore db = FirebaseFirestore.getInstance();
-            DocumentReference docRef = db.collection("Users").document(userIDfromGenerated).collection("Poznavacky").document(docID);
+            DocumentReference docRef = db.collection("Users").document(userId_saving).collection("Poznavacky").document(docId_saving);
             docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                 @Override
                 public void onSuccess(DocumentSnapshot documentSnapshot) {
@@ -950,6 +1016,7 @@ public class MyListsActivity extends AppCompatActivity {
             //Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
 
             savingDownloadedList = false;
+            savingFromDeeplink = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
             //TODO return

@@ -35,10 +35,26 @@
             android:theme="@style/AppTheme" />
         <activity
             android:name="com.adamec.timotej.poznavacka.activities.lists.MyListsActivity"
-            android:theme="@style/AppTheme"
-            android:windowSoftInputMode="stateHidden"
             android:noHistory="true"
-            android:screenOrientation="portrait" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme"
+            android:windowSoftInputMode="stateHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="memimgapp.page.link"
+                    android:scheme="http" />
+                <data
+                    android:host="memimgapp.page.link"
+                    android:scheme="https" />
+            </intent-filter>
+        </activity>
+
+
         <activity
             android:name="com.adamec.timotej.poznavacka.activities.practice.PracticeActivity"
             android:screenOrientation="portrait" />
