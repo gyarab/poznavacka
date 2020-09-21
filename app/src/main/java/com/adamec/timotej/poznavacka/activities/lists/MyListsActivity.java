@@ -75,6 +75,7 @@ import androidx.appcompat.app.AppCompatDelegate;
 import androidx.multidex.MultiDex;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import io.github.yavski.fabspeeddial.FabSpeedDial;
 import io.github.yavski.fabspeeddial.SimpleMenuListenerAdapter;
 import timber.log.Timber;
@@ -357,15 +358,18 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public void onShareClick(final int position) {
                 sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
-
                 boolean poznavackaIsUploaded = sActivePoznavacka.isUploaded();
 
-                if (!poznavackaIsUploaded) {
-                    if (upload()) {
+                if (SharedListsActivity.checkInternet(getApplicationContext())) {
+                    if (!poznavackaIsUploaded) {
+                        if (upload()) {
+                            shareIntent();
+                        }
+                    } else {
                         shareIntent();
                     }
                 } else {
-                    shareIntent();
+                    Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 }
 
                 //Deletion from database
