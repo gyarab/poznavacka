@@ -98,7 +98,7 @@
                 android:focusable="true"
                 app:backgroundTint="@android:color/holo_green_light"
                 app:fabSize="normal"
-                app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+                app:layout_constraintBottom_toTopOf="@id/adView"
                 app:layout_constraintStart_toStartOf="parent"
                 app:rippleColor="@android:color/white"
                 app:srcCompat="@drawable/check" />
@@ -125,7 +125,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 app:fabSize="normal"
-                app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+                app:layout_constraintBottom_toTopOf="@id/adView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:srcCompat="@drawable/cross" />
 
@@ -161,37 +161,44 @@
                 android:focusable="true"
                 app:backgroundTint="@color/blue"
                 app:fabSize="normal"
-                app:layout_constraintBottom_toTopOf="@id/bottomNavView_Bar"
+                app:layout_constraintBottom_toTopOf="@id/adView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:srcCompat="@drawable/restart_only" />
-
-
-            <com.google.android.material.bottomnavigation.BottomNavigationView
-                android:id="@+id/bottomNavView_Bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/navigation_border_top"
-                android:layout_above="@id/adView"
-                app:itemIconTint="@color/bnv_tab_item_foreground"
-                app:itemTextColor="@color/bnv_tab_item_foreground"
-                app:menu="@menu/bottom_navigation_menu"
-
-                app:layout_constraintBottom_toTopOf="@id/adView" />
 
             <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
+
                 android:layout_centerHorizontal="true"
+                android:layout_above="@id/bottomBar"
                 ads:adSize="BANNER"
                 ads:adUnitId="ca-app-pub-2924053854177245/9719495936"
-                ads:layout_constraintBottom_toBottomOf="parent"
                 ads:layout_constraintStart_toStartOf="parent"
+                ads:layout_constraintBottom_toTopOf="@id/bottomBar"
                 ads:layout_constraintEnd_toEndOf="parent" />
 
             <!--ca-app-pub-3940256099942544/6300978111 TEST add-->
+            <RelativeLayout
+                android:id="@+id/bottomBar"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                app:layout_constraintBottom_toBottomOf="parent">
+
+                <com.google.android.material.bottomnavigation.BottomNavigationView
+                    android:id="@+id/bottomNavView_Bar"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/navigation_border_top"
+                    app:itemIconTint="@color/bnv_tab_item_foreground"
+                    app:itemTextColor="@color/bnv_tab_item_foreground"
+                    app:menu="@menu/bottom_navigation_menu">
+
+
+                </com.google.android.material.bottomnavigation.BottomNavigationView>
+            </RelativeLayout>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
