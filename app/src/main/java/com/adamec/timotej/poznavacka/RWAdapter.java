@@ -16,13 +16,19 @@ import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import timber.log.Timber;
 
 //ad holder
@@ -258,8 +264,10 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                             pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                         }
                     }*/
-                    if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())
-                            || doesExistInFirestore(currentPoznavackaInfo)) {
+                    /*if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())
+                            || doesExistInFirestore(currentPoznavackaInfo)) {*/
+
+                    if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
                         pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                     } else {
                         pivh.shareImg.setEnabled(false);
@@ -281,9 +289,8 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     private boolean doesExistInFirestore(PoznavackaInfo currentPoznavackaInfo) {
-        return false;
-        //TODO do after deep link
-        /*
+        //return false;
+
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         DocumentReference poznavackaReference = db.collection("Users").document(currentPoznavackaInfo.getAuthorsID()).collection("Poznavacky").document(currentPoznavackaInfo.getId());
 
@@ -307,15 +314,15 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             Timber.d("doesExistInFirestore() is exception1");
             e.printStackTrace();
             return false;
-        }
 
-        /*
-        if (poznavackaReference.get().isSuccessful()) {
-            Timber.d("doesExistInFirestore() is true");
-        } else {
-            Timber.d("doesExistInFirestore() is false");
-        }*/
-        //return poznavackaReference.get().isSuccessful();
+
+            /*if (poznavackaReference.get().isSuccessful()) {
+                Timber.d("doesExistInFirestore() is true");
+            } else {
+                Timber.d("doesExistInFirestore() is false");
+            }*/
+            //return poznavackaReference.get().isSuccessful();
+        }
     }
 
     private void populateNativeAdView(UnifiedNativeAd nativeAd,

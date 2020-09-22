@@ -190,7 +190,7 @@ public class MyListsActivity extends AppCompatActivity {
             }
         }
 
-        checkForDynamicLinks();
+        //checkForDynamicLinks();
 
         if (!initialized) {
             init(getApplication());
@@ -358,9 +358,24 @@ public class MyListsActivity extends AppCompatActivity {
              */
             @Override
             public void onShareClick(final int position) {
+                Timber.d("Share clicked");
                 if (SharedListsActivity.checkInternet(getApplicationContext())) {
+                    Timber.d("Share clicked, internet good");
                     sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
-                    createDeepLink(sActivePoznavacka);
+                    //createDeepLink(sActivePoznavacka);
+                    if (SharedListsActivity.checkInternet(getApplicationContext())) {
+                        if (!sActivePoznavacka.isUploaded()) {
+                            if (upload()) {
+                                Timber.d("Share clicked, uploaded");
+                                shareIntent(String.valueOf("https://tinyurl.com/memimg-app"));
+                            }
+                        } else {
+                            Timber.d("Share clicked, not uploaded");
+                            shareIntent(String.valueOf("https://tinyurl.com/memimg-app"));
+                        }
+                    } else {
+                        Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
+                    }
                 } else {
                     Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                 }
@@ -580,7 +595,7 @@ public class MyListsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-        checkForDynamicLinks();
+        //checkForDynamicLinks();
     }
 
     private void checkForDynamicLinks() {
@@ -616,11 +631,14 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     private void createDeepLink(PoznavackaInfo poznavackaInfo) {
+        Timber.d("Share clicked, create deep link");
         Task<ShortDynamicLink> shortLinkTask = FirebaseDynamicLinks.getInstance().createDynamicLink()
-                .setLink(Uri.parse("https://stackoverflow.com/questions/38284518/firebase-dynamic-link-support-custom-parameters"))
+                .setLink(Uri.parse("https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka"))
+                //.setLink(Uri.parse("https://tinyurl.com/memimg-app"))
                 //.setLink(Uri.parse("https://play.google.com/store/apps/details?id=com.adamec.timotej.poznavacka/?userId=" + poznavackaInfo.getAuthorsID() + "&docId=" + poznavackaInfo.getId()))
                 .setDomainUriPrefix("https://memimgapp.page.link")
-                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().setMinimumVersion(10).build())
+                //.setAndroidParameters(new DynamicLink.AndroidParameters.Builder().setMinimumVersion(10).build())
+                .setAndroidParameters(new DynamicLink.AndroidParameters.Builder().build())
                 .setGoogleAnalyticsParameters(
                         new DynamicLink.GoogleAnalyticsParameters.Builder()
                                 .setSource("shareSource")
@@ -640,21 +658,25 @@ public class MyListsActivity extends AppCompatActivity {
                             // Short link created
                             Uri shortLink = task.getResult().getShortLink();
                             Uri flowchartLink = task.getResult().getPreviewLink();
+                            Timber.d("Share clicked, deep link successful");
                             Timber.d("short link = %s", shortLink);
                             Timber.d("flow chart link = %s", flowchartLink);
 
                             if (SharedListsActivity.checkInternet(getApplicationContext())) {
                                 if (!poznavackaInfo.isUploaded()) {
                                     if (upload()) {
+                                        Timber.d("Share clicked, uploaded");
                                         shareIntent(String.valueOf(shortLink));
                                     }
                                 } else {
+                                    Timber.d("Share clicked, not uploaded");
                                     shareIntent(String.valueOf(shortLink));
                                 }
                             } else {
                                 Toast.makeText(getApplicationContext(), "No internet", Toast.LENGTH_SHORT).show();
                             }
                         } else {
+                            Timber.e("Share clicked, deep link unsuccessful");
                             // Error
                             // ...
                         }
@@ -1064,6 +1086,7 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     public boolean upload() {
+        Timber.d("Share clicked, upload");
         if (SharedListsActivity.checkInternet(getApplication())) {
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -1095,8 +1118,8 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     private void shareIntent(String link) {
-        //String message = getString(R.string.i_created_list) + "\n\n" + getString(R.string.app_url_store) + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
-        String message = getString(R.string.i_created_list) + "\n\n" + link;
+        String message = getString(R.string.i_created_list) + "\n\n" + link + "\n\n" + getString(R.string.after_search_for) + " " + sActivePoznavacka.getName();
+        //String message = getString(R.string.i_created_list) + "\n\n" + link;
         Intent sendIntent = new Intent();
         sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.putExtra(Intent.EXTRA_TEXT, message);
