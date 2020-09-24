@@ -161,6 +161,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             viewHolder.mImageView2.setImageResource(R.drawable.ic_file_download);
             if (item.getAuthorsUuid().equals(user.getUid())) {
                 viewHolder.mImageView3.setImageResource(R.drawable.ic_delete);
+                Timber.d("Delete button active for %s", previewPoznavacka.getName());
             } else {
                 viewHolder.mImageView3.setEnabled(false);
             }
