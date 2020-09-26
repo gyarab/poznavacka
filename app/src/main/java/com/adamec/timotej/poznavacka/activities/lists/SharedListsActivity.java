@@ -96,7 +96,7 @@ public class SharedListsActivity extends AppCompatActivity {
         if (checkInternet(this)) {
             buildSharedListFragment();
         } else {
-            Toast.makeText(getApplication(), "ur not connected,restart app and connect plis!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(getApplication(), "No internet", Toast.LENGTH_SHORT).show();
         }
     }
 

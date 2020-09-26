@@ -159,11 +159,11 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             viewHolder.mTextView2.setText(item.getAuthorsName());
             viewHolder.mLangTextView.setText(item.getLanguageURL());
             viewHolder.mImageView2.setImageResource(R.drawable.ic_file_download);
+            viewHolder.mImageView3.setEnabled(false);
             if (item.getAuthorsUuid().equals(user.getUid())) {
+                viewHolder.mImageView3.setEnabled(true);
                 viewHolder.mImageView3.setImageResource(R.drawable.ic_delete);
                 Timber.d("Delete button active for %s", previewPoznavacka.getName());
-            } else {
-                viewHolder.mImageView3.setEnabled(false);
             }
 
             viewHolder.mImageView2.setOnClickListener(new View.OnClickListener() {

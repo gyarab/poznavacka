@@ -3,6 +3,7 @@ package com.adamec.timotej.poznavacka.activities.practice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -29,19 +30,19 @@ import timber.log.Timber;
 
 public class PracticeActivity extends AppCompatActivity {
 
-    private static final int ALL = 1;
-    private static final int NOT_MEM = 0;
+    public static final int ALL = 1;
+    public static final int NOT_MEM = 0;
 
     TextView mTextView;
     Button mButtonAll;
     Button mButtonContinue;
 
     // Array with zastupci
-    static PoznavackaInfo sLoadedPoznavacka;
-    static ArrayList<Object> sZastupceArrOrig = new ArrayList<>();
+    public static PoznavackaInfo sLoadedPoznavacka;
+    public static ArrayList<Object> sZastupceArrOrig = new ArrayList<>();
     //int parameterCount;
 
-    boolean mLoaded = false;
+    public static boolean mLoaded = false;
     public static ArrayList<Integer> sNenauceniZastupci = new ArrayList<>();
 
     protected Resources res;
@@ -56,56 +57,19 @@ public class PracticeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_practice);
         init();
+        updateData();
 
-        if (MyListsActivity.sActivePoznavacka != null) {
+        /*if (MyListsActivity.sActivePoznavacka != null) {
             if (sLoadedPoznavacka != null && sLoadedPoznavacka.getId().equals(MyListsActivity.sActivePoznavacka.getId())) {
                 mLoaded = true;
+                updateData();
             } else {
-                loadPoznavacka();
+                new LoadPoznavacka().execute();
             }
-        }
-
-        if (!mLoaded) {
-            mTextView.setText(R.string.select_list);
-            mButtonAll.setEnabled(false);
-            mButtonAll.setText("(0)");
-            mButtonContinue.setEnabled(false);
-            mButtonContinue.setText("(0)");
-        } else {
-            int count = sZastupceArrOrig.size();
-            for (Object o :
-                    sZastupceArrOrig) {
-                if (o instanceof ClassificationData) {
-                    Timber.d("sZastupceArrOrig item is ClassificationData = " + ((ClassificationData) o).getClassification());
-                } else {
-                    //for (int i = 0; i < ((Zastupce) o).getParameters(); i++) {
-                    Timber.d("sZastupceArrOrig item is Zastupce = " + ((Zastupce) o).getParameter(0));
-                    //}
-                }
-            }
-
-            if (sZastupceArrOrig.get(0) instanceof ClassificationData) {
-                count -= 1;
-            }
-            mButtonAll.setText(getString(R.string.practice_all) + count + ")");
-            /*for (int i = 0; i < sZastupceArrOrig.size(); i++) {
-                if (i == 0) {
-                    Timber.d("sZastupceArrOrig - " + i + " = " + ((ClassificationData) sZastupceArrOrig.get(0)).getClassification());
-                } else {
-                    for (int k = 0; k < ((Zastupce) sZastupceArrOrig.get(i)).getParameters(); k++) {
-                        Timber.d("sZastupceArrOrig - " + i + " = " + ((Zastupce) sZastupceArrOrig.get(i)).getParameter(k));
-                    }
-                }
-            }*/
-            mButtonContinue.setText(getString(R.string.continue_practice) + sNenauceniZastupci.size() + ")");
-            if (sNenauceniZastupci.size() < 1) {
-                mButtonContinue.setEnabled(false);
-            }
-        }
+        }*/
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
-        //BottomNavigationViewHelper.disableShiftMode(bottomNavigationView);
         Menu menu = bottomNavigationView.getMenu();
         MenuItem menuItem = menu.getItem(0).setIcon(R.drawable.brain_filled_white);
         menuItem.setChecked(true);
@@ -143,6 +107,46 @@ public class PracticeActivity extends AppCompatActivity {
         });
     }
 
+    private void updateData() {
+        if (!mLoaded) {
+            Timber.d("Practice load (PracticeActivity), not loaded");
+            mTextView.setText(R.string.select_list);
+            mButtonAll.setEnabled(false);
+            mButtonAll.setText("(0)");
+            mButtonContinue.setEnabled(false);
+            mButtonContinue.setText("(0)");
+        } else {
+            Timber.d("Practice load (PracticeActivity), loaded");
+            int count = sZastupceArrOrig.size();
+            if (sZastupceArrOrig.get(0) instanceof ClassificationData) {
+                count -= 1;
+            }
+            if (count == PracticeActivity.sNenauceniZastupci.size()) {
+                practice2Transition(PracticeActivity.ALL);
+            } else if (PracticeActivity.sNenauceniZastupci.size() < 1) {
+                practice2Transition(PracticeActivity.ALL);
+            }
+            mButtonAll.setText(getString(R.string.practice_all) + count + ")");
+            mButtonContinue.setText(getString(R.string.continue_practice) + sNenauceniZastupci.size() + ")");
+        }
+    }
+
+    private class LoadPoznavacka extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            loadPoznavacka();
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            updateData();
+        }
+    }
+
+
     private void loadPoznavacka() {
         Gson gson = new Gson();
         Context context = this;
@@ -168,13 +172,14 @@ public class PracticeActivity extends AppCompatActivity {
         String jsonInt = MyListsActivity.getSMC(context).readFile(path + "nenauceni.txt", true);
         try {
             if (jsonInt.equals("") || jsonInt.isEmpty()) {
-
                 sNenauceniZastupci = fillArr();
-
+                Timber.d("sNenauceniZastupci - fillArr()");
             } else {
                 sNenauceniZastupci = gson.fromJson(jsonInt, intArrType);
+                Timber.d("sNenauceniZastupci - fromJson()");
             }
         } catch (Exception e) {
+            Timber.e("sNenauceniZastupci error - %s", e);
             //Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
         }
         for (Object z : sZastupceArrOrig) {
@@ -204,13 +209,7 @@ public class PracticeActivity extends AppCompatActivity {
              */
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
-                Bundle b = new Bundle();
-                b.putInt("key", ALL);
-                intent.putExtras(b);
-                startActivity(intent);
-                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                finish();
+                practice2Transition(ALL);
             }
         });
 
@@ -218,21 +217,26 @@ public class PracticeActivity extends AppCompatActivity {
         mButtonContinue.setOnClickListener(new View.OnClickListener() {
             /**
              * Po kliknutí na talčítko "testovat nenaučená" spustí Practice Activity 2 s parametrem NOT_MEM.
+             *
              * @param view
              */
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
-                Bundle b = new Bundle();
-                b.putInt("key", NOT_MEM);
-                intent.putExtras(b);
-                startActivity(intent);
-                overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                finish();
+                practice2Transition(NOT_MEM);
             }
         });
 
-        mLoaded = false;
+        //mLoaded = false;
+    }
+
+    private void practice2Transition(int type) {
+        Intent intent = new Intent(PracticeActivity.this, PracticeActivity2.class);
+        Bundle b = new Bundle();
+        b.putInt("key", type);
+        intent.putExtras(b);
+        startActivity(intent);
+        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+        finish();
     }
 
     /**

@@ -15,6 +15,17 @@
     app:strokeWidth="2dp">
     <!--android:background="@drawable/poznavacko_info_cardview_background"-->
 
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:id="@+id/item_loading_progressBar"
+        style="?android:attr/progressBarStyleHorizontal"
+        android:layout_width="match_parent"
+        android:layout_height="15dp"
+        android:layout_gravity="top"
+        android:scaleY="6"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/colorAccent"
+        android:indeterminateTintMode="src_atop"
+        android:visibility="invisible" />
 
     <RelativeLayout
         android:id="@+id/container"

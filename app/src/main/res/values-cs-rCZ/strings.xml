@@ -92,4 +92,5 @@
     <string name="click_to_add_new_list">Klikni a přidej novou poznávačku</string>
     <string name="poznavacka">Poznávačka</string>
     <string name="learn_for_exam">Připrav se na poznávačku s Memimg!</string>
+    <string name="wait_save">Teď nezavírej aplikaci</string>
 </resources>

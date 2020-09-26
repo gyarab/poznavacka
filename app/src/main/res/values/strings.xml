@@ -92,4 +92,5 @@
     <string name="click_to_add_new_list">Click to add new list</string>
     <string name="poznavacka">Image recognition -</string>
     <string name="learn_for_exam">Prepare for image recogntion exam with Memimg!</string>
+    <string name="wait_save">Do not exit the app now</string>
 </resources>

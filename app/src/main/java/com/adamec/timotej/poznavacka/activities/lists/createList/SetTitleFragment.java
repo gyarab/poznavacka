@@ -18,8 +18,6 @@ import com.adamec.timotej.poznavacka.activities.lists.MyListsActivity;
 import com.adamec.timotej.poznavacka.activities.lists.SharedListsActivity;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
-import java.util.Objects;
-
 import androidx.fragment.app.Fragment;
 
 
@@ -112,7 +110,7 @@ public class SetTitleFragment extends Fragment {
             public void onClick(View v) {
                 btnNext.setVisibility(View.GONE);
                 btnCancel.setVisibility(View.GONE);
-                onButtonPressed(titleInput.getText().toString());
+                onButtonPressed(titleInput.getText().toString().trim());
             }
         });
 
@@ -144,7 +142,7 @@ public class SetTitleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         final View view;
-        if (!SharedListsActivity.checkInternet(Objects.requireNonNull(getContext()))) {
+        if (!SharedListsActivity.checkInternet(requireContext())) {
             view = inflater.inflate(R.layout.fragment_not_connected_to_internet, container, false);
         } else {
             view = inflater.inflate(R.layout.fragment_set_title, container, false);

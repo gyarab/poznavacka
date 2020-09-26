@@ -26,6 +26,7 @@ import java.util.concurrent.Future;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
+import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -64,6 +65,7 @@ class UnifiedNativeAdViewHolder extends RecyclerView.ViewHolder {
  * Kartička s informacemi o poznávačce a tlačítky k provedení akcí s poznávačkou.
  */
 class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
+    public ContentLoadingProgressBar progressBar;
     public TextView textView1;
     public TextView textView2;
     public TextView languageURL;
@@ -82,6 +84,7 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
      */
     PoznavackaInfoViewHolder(@NonNull View itemView, final RWAdapter.OnItemClickListener listener) {
         super(itemView);
+        progressBar = itemView.findViewById(R.id.item_loading_progressBar);
         textView1 = itemView.findViewById(R.id.itemText1);
         textView2 = itemView.findViewById(R.id.itemText2);
         languageURL = itemView.findViewById(R.id.languageURL);
@@ -111,6 +114,10 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
                 if (listener != null) {
                     int position = getAdapterPosition();
                     if (position != RecyclerView.NO_POSITION) {
+                        progressBar.setVisibility(View.VISIBLE);
+                        progressBar.setEnabled(true);
+                        progressBar.animate();
+                        progressBar.show();
                         listener.onPracticeClick(position);
                     }
                 }
