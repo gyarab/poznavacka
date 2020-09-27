@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.ClassificationData;
 import com.adamec.timotej.poznavacka.LockableViewPager;
@@ -14,9 +15,7 @@ import com.adamec.timotej.poznavacka.activities.lists.MyListsActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdCallback;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 
 import java.io.File;
@@ -29,7 +28,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import timber.log.Timber;
 
-import static com.adamec.timotej.poznavacka.activities.lists.MyListsActivity.mInterstitialAd;
+import static com.adamec.timotej.poznavacka.activities.lists.MyListsActivity.mNewListInterstitialAd;
 
 public class CreateListActivity extends AppCompatActivity implements SetTitleFragment.OnFragmentInteractionListener, SetLanguageFragment.OnFragmentInteractionListener, SetRepresentativesFragment.OnFragmentInteractionListener, SetCreateOptionsFragment.OnFragmentInteractionListener, GeneratedListFragment.OnFragmentInteractionListener {
 
@@ -212,21 +211,21 @@ public class CreateListActivity extends AppCompatActivity implements SetTitleFra
             Timber.d("The interstitial wasn't loaded yet.");
         }*/
 
-        mInterstitialAd = new InterstitialAd(this);
-        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); Test add
-        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
+        mNewListInterstitialAd = new InterstitialAd(getApplication());
+        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
+        mNewListInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+        mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
 
-        mInterstitialAd.setAdListener(new AdListener() {
+        mNewListInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
                 // Load the next interstitial.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
+                mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
+                Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
             }
 
         });
 
-        //TODO return Ad
         /*if (mRewardedAd.isLoaded()) {
             RewardedAdCallback adCallback = new RewardedAdCallback() {
                 @Override

@@ -44,6 +44,7 @@ import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
@@ -135,10 +136,16 @@ public class MyListsActivity extends AppCompatActivity {
     private RelativeLayout noListsLayout;
     private static TourGuide mTourGuide;
 
-    public static InterstitialAd mInterstitialAd;
+    public static InterstitialAd mNewListInterstitialAd;
     public static UnifiedNativeAd mUnifiedNativeAd;
     public static boolean initialized;
     private AdLoader nativeAdLoader;
+
+    private InterstitialAd mPracticeLoadInterstitialAd;
+    private boolean mPracticeLoadInterstitalAdWatched = false;
+    private boolean practice2Transition = false;
+    private boolean practiceTransition = false;
+    private boolean practiceNavPressed = false;
 
     @Override
     protected void attachBaseContext(Context base) {
@@ -162,8 +169,10 @@ public class MyListsActivity extends AppCompatActivity {
         }
 
         if (savingNewList) {
-            showInterstitial();
-            Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+            showNewListInterstitial();
+            if (!mNewListInterstitialAd.isLoaded()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+            }
 
             newListBTNProgressBar.setVisibility(View.VISIBLE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
@@ -189,7 +198,9 @@ public class MyListsActivity extends AppCompatActivity {
             currentSaveCreatedListAsync.execute();
 
         } else if (savingDownloadedList) {
-            Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+            if (!mNewListInterstitialAd.isLoaded()) {
+                Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+            }
             saveDownloadedList();
 
         } else if (sPoznavackaInfoArr == null || sPositionOfActivePoznavackaInfo == -1 || sPoznavackaInfoArr.isEmpty()) {
@@ -208,99 +219,6 @@ public class MyListsActivity extends AppCompatActivity {
                 initTourGuide();
             }
         }
-
-        /*//initialization
-        if (sPoznavackaInfoArr == null) {
-            Gson gson = new Gson();
-            String s = getSMC(getApplication()).readFile("poznavacka.txt", true);
-
-            if (s != null) {
-                if (!s.isEmpty()) {
-                    Type cType = new TypeToken<ArrayList<PoznavackaInfo>>() {
-                    }.getType();
-                    sPoznavackaInfoArr = gson.fromJson(s, cType);
-                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(0);
-                    sPositionOfActivePoznavackaInfo = 0;
-                } else {
-                    sPoznavackaInfoArr = new ArrayList<>();
-                    sPositionOfActivePoznavackaInfo = -1;
-                    *//*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
-                    noListsLayout = findViewById(R.id.no_lists_layout);
-                    noListsLayout.setVisibility(View.VISIBLE);*//*
-                    initTourGuide();
-
-                }
-            } else {
-                sPoznavackaInfoArr = new ArrayList<>();
-                sPositionOfActivePoznavackaInfo = -1;
-
-                initTourGuide();
-            }
-        }*/
-
-        /* Add new button */
-        /*newListBTN = view.findViewById(R.id.new_list_btn);
-        newListBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent0 = new Intent(getContext(), CreateListActivity.class);
-                startActivity(intent0);
-                getActivity().overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                getActivity().finish();
-            }
-        });*/
-        newListBTN.setMenuListener(new SimpleMenuListenerAdapter() {
-            @Override
-            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
-                if (!SharedListsActivity.checkInternet(getApplicationContext())) {
-                    Toast.makeText(getApplicationContext(), "Not connected to internet", Toast.LENGTH_SHORT).show();
-                    return false;
-                }
-                if (savingDownloadedList || savingNewList) {
-                    return false;
-                }
-                if (mTourGuide != null) {
-                    mTourGuide.cleanUp();
-                }
-                return super.onPrepareMenu(navigationMenu);
-            }
-
-            @Override
-            public boolean onMenuItemSelected(MenuItem menuItem) {
-                switch (menuItem.getItemId()) {
-                    case (R.id.action_download):
-                        Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
-                        startActivity(intent0);
-                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-
-                        mInterstitialAd = new InterstitialAd(getApplication());
-                        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
-                        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
-                        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                        Timber.d("Interstitial shared lists ad loaded");
-
-                        mInterstitialAd.setAdListener(new AdListener() {
-                            @Override
-                            public void onAdClosed() {
-                                // Load the next interstitial.
-                                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-                                Timber.d("Interstitial shared lists ad loaded");
-                            }
-
-                        });
-                        break;
-                    case (R.id.action_create):
-                        Intent intent1 = new Intent(getApplication(), CreateListActivity.class);
-                        startActivity(intent1);
-                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                        finish();
-                        break;
-
-
-                }
-                return true;
-            }
-        });
 
         /*examEFAB = findViewById(R.id.exams_btn); //TODO return exams
         examEFAB.setOnClickListener(new View.OnClickListener() {
@@ -353,15 +271,10 @@ public class MyListsActivity extends AppCompatActivity {
             @Override
             public void onPracticeClick(final int position) {
                 if (!loadingPractice) {
+                    showPracticeLoadInterstitial();
                     loadingPractice = true;
                     sPositionOfActivePoznavackaInfo = position;
                     sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(position);
-                /*ContentLoadingProgressBar progressBar = findViewById(R.id.item_loading_progressBar);
-                progressBar.setVisibility(View.VISIBLE);
-                progressBar.setEnabled(true);
-                progressBar.animate();
-                progressBar.show();*/
-                    //mAdapter.notifyDataSetChanged();
 
                     if (sActivePoznavacka != null) {
                         if (PracticeActivity.sLoadedPoznavacka != null && PracticeActivity.sLoadedPoznavacka.getId().equals(MyListsActivity.sActivePoznavacka.getId())) {
@@ -374,11 +287,6 @@ public class MyListsActivity extends AppCompatActivity {
                         }
                     }
                 }
-
-                /*Intent myIntent = new Intent(getApplication(), PracticeActivity.class);
-                startActivity(myIntent);
-                overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
-                finish();*/
             }
 
             /**
@@ -472,6 +380,43 @@ public class MyListsActivity extends AppCompatActivity {
 
         });
 
+        newListBTN.setMenuListener(new SimpleMenuListenerAdapter() {
+            @Override
+            public boolean onPrepareMenu(NavigationMenu navigationMenu) {
+                if (!SharedListsActivity.checkInternet(getApplicationContext())) {
+                    Toast.makeText(getApplicationContext(), "Not connected to internet", Toast.LENGTH_SHORT).show();
+                    return false;
+                }
+                if (savingDownloadedList || savingNewList) {
+                    return false;
+                }
+                if (mTourGuide != null) {
+                    mTourGuide.cleanUp();
+                }
+                return super.onPrepareMenu(navigationMenu);
+            }
+
+            @Override
+            public boolean onMenuItemSelected(MenuItem menuItem) {
+                switch (menuItem.getItemId()) {
+                    case (R.id.action_download):
+                        Intent intent0 = new Intent(getApplication(), SharedListsActivity.class);
+                        startActivity(intent0);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        loadNewListInterstitial();
+                        break;
+                    case (R.id.action_create):
+                        Intent intent1 = new Intent(getApplication(), CreateListActivity.class);
+                        startActivity(intent1);
+                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                        finish();
+                        break;
+                }
+                return true;
+            }
+        });
+
+        loadPracticeLoadInterstitial();
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
@@ -488,9 +433,13 @@ public class MyListsActivity extends AppCompatActivity {
                         if (savingDownloadedList || savingNewList) {
                             break;
                         }
-                        Intent intent0 = new Intent(MyListsActivity.this, PracticeActivity.class);
-                        startActivity(intent0);
-                        overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                        practiceNavPressed = true;
+                        showPracticeLoadInterstitial();
+                        if (mPracticeLoadInterstitalAdWatched) {
+                            Intent intent0 = new Intent(MyListsActivity.this, PracticeActivity.class);
+                            startActivity(intent0);
+                            overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                        }
                         break;
 
                     case R.id.nav_lists:
@@ -521,11 +470,65 @@ public class MyListsActivity extends AppCompatActivity {
         });
     }
 
+    private void loadNewListInterstitial() {
+        mNewListInterstitialAd = new InterstitialAd(getApplication());
+        mNewListInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
+        //mNewListInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
+        mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
+        Timber.d("Interstitial shared lists ad loaded");
+
+        mNewListInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
+                Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+                Timber.d("Interstitial shared lists ad loaded");
+            }
+        });
+    }
+
+    private void loadPracticeLoadInterstitial() {
+        mPracticeLoadInterstitialAd = new InterstitialAd(getApplication());
+        mPracticeLoadInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/7485518486");
+        //mPracticeLoadInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
+        mPracticeLoadInterstitialAd.loadAd(new AdRequest.Builder().build());
+        Timber.d("Interstitial shared lists ad loaded");
+
+        mPracticeLoadInterstitialAd.setAdListener(new AdListener() {
+            @Override
+            public void onAdClosed() {
+                // Load the next interstitial.
+                mPracticeLoadInterstitialAd.loadAd(new AdRequest.Builder().build());
+                Timber.d("Interstitial shared lists ad loaded");
+                mPracticeLoadInterstitalAdWatched = true;
+                if (practiceTransition) {
+                    practiceTransition();
+                } else if (practice2Transition) {
+                    practice2Transition(PracticeActivity.ALL);
+                } else if (practiceNavPressed) {
+                    Intent intent0 = new Intent(MyListsActivity.this, PracticeActivity.class);
+                    startActivity(intent0);
+                    overridePendingTransition(R.anim.slide_in_left, R.anim.slide_out_right);
+                }
+            }
+
+            @Override
+            public void onAdFailedToLoad(LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                mPracticeLoadInterstitalAdWatched = true;
+            }
+        });
+    }
+
     private void updateData() {
         Timber.d("Practice load, updateData()");
         if (!PracticeActivity.mLoaded) {
             Timber.d("Practice load, updateData(), notLoaded");
-            practiceTransition();
+            practiceTransition = true;
+            if (mPracticeLoadInterstitalAdWatched) {
+                practiceTransition();
+            }
         } else {
             Timber.d("Practice load, updateData(), loaded");
             int count = PracticeActivity.sZastupceArrOrig.size();
@@ -535,11 +538,20 @@ public class MyListsActivity extends AppCompatActivity {
             Timber.d("Practice load, updateData(), count = %s", count);
             Timber.d("Practice load, updateData(), sNenuceniZastupci.size() = %s", PracticeActivity.sNenauceniZastupci.size());
             if (count == PracticeActivity.sNenauceniZastupci.size()) {
-                practice2Transition(PracticeActivity.ALL);
+                practice2Transition = true;
+                if (mPracticeLoadInterstitalAdWatched) {
+                    practice2Transition(PracticeActivity.ALL);
+                }
             } else if (PracticeActivity.sNenauceniZastupci.size() < 1) {
-                practice2Transition(PracticeActivity.ALL);
+                practice2Transition = true;
+                if (mPracticeLoadInterstitalAdWatched) {
+                    practice2Transition(PracticeActivity.ALL);
+                }
             } else {
-                practiceTransition();
+                practiceTransition = true;
+                if (mPracticeLoadInterstitalAdWatched) {
+                    practiceTransition();
+                }
             }
         }
     }
@@ -664,7 +676,6 @@ public class MyListsActivity extends AppCompatActivity {
                         try {
                             sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
                         } catch (Exception e) {
-                            //Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
                         }
                     } else {
                         sActivePoznavacka = null;
@@ -692,7 +703,7 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     private void saveDownloadedList() {
-        showInterstitial();
+        showNewListInterstitial();
         newListBTNProgressBar.setVisibility(View.VISIBLE);
         newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -714,8 +725,8 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
+    protected void onStop() {
+        super.onStop();
 
         if (savingDownloadedList) {
             Timber.d("onPause savingDownloadedList=true");
@@ -838,9 +849,6 @@ public class MyListsActivity extends AppCompatActivity {
             } else {
                 sPoznavackaInfoArr = new ArrayList<>();
                 sPositionOfActivePoznavackaInfo = -1;
-                    /*Toast.makeText(getApplication(), "NOTHING IS HERE", Toast.LENGTH_SHORT).show();
-                    noListsLayout = findViewById(R.id.no_lists_layout);
-                    noListsLayout.setVisibility(View.VISIBLE);*/
             }
         } else {
             Timber.d("init poznavacka info array from device");
@@ -890,24 +898,19 @@ public class MyListsActivity extends AppCompatActivity {
         nativeAdLoader.loadAd(new AdRequest.Builder().build());
     }
 
-    private void showInterstitial() {
-        mInterstitialAd = new InterstitialAd(this);
-        mInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
-        //mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
-
-        mInterstitialAd.setAdListener(new AdListener() {
-            @Override
-            public void onAdClosed() {
-                // Load the next interstitial.
-                mInterstitialAd.loadAd(new AdRequest.Builder().build());
-            }
-
-        });
-
-        if (mInterstitialAd.isLoaded()) {
-            mInterstitialAd.show();
+    private void showNewListInterstitial() {
+        if (mNewListInterstitialAd.isLoaded()) {
+            mNewListInterstitialAd.show();
         } else {
+            Timber.d("The interstitial wasn't loaded yet.");
+        }
+    }
+
+    private void showPracticeLoadInterstitial() {
+        if (mPracticeLoadInterstitialAd.isLoaded()) {
+            mPracticeLoadInterstitialAd.show();
+        } else {
+            mPracticeLoadInterstitalAdWatched = true;
             Timber.d("The interstitial wasn't loaded yet.");
         }
     }
@@ -940,7 +943,7 @@ public class MyListsActivity extends AppCompatActivity {
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void aVoid) {
-                                //Toast.makeText(getApplication(), R.string.removed_from_database, Toast.LENGTH_SHORT).show();
+
                             }
                         })
                         .addOnFailureListener(new OnFailureListener() {
@@ -966,7 +969,6 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -983,7 +985,6 @@ public class MyListsActivity extends AppCompatActivity {
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
             Log.d("Files", "Saved successfully");
-            //Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
 
             savingNewList = false;
             newListBTNProgressBar.setVisibility(View.GONE);
@@ -1104,7 +1105,6 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            //Toast.makeText(getApplication(), "Saving " + title + "...", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -1201,7 +1201,6 @@ public class MyListsActivity extends AppCompatActivity {
             MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
             Log.d("Files", "Saved successfully");
-            //Toast.makeText(getApplication(), "Successfully saved " + title, Toast.LENGTH_LONG).show();
 
             savingDownloadedList = false;
             savingFromDeeplink = false;
@@ -1294,8 +1293,6 @@ public class MyListsActivity extends AppCompatActivity {
             sActivePoznavacka.setUploaded(true);
             getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
 
-            //Toast toast = Toast.makeText(getApplication(), "Shared", Toast.LENGTH_SHORT);
-            //toast.show();
             return true;
 
         } else {
@@ -1366,35 +1363,4 @@ public class MyListsActivity extends AppCompatActivity {
         editor.putString("My_Lang", loc);
         editor.apply();
     }
-
-    /*        //fragments navigation
-        mSectionsPageAdapter = new SectionsPageAdapter(getSupportFragmentManager());
-        mViewPager = (ViewPager) findViewById(R.id.container);
-        setupViewPager(mViewPager);
-
-        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.setupWithViewPager(mViewPager);
-
-
-        Objects.requireNonNull(tabLayout.getTabAt(0)).setIcon(R.drawable.ic_list_black_24dp);
-        Objects.requireNonNull(tabLayout.getTabAt(1)).setIcon(R.drawable.ic_file_download);
-//        Objects.requireNonNull(tabLayout.getTabAt(2)).setIcon(R.drawable.ic_add_circle_black_24dp);
-*/
-
-
-
-
-/*
-    private void setupViewPager(ViewPager viewPager) {
-        SectionsPageAdapter adapter = new SectionsPageAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MyListsFragment());
-        adapter.addFragment(new SharedListsFragment());
-        //adapter.addFragment(new CreateListFragment());
-        viewPager.setAdapter(adapter);
-    }
-
-    public void setViewPager(int fragmentNumber) {
-        mViewPager.setCurrentItem(fragmentNumber);
-    }*/
-
 }
