@@ -730,12 +730,16 @@ public class MyListsActivity extends AppCompatActivity {
 
         if (savingDownloadedList) {
             Timber.d("onPause savingDownloadedList=true");
-            currentSaveDownloadedListAsync.cancel(true);
-            currentDrawableFromUrlAsync.cancel(true);
+            if (currentSaveCreatedListAsync != null) {
+                currentSaveDownloadedListAsync.cancel(true);
+                currentDrawableFromUrlAsync.cancel(true);
+            }
         }
 
         if (savingNewList) {
-            currentSaveCreatedListAsync.cancel(true);
+            if (currentSaveCreatedListAsync != null) {
+                currentSaveCreatedListAsync.cancel(true);
+            }
         }
     }
 

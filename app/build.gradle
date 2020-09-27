@@ -36,8 +36,8 @@ android {
         applicationId "com.adamec.timotej.poznavacka"
         minSdkVersion 22
         targetSdkVersion 29
-        versionCode 12
-        versionName "1.4"
+        versionCode 13
+        versionName "1.4.1"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
