@@ -177,6 +177,12 @@ public class StorageManagerClass {
      */
     public boolean saveDrawable(Drawable drawable, String path, String name) {
         BitmapDrawable bitmapDraw = (BitmapDrawable) drawable;
+        if (bitmapDraw == null) {
+            NullPointerException nullPointerException = new NullPointerException();
+            nullPointerException.printStackTrace();
+            deletePoznavacka(path);
+            return false;
+        }
         Bitmap bitmap = bitmapDraw.getBitmap();
         FileOutputStream fos;
 

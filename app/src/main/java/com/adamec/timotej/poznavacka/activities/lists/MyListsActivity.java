@@ -416,7 +416,9 @@ public class MyListsActivity extends AppCompatActivity {
             }
         });
 
-        loadPracticeLoadInterstitial();
+        if (mPracticeLoadInterstitialAd == null || !mPracticeLoadInterstitialAd.isLoaded()) {
+            loadPracticeLoadInterstitial();
+        }
 
         //navigation
         BottomNavigationView bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottomNavView_Bar);
@@ -475,7 +477,7 @@ public class MyListsActivity extends AppCompatActivity {
         mNewListInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/3480271080");
         //mNewListInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
         mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
-        Timber.d("Interstitial shared lists ad loaded");
+        Timber.d("NewListInterstitial shared lists load ad");
 
         mNewListInterstitialAd.setAdListener(new AdListener() {
             @Override
@@ -483,7 +485,7 @@ public class MyListsActivity extends AppCompatActivity {
                 // Load the next interstitial.
                 mNewListInterstitialAd.loadAd(new AdRequest.Builder().build());
                 Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
-                Timber.d("Interstitial shared lists ad loaded");
+                Timber.d("NewListInterstitial shared lists ad closed");
             }
         });
     }
@@ -493,14 +495,14 @@ public class MyListsActivity extends AppCompatActivity {
         mPracticeLoadInterstitialAd.setAdUnitId("ca-app-pub-2924053854177245/7485518486");
         //mPracticeLoadInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712"); //Test add
         mPracticeLoadInterstitialAd.loadAd(new AdRequest.Builder().build());
-        Timber.d("Interstitial shared lists ad loaded");
+        Timber.d("PracticeLoadInterstitial shared lists load ad");
 
         mPracticeLoadInterstitialAd.setAdListener(new AdListener() {
             @Override
             public void onAdClosed() {
                 // Load the next interstitial.
                 mPracticeLoadInterstitialAd.loadAd(new AdRequest.Builder().build());
-                Timber.d("Interstitial shared lists ad loaded");
+                Timber.d("PracticeLoadInterstitial shared lists ad closed");
                 mPracticeLoadInterstitalAdWatched = true;
                 if (practiceTransition) {
                     practiceTransition();
@@ -1237,7 +1239,28 @@ public class MyListsActivity extends AppCompatActivity {
                         Log.e("Obrazek", "Obrazek nestahnut");
                         e.printStackTrace();
                     }
-                    MyListsActivity.getSMC(getApplication()).saveDrawable(returnDrawable, path, z.getParameter(0));
+                    if (!MyListsActivity.getSMC(getApplication()).saveDrawable(returnDrawable, path, z.getParameter(0))) {
+                        Thread thread = new Thread() {
+                            public void run() {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(MyListsActivity.this, getString(R.string.error_try_again), Toast.LENGTH_LONG).show();
+                                        newListBTNProgressBar.setVisibility(View.GONE);
+                                        newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
+                                        if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
+                                                && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(item.getId())) {
+                                            Timber.d("Image download error, " + ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getName() + " removed");
+                                            sPoznavackaInfoArr.remove(sPoznavackaInfoArr.size() - 1);
+                                        }
+                                    }
+                                });
+                            }
+                        };
+                        savingDownloadedList = false;
+                        savingFromDeeplink = false;
+                        thread.start();
+                        return null;
+                    }
                 }
             }
             return null;

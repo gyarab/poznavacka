@@ -93,4 +93,5 @@
     <string name="poznavacka">Image recognition -</string>
     <string name="learn_for_exam">Prepare for image recogntion exam with Memimg!</string>
     <string name="wait_save">Do not exit the app now</string>
+    <string name="error_try_again">Error, try again</string>
 </resources>
