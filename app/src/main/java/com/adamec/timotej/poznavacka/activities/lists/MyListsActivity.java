@@ -170,7 +170,7 @@ public class MyListsActivity extends AppCompatActivity {
 
         if (savingNewList) {
             showNewListInterstitial();
-            if (!mNewListInterstitialAd.isLoaded()) {
+            if (mNewListInterstitialAd == null || !mNewListInterstitialAd.isLoaded()) {
                 Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
             }
 
@@ -198,7 +198,7 @@ public class MyListsActivity extends AppCompatActivity {
             currentSaveCreatedListAsync.execute();
 
         } else if (savingDownloadedList) {
-            if (!mNewListInterstitialAd.isLoaded()) {
+            if (mNewListInterstitialAd == null || !mNewListInterstitialAd.isLoaded()) {
                 Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
             }
             saveDownloadedList();
@@ -524,36 +524,44 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     private void updateData() {
-        Timber.d("Practice load, updateData()");
-        if (!PracticeActivity.mLoaded) {
-            Timber.d("Practice load, updateData(), notLoaded");
-            practiceTransition = true;
-            if (mPracticeLoadInterstitalAdWatched) {
-                practiceTransition();
-            }
-        } else {
-            Timber.d("Practice load, updateData(), loaded");
-            int count = PracticeActivity.sZastupceArrOrig.size();
-            if (PracticeActivity.sZastupceArrOrig.get(0) instanceof ClassificationData) {
-                count -= 1;
-            }
-            Timber.d("Practice load, updateData(), count = %s", count);
-            Timber.d("Practice load, updateData(), sNenuceniZastupci.size() = %s", PracticeActivity.sNenauceniZastupci.size());
-            if (count == PracticeActivity.sNenauceniZastupci.size()) {
-                practice2Transition = true;
-                if (mPracticeLoadInterstitalAdWatched) {
-                    practice2Transition(PracticeActivity.ALL);
-                }
-            } else if (PracticeActivity.sNenauceniZastupci.size() < 1) {
-                practice2Transition = true;
-                if (mPracticeLoadInterstitalAdWatched) {
-                    practice2Transition(PracticeActivity.ALL);
-                }
-            } else {
+        if (getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/", false) != null
+                && !getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/", false).equals("")
+                && !getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/", false).isEmpty()) {
+            Timber.d("Practice load, updateData()");
+            if (!PracticeActivity.mLoaded) {
+                Timber.d("Practice load, updateData(), notLoaded");
                 practiceTransition = true;
                 if (mPracticeLoadInterstitalAdWatched) {
                     practiceTransition();
                 }
+            } else {
+                Timber.d("Practice load, updateData(), loaded");
+                int count = PracticeActivity.sZastupceArrOrig.size();
+                if (PracticeActivity.sZastupceArrOrig.get(0) instanceof ClassificationData) {
+                    count -= 1;
+                }
+                Timber.d("Practice load, updateData(), count = %s", count);
+                Timber.d("Practice load, updateData(), sNenuceniZastupci.size() = %s", PracticeActivity.sNenauceniZastupci.size());
+                if (count == PracticeActivity.sNenauceniZastupci.size()) {
+                    practice2Transition = true;
+                    if (mPracticeLoadInterstitalAdWatched) {
+                        practice2Transition(PracticeActivity.ALL);
+                    }
+                } else if (PracticeActivity.sNenauceniZastupci.size() < 1) {
+                    practice2Transition = true;
+                    if (mPracticeLoadInterstitalAdWatched) {
+                        practice2Transition(PracticeActivity.ALL);
+                    }
+                } else {
+                    practiceTransition = true;
+                    if (mPracticeLoadInterstitalAdWatched) {
+                        practiceTransition();
+                    }
+                }
+            }
+        } else {
+            if (getSMC(getApplication()).readFile(sActivePoznavacka.getId() + "/", false) == null) {
+                Timber.d("sActivePoznavacka is null");
             }
         }
     }
@@ -611,13 +619,43 @@ public class MyListsActivity extends AppCompatActivity {
             if (classificationData != null && classificationData.getClassification().size() != 0 && !classificationData.getClassification().get(0).isEmpty())
                 PracticeActivity.sZastupceArrOrig.add(classificationData);
         }
-        PracticeActivity.sZastupceArrOrig.addAll(zastupces);
+        if (zastupces == null) {
+            Timber.d("List is corrupted");
+            Thread thread = new Thread() {
+                public void run() {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Timber.d("List is corrupted, ui thread run");
+                            getSMC(getApplication()).deletePoznavacka(path);
+                            getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+                            if (SharedListsActivity.checkInternet(getApplication())) {
+                                Toast.makeText(getApplication(), R.string.corrupted_file_downloading_new, Toast.LENGTH_LONG).show();
+                                if (mNewListInterstitialAd != null && !mNewListInterstitialAd.isLoaded()) {
+                                    Toast.makeText(getApplicationContext(), getString(R.string.wait_save), Toast.LENGTH_LONG).show();
+                                }
+                                userId_saving = sActivePoznavacka.getAuthorsID();
+                                Timber.d("List is corrupted, userID_saving = %s", userId_saving);
+                                docId_saving = sActivePoznavacka.getId();
+                                Timber.d("List is corrupted, docID_saving = %s", docId_saving);
+                                saveDownloadedList();
+                            } else {
+                                Toast.makeText(getApplication(), R.string.corrupted_file_please_download_new, Toast.LENGTH_LONG).show();
+                            }
+                        }
+                    });
+                }
+            };
+            thread.start();
+            return;
+        } else {
+            PracticeActivity.sZastupceArrOrig.addAll(zastupces);
+        }
 
         Type intArrType = new TypeToken<ArrayList<Integer>>() {
         }.getType();
         String jsonInt = MyListsActivity.getSMC(context).readFile(path + "nenauceni.txt", true);
         try {
-            if (jsonInt.equals("") || jsonInt.isEmpty()) {
+            if (jsonInt == null || jsonInt.equals("") || jsonInt.isEmpty()) {
                 PracticeActivity.sNenauceniZastupci = fillArr();
                 Timber.d("sNenauceniZastupci - fillArr()");
             } else {
@@ -625,8 +663,7 @@ public class MyListsActivity extends AppCompatActivity {
                 Timber.d("sNenauceniZastupci - fromJson()");
             }
         } catch (Exception e) {
-            Timber.e("sNenauceniZastupci error - %s", e);
-            //Toast.makeText(getApplicationContext(), e.toString(), Toast.LENGTH_SHORT).show();
+            e.printStackTrace();
         }
         for (Object z : PracticeActivity.sZastupceArrOrig) {
             if (z instanceof Zastupce) {
@@ -663,27 +700,7 @@ public class MyListsActivity extends AppCompatActivity {
         builder.setMessage(getString(R.string.do_you_want_to_delete) + sActivePoznavacka.getName() + "?");
         builder.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                Context context = getApplication();
-                getSMC(context).deletePoznavacka(sActivePoznavacka.getId() + "/");
-
-                sPoznavackaInfoArr.remove(position);
-                getSMC(context).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
-
-                if (position <= sPositionOfActivePoznavackaInfo) {
-                    sPositionOfActivePoznavackaInfo -= 1;
-                    if (sPoznavackaInfoArr.size() > 0) {
-                        if (sPositionOfActivePoznavackaInfo < 0) {
-                            sPositionOfActivePoznavackaInfo = 0;
-                        }
-                        try {
-                            sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
-                        } catch (Exception e) {
-                        }
-                    } else {
-                        sActivePoznavacka = null;
-                    }
-                }
-                mAdapter.notifyDataSetChanged();
+                deletePoznavacka(position);
                 dialog.dismiss();
             }
         });
@@ -704,8 +721,35 @@ public class MyListsActivity extends AppCompatActivity {
         btnNegative.setLayoutParams(layoutParams);
     }
 
+    private void deletePoznavacka(int position) {
+        Context context = getApplication();
+        getSMC(context).deletePoznavacka(sActivePoznavacka.getId() + "/");
+
+        sPoznavackaInfoArr.remove(position);
+        getSMC(context).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
+
+        if (position <= sPositionOfActivePoznavackaInfo) {
+            sPositionOfActivePoznavackaInfo -= 1;
+            if (sPoznavackaInfoArr.size() > 0) {
+                if (sPositionOfActivePoznavackaInfo < 0) {
+                    sPositionOfActivePoznavackaInfo = 0;
+                }
+                try {
+                    sActivePoznavacka = (PoznavackaInfo) sPoznavackaInfoArr.get(sPositionOfActivePoznavackaInfo);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            } else {
+                sActivePoznavacka = null;
+            }
+        }
+        mAdapter.notifyDataSetChanged();
+    }
+
     private void saveDownloadedList() {
+        Timber.d("saveDownloadedList()");
         showNewListInterstitial();
+        savingDownloadedList = true;
         newListBTNProgressBar.setVisibility(View.VISIBLE);
         newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_in));
 
@@ -905,7 +949,7 @@ public class MyListsActivity extends AppCompatActivity {
     }
 
     private void showNewListInterstitial() {
-        if (mNewListInterstitialAd.isLoaded()) {
+        if (mNewListInterstitialAd != null && mNewListInterstitialAd.isLoaded()) {
             mNewListInterstitialAd.show();
         } else {
             Timber.d("The interstitial wasn't loaded yet.");
@@ -1088,9 +1132,9 @@ public class MyListsActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            super.onCancelled();
             try {
                 getSMC(getApplication()).deletePoznavacka(path);
+                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
                 if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
                         && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(uuid)) {
                     sPoznavackaInfoArr.remove(sPoznavackaInfoArr.size() - 1);
@@ -1098,6 +1142,7 @@ public class MyListsActivity extends AppCompatActivity {
             } catch (Exception e) {
                 Timber.e(e);
             }
+            super.onCancelled();
         }
     }
 
@@ -1115,56 +1160,75 @@ public class MyListsActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            Timber.d("SaveDownloadedListAsync doInBackground...");
             FirebaseFirestore db = FirebaseFirestore.getInstance();
             DocumentReference docRef = db.collection("Users").document(userId_saving).collection("Poznavacky").document(docId_saving);
-            docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                @Override
-                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                    item = documentSnapshot.toObject(PoznavackaDbObject.class);
-                    if (item == null) {
-                        Timber.d("Item documentSnapshot docID=" + documentSnapshot.getId());
-                        Timber.d("Item documentSnapshot id=" + documentSnapshot.getString("id"));
-                        Timber.d("Item documentSnapshot name=" + documentSnapshot.getString("name"));
-                        Timber.d("Item " + documentSnapshot.getString("name") + " is null");
-                    }
+            Timber.d("List is corrupted, probably not, SaveDownloadedListAsync, userID_saving = %s", userId_saving);
+            Timber.d("List is corrupted, probably not, SaveDownloadedListAsync, docID_saving = %s", docId_saving);
+            docRef.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            item = documentSnapshot.toObject(PoznavackaDbObject.class);
+                            if (item == null) {
+                                Timber.d("Item documentSnapshot docID=%s", documentSnapshot.getId());
+                                Timber.d("Item documentSnapshot id=%s", documentSnapshot.getString("id"));
+                                Timber.d("Item documentSnapshot name=%s", documentSnapshot.getString("name"));
+                                Timber.d("Item " + documentSnapshot.getString("name") + " is null");
+                            }
 
-                    // Store images
-                    Context context = getApplication();
-                    path = item.getId() + "/";
-                    File dir = new File(context.getFilesDir().getPath() + "/" + path);
+                            // Store images
+                            Context context = getApplication();
+                            path = item.getId() + "/";
+                            File dir = new File(context.getFilesDir().getPath() + "/" + path);
 
-                    // Create folder
-                    try {
-                        dir.mkdir();
-                    } catch (Exception e) {
-                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
-                        e.printStackTrace();
-                        return;
-                    }
+                            // Create folder
+                            try {
+                                dir.mkdir();
+                            } catch (Exception e) {
+                                Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                                e.printStackTrace();
+                                return;
+                            }
 
-                    if (item.getClassification() != null) {
-                        MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId() + "classification", item.getClassification());
-                    }
+                            if (item.getClassification() != null) {
+                                MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId() + "classification", item.getClassification());
+                            }
 
-                    if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
-                        Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
-                        return;
-                    } else {
-                        //images download
-                        currentDrawableFromUrlAsync = new DrawableFromUrlAsync();
-                        if (!isCancelled()) {
-                            currentDrawableFromUrlAsync.execute();  //viz Async metoda dole
+                            if (!MyListsActivity.getSMC(getApplication()).createAndWriteToFile(path, item.getId(), item.getContent())) {
+                                Toast.makeText(getApplication(), "Failed to save " + item.getName(), Toast.LENGTH_SHORT).show();
+                                return;
+                            } else {
+                                //images download
+                                currentDrawableFromUrlAsync = new DrawableFromUrlAsync();
+                                if (!isCancelled()) {
+                                    currentDrawableFromUrlAsync.execute();  //viz Async metoda dole
+                                }
+                            }
+
+                            String pathPoznavacka = "poznavacka.txt";
+                            if (MyListsActivity.sPoznavackaInfoArr == null) {
+                                MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
+                            }
+                            MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                            //MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
+
+                            Log.d("Files", "Saved successfully");
                         }
-                    }
-
-                    String pathPoznavacka = "poznavacka.txt";
-                    if (MyListsActivity.sPoznavackaInfoArr == null) {
-                        MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
-                    }
-                    MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
-                    //MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
-
-                    Log.d("Files", "Saved successfully");
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Timber.d("Firebase document connection failure");
+                    Thread thread = new Thread() {
+                        public void run() {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(MyListsActivity.this, getString(R.string.unable_to_download_maybe_list_is_not_available), Toast.LENGTH_LONG).show();
+                                }
+                            });
+                        }
+                    };
+                    thread.start();
                 }
             });
 
@@ -1177,6 +1241,7 @@ public class MyListsActivity extends AppCompatActivity {
             Timber.d("onCancelled() - SaveDownloadedListAsync");
             try {
                 getSMC(getApplication()).deletePoznavacka(path);
+                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
                 savingDownloadedList = false;
                 if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
                         && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(item.getId())) {
@@ -1268,9 +1333,9 @@ public class MyListsActivity extends AppCompatActivity {
 
         @Override
         protected void onCancelled() {
-            super.onCancelled();
             try {
                 getSMC(getApplication()).deletePoznavacka(path);
+                getSMC(getApplication()).updatePoznavackaFile("poznavacka.txt", sPoznavackaInfoArr);
                 savingDownloadedList = false;
                 if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
                         && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(item.getId())) {
@@ -1283,6 +1348,7 @@ public class MyListsActivity extends AppCompatActivity {
                 Timber.e(e);
             }
             Timber.d("onCancelled() - DrawableFromUrlAsync, end");
+            super.onCancelled();
         }
 
         public Drawable drawable_from_url(String url) throws java.io.IOException {
