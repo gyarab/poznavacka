@@ -190,7 +190,7 @@ public class StorageManagerClass {
             fos = new FileOutputStream(ENV_PATH + path + name + ".png");
             bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
             fos.close();
-        } catch (IOException e) {
+        } catch (Exception e) {
             e.printStackTrace();
             deletePoznavacka(path);
             return false;
