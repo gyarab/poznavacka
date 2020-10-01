@@ -291,7 +291,7 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             }
 
         } catch (Exception e) {
-
+            e.printStackTrace();
         }
     }
 

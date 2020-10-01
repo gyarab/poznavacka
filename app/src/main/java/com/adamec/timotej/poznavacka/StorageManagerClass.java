@@ -159,8 +159,8 @@ public class StorageManagerClass {
 
         try {
             File[] files = directory.listFiles();
-            for (int x = 0; x < files.length; x++) {
-                files[x].delete();
+            for (File file : files) {
+                file.delete();
             }
             directory.delete();
         } catch (Exception e) {
