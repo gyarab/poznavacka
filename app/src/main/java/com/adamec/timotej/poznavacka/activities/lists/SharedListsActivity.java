@@ -130,7 +130,7 @@ public class SharedListsActivity extends AppCompatActivity {
                         fetchFirstFirestoreSearch(searchText);
                     }
 
-                    Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
                     View view = getCurrentFocus();
                     if (view != null) {
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);

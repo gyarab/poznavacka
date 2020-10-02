@@ -17,7 +17,8 @@
         android:inputType="text"
         android:imeOptions="actionSearch"
         android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color" />
+        android:textColorHint="@color/hint_color"
+        android:visibility="gone" />
 
     <ImageView
         android:id="@+id/search_icon_shared_lists"

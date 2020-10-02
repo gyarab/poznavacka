@@ -40,6 +40,7 @@ import com.adamec.timotej.poznavacka.activities.AuthenticationActivity;
 import com.adamec.timotej.poznavacka.activities.lists.createList.CreateListActivity;
 import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity;
 import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity2;
+import com.google.android.gms.ads.AdError;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -48,6 +49,10 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdCallback;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -139,8 +144,10 @@ public class MyListsActivity extends AppCompatActivity {
 
     public static InterstitialAd mNewListInterstitialAd;
     public static UnifiedNativeAd mUnifiedNativeAd;
+    private RewardedAd mRewardedAd;
     public static boolean initialized;
     private AdLoader nativeAdLoader;
+    public static boolean rewardAdWatched;
 
     private InterstitialAd mPracticeLoadInterstitialAd;
     private boolean mPracticeLoadInterstitalAdWatched = false;
@@ -238,7 +245,7 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.recyclerViewL);
         mRecyclerView.setHasFixedSize(true);
         mLManager = new LinearLayoutManager(getApplicationContext());
-        mAdapter = new RWAdapter(sPoznavackaInfoArr);
+        mAdapter = new RWAdapter(sPoznavackaInfoArr, getApplicationContext());
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -412,10 +419,47 @@ public class MyListsActivity extends AppCompatActivity {
                         loadNewListInterstitial();
                         break;
                     case (R.id.action_create):
-                        Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
-                        startActivity(intent1);
-                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
-                        finish();
+                        if (mRewardedAd.isLoaded()) {
+                            RewardedAdCallback adCallback = new RewardedAdCallback() {
+                                @Override
+                                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                                    rewardAdWatched = true;
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                }
+
+                                @Override
+                                public void onRewardedAdClosed() {
+                                    super.onRewardedAdClosed();
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                    if (rewardAdWatched) {
+                                        Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                                        startActivity(intent1);
+                                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onRewardedAdFailedToShow(AdError adError) {
+                                    super.onRewardedAdFailedToShow(adError);
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                    Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                                    startActivity(intent1);
+                                    overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                    finish();
+                                }
+                            };
+                            mRewardedAd.show(MyListsActivity.this, adCallback);
+                        } else {
+                            mRewardedAd = createAndLoadRewardedAd();
+                            rewardAdWatched = true;
+                            Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                            startActivity(intent1);
+                            overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                            finish();
+                            Timber.d("The rewarded ad wasn't loaded yet.");
+                        }
+                        rewardAdWatched = false;
                         break;
                 }
                 return true;
@@ -476,6 +520,21 @@ public class MyListsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public RewardedAd createAndLoadRewardedAd() {
+        RewardedAd rewardedAd = new RewardedAd(getApplicationContext(),
+                "ca-app-pub-2924053854177245/2892047910");
+        //ca-app-pub-3940256099942544/5224354917 Test add
+
+        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                // Ad successfully loaded.
+            }
+        };
+        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+        return rewardedAd;
     }
 
     private void loadNewListInterstitial() {
@@ -775,6 +834,16 @@ public class MyListsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //Test add ca-app-pub-3940256099942544/5224354917
+        mRewardedAd = createAndLoadRewardedAd();
+        /*RewardedAdLoadCallback rewardedAdLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                super.onRewardedAdLoaded();
+            }
+        };
+        mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);*/
+
         //checkForDynamicLinks();
     }
 
