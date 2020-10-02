@@ -1227,12 +1227,14 @@ public class MyListsActivity extends AppCompatActivity {
 
         @Override
         protected void onPostExecute(Void aVoid) {
-            if (downloadingCorruptedList) {
+            /*if (downloadingCorruptedList) {
                 loadingPractice = false;
-                sPoznavackaInfoArr.remove(sActivePoznavacka);
+                sPoznavackaInfoArr.remove(sPositionOfActivePoznavackaInfo);
+                //sPoznavackaInfoArr.add(sActivePoznavacka);
                 mAdapter.notifyDataSetChanged();
                 downloadingCorruptedList = false;
-            }
+                recreate();
+            }*/
             super.onPostExecute(aVoid);
         }
 
@@ -1364,10 +1366,18 @@ public class MyListsActivity extends AppCompatActivity {
         @Override
         protected void onPostExecute(Drawable drawable) {
             super.onPostExecute(drawable);
-            //TODO return
             if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
                 sPoznavackaInfoArr.remove(mUnifiedNativeAd);
                 mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
+            }
+
+            if (downloadingCorruptedList) {
+                loadingPractice = false;
+                sPoznavackaInfoArr.remove(sPositionOfActivePoznavackaInfo);
+                //sPoznavackaInfoArr.add(sActivePoznavacka);
+                mAdapter.notifyDataSetChanged();
+                downloadingCorruptedList = false;
+                recreate();
             }
 
             String pathPoznavacka = "poznavacka.txt";
@@ -1379,7 +1389,7 @@ public class MyListsActivity extends AppCompatActivity {
             savingFromDeeplink = false;
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
-            //TODO return
+
             if (mUnifiedNativeAd != null) {
                 sPoznavackaInfoArr.add(mUnifiedNativeAd);
                 mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());
@@ -1414,17 +1424,17 @@ public class MyListsActivity extends AppCompatActivity {
                                         Toast.makeText(MyListsActivity.this, getString(R.string.error_try_again), Toast.LENGTH_LONG).show();
                                         newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
                                         newListBTNProgressBar.setVisibility(View.GONE);
-                                        if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
-                                                && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(item.getId())) {
-                                            Timber.d("Image download error, " + ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getName() + " removed");
-                                            sPoznavackaInfoArr.remove(sPoznavackaInfoArr.size() - 1);
-                                        }
                                     }
                                 });
                             }
                         };
                         savingDownloadedList = false;
                         savingFromDeeplink = false;
+                        if ((sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1) instanceof PoznavackaInfo)
+                                && ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getId().equals(item.getId())) {
+                            Timber.d("Image download error, " + ((PoznavackaInfo) sPoznavackaInfoArr.get(sPoznavackaInfoArr.size() - 1)).getName() + " removed");
+                            sPoznavackaInfoArr.remove(sPoznavackaInfoArr.size() - 1);
+                        }
                         thread.start();
                         return null;
                     }
