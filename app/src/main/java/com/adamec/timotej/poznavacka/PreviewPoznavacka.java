@@ -10,17 +10,27 @@ public class PreviewPoznavacka {
     private String authorsName;
     private String authorsUuid;
     private String languageURL;
+    private int representativesCount;
 
     public PreviewPoznavacka() {
     }
 
-    public PreviewPoznavacka(String imageResource, String name, String id, String authorsName, String authorsUuid, String languageURL) {
+    public PreviewPoznavacka(String imageResource, String name, String id, String authorsName, String authorsUuid, String languageURL, int representativesCount) {
         this.imageRecource = imageResource;
         this.name = name;
         this.id = id;
         this.authorsName = authorsName;
         this.authorsUuid = authorsUuid;
         this.languageURL = languageURL;
+        this.representativesCount = representativesCount;
+    }
+
+    public int getRepresentativesCount() {
+        return representativesCount;
+    }
+
+    public void setRepresentativesCount(int representativesCount) {
+        this.representativesCount = representativesCount;
     }
 
     public String getLanguageURL() {

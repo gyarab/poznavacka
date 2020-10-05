@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.ClassificationData;
 import com.adamec.timotej.poznavacka.DBTestObject;
+import com.adamec.timotej.poznavacka.PoznavackaDbObject;
 import com.adamec.timotej.poznavacka.PoznavackaInfo;
 import com.adamec.timotej.poznavacka.R;
 import com.adamec.timotej.poznavacka.RWAdapter;
@@ -1181,7 +1182,7 @@ public class MyListsActivity extends AppCompatActivity {
                     return null;
                 }
 
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, false));
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, zastupceArr.size(), false));
             } else {
                 // Saving mZastupceArr
                 ArrayList<Zastupce> zastupceArr = new ArrayList<>();
@@ -1196,7 +1197,7 @@ public class MyListsActivity extends AppCompatActivity {
                     return null;
                 }
 
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, false));
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, mZastupceArr.size(), false));
             }
 
             String pathPoznavacka = "poznavacka.txt";
@@ -1296,7 +1297,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 if (MyListsActivity.sPoznavackaInfoArr == null) {
                                     MyListsActivity.getSMC(getApplicationContext()).readFile(pathPoznavacka, true);
                                 }
-                                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), item.getRepresentativesCount(), true));
                                 //MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
                                 Log.d("Files", "Saved successfully");
@@ -1486,7 +1487,7 @@ public class MyListsActivity extends AppCompatActivity {
             String classification = getSMC(getApplicationContext()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
             if (!(user.getUid() == null)) {
                 Timber.d("Adding to firestore");
-                SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
+                SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), sActivePoznavacka.getRepresentativesCount(), System.currentTimeMillis()));
             } else {
                 Intent intent0 = new Intent(getApplicationContext(), AuthenticationActivity.class);
                 startActivity(intent0);

@@ -1,7 +1,8 @@
-package com.adamec.timotej.poznavacka.activities.lists;
+package com.adamec.timotej.poznavacka;
 
 public class PoznavackaDbObject {
     private String name;
+    private String lowerCaseName;
     private String id;
     private String content;
     private String classification;
@@ -10,10 +11,12 @@ public class PoznavackaDbObject {
     private String headImageUrl;
     private String headImagePath;
     private String languageURL;
+    private int representativesCount;
     private long timeUploaded;
 
-    public PoznavackaDbObject(String name, String id, String classification, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL, long timeUploaded) {
+    public PoznavackaDbObject(String name, String id, String classification, String content, String authorsName, String authorsID, String headImageUrl, String headImagePath, String languageURL, int representativesCount, long timeUploaded) {
         this.name = name;
+        this.lowerCaseName = name.toLowerCase();
         this.id = id;
         this.classification = classification;
         this.content = content;
@@ -22,7 +25,24 @@ public class PoznavackaDbObject {
         this.headImageUrl = headImageUrl;
         this.headImagePath = headImagePath;
         this.languageURL = languageURL;
+        this.representativesCount = representativesCount;
         this.timeUploaded = timeUploaded;
+    }
+
+    public int getRepresentativesCount() {
+        return representativesCount;
+    }
+
+    public void setRepresentativesCount(int representativesCount) {
+        this.representativesCount = representativesCount;
+    }
+
+    public String getLowerCaseName() {
+        return lowerCaseName;
+    }
+
+    public void setLowerCaseName(String lowerCaseName) {
+        this.lowerCaseName = lowerCaseName;
     }
 
     public long getTimeUploaded() {
