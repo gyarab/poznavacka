@@ -276,9 +276,9 @@ public class PopActivity extends Activity {
                         e.printStackTrace();
                         searchSuccessful = false;
                         GoogleSearchObjectAutoCorrect googleSearchObjectAutoCorrect = gson.fromJson(result, GoogleSearchObjectAutoCorrect.class);
-                        Timber.d(googleSearchObjectAutoCorrect.toString());
                         //if corrects spelling
                         if (googleSearchObjectAutoCorrect.getSpelling() != null) {
+                            Timber.d(googleSearchObjectAutoCorrect.toString());
                             Spelling spelling = googleSearchObjectAutoCorrect.getSpelling();
                             googleSearchRepresentative = spelling.getCorrectedQuery();
                         } else {
