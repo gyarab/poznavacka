@@ -4,7 +4,7 @@
     <string name="firebase_database_url" translatable="false">https://poznavacka-dd333.firebaseio.com</string>
     <string name="gcm_defaultSenderId" translatable="false">882289086797</string>
     <string name="google_api_key" translatable="false">AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38</string>
-    <string name="google_app_id" translatable="false">1:882289086797:android:91876b2892400ac7576704</string>
+    <string name="google_app_id" translatable="false">1:882289086797:android:1d82caa045e6502c576704</string>
     <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCaQxGMMIGJOj-XRgfzR6me0e70IZ8qR38</string>
     <string name="google_storage_bucket" translatable="false">poznavacka-dd333.appspot.com</string>
     <string name="project_id" translatable="false">poznavacka-dd333</string>
