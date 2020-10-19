@@ -20,6 +20,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.adamec.timotej.poznavacka.PoznavackaDbObject;
 import com.adamec.timotej.poznavacka.PoznavackaInfo;
 import com.adamec.timotej.poznavacka.PreviewPoznavacka;
 import com.adamec.timotej.poznavacka.R;
@@ -37,6 +38,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.WriteBatch;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
@@ -98,6 +100,12 @@ public class SharedListsActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onStart() {
+        super.onStart();
+        //add_lower_case_name_and_number_of_representatives_to_all();
+    }
+
+    @Override
     public void onBackPressed() {
         Intent intent1 = new Intent(getApplication(), MyListsActivity.class);
         startActivity(intent1);
@@ -127,7 +135,7 @@ public class SharedListsActivity extends AppCompatActivity {
                         fetchFirstFirestoreSearch(searchText);
                     }
 
-                    Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
+                    //Toast.makeText(getApplication(), "Search " + textView.getText().toString(), Toast.LENGTH_SHORT).show();
                     View view = getCurrentFocus();
                     if (view != null) {
                         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -149,7 +157,8 @@ public class SharedListsActivity extends AppCompatActivity {
         mSharedListAdapter.notifyItemInserted(arrayList.size() - 1);
 
         Timber.d("Fetching first Firestore search for = %s", searchText);
-        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).orderBy("name").limit(DOCUMENTS_PAGINATE_COUNT);
+        //Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).orderBy("name").limit(DOCUMENTS_PAGINATE_COUNT);
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("lowerCaseName").startAt(searchText.toLowerCase()).endAt(searchText.toLowerCase() + "\uf8ff").limit(DOCUMENTS_PAGINATE_COUNT);
 
         //first query (setting up snapshot)
         //poznavackyDocs = poznavackaQuery.get().getResult().getDocuments();
@@ -160,13 +169,15 @@ public class SharedListsActivity extends AppCompatActivity {
                     public void onComplete(@NonNull Task<QuerySnapshot> task) {
                         Timber.d("first search query completed");
                         if (task.isSuccessful()) {
-                            Timber.d("first searcb query successful");
+                            Timber.d("first search query successful");
                             poznavackyDocs = task.getResult().getDocuments();
                             Timber.d("first search poznavackyDocs size = %s", poznavackyDocs.size());
                             addDocsToScene();
                             if (poznavackyDocs.size() == 0) {
                                 activateLoadMore(searchText);
                             }
+                        } else {
+                            Timber.e("first search query unsuccessful -> %s", task.getResult());
                         }
                     }
                 });
@@ -175,7 +186,8 @@ public class SharedListsActivity extends AppCompatActivity {
     private void fetchFirestoreSearch(final String searchText) {
         Timber.d("Fetching firestore search");
 
-        Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
+        //Query poznavackaQuery = db.collectionGroup("Poznavacky").whereGreaterThanOrEqualTo("name", searchText).limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
+        Query poznavackaQuery = db.collectionGroup("Poznavacky").orderBy("lowerCaseName").startAt(searchText.toLowerCase()).endAt(searchText.toLowerCase() + "\uf8ff").limit(DOCUMENTS_PAGINATE_COUNT).startAfter(poznavackaSnapshot);
 
         poznavackaQuery.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
             @Override
@@ -191,6 +203,68 @@ public class SharedListsActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    public void add_lower_case_name_and_number_of_representatives_to_all() {
+        FirebaseFirestore.getInstance().collection("Users").get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            //WriteBatch batch = db.batch();
+
+                            for (DocumentSnapshot document : task.getResult()) {
+                                FirebaseFirestore.getInstance().collection("Users").document(document.getId()).collection("Poznavacky").get()
+                                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                            @Override
+                                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                if (task.isSuccessful()) {
+                                                    WriteBatch batch = db.batch();
+                                                    for (DocumentSnapshot documentSnapshot : task.getResult()) {
+                                                        DocumentReference docRef = documentSnapshot.getReference();
+                                                        /*Map<String, Object> new_map = new HashMap<>();
+                                                        new_map.put("lowerCaseName", documentSnapshot.getString("name").toLowerCase());
+                                                        batch.update(docRef, new_map);*/
+                                                        Gson gson = new Gson();
+                                                        Type cType = new TypeToken<ArrayList<Zastupce>>() {
+                                                        }
+                                                                .getType();
+                                                        ArrayList<Zastupce> zastupceArr = gson.fromJson(documentSnapshot.toObject(PoznavackaDbObject.class).getContent(), cType);
+
+                                                        int representativesCount = zastupceArr.size();
+                                                        Map<String, Object> represents_map = new HashMap<>();
+                                                        represents_map.put("representativesCount", representativesCount);
+                                                        batch.update(docRef, represents_map);
+                                                    }
+                                                    batch.commit();
+                                                } else {
+                                                    Timber.e("Error adding field -> %s", task.getException());
+                                                }
+                                            }
+                                        })
+                                        .addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@NonNull Exception e) {
+                                                e.printStackTrace();
+                                            }
+                                        });
+                                /*DocumentReference docRef = document.getReference();
+                                Map<String, Object> new_map = new HashMap<>();
+                                new_map.put(key, value);
+                                batch.update(docRef, new_map);*/
+                            }
+                            //batch.commit();
+                        } else {
+                            Timber.e("Error task not successful -> %s", task.getException());
+                        }
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        e.printStackTrace();
+                    }
+                });
     }
 
     //vytvori arraylist
@@ -239,7 +313,7 @@ public class SharedListsActivity extends AppCompatActivity {
                     if (MyListsActivity.sPoznavackaInfoArr == null) {
                         MyListsActivity.getSMC(getApplication()).readFile(pathPoznavacka, true);
                     }
-                    MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                    MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), item.getRepresentativesCount(), true));
                     MyListsActivity.getSMC(getApplication()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
                     Log.d("Files", "Saved successfully");
@@ -473,7 +547,7 @@ public class SharedListsActivity extends AppCompatActivity {
             poznavackaSnapshot = poznavackyDocs.get(poznavackyDocs.size() - 1);
             for (DocumentSnapshot ds :
                     poznavackyDocs) {
-                arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL")));
+                arrayList.add(new PreviewPoznavacka(ds.getString("headImageUrl"), ds.getString("name"), ds.getString("id"), ds.getString("authorsName"), ds.getString("authorsID"), ds.getString("languageURL"), ((Long) ds.get("representativesCount")).intValue()));
             }
         } else {
             deactivateLoadMore();
@@ -508,7 +582,7 @@ public class SharedListsActivity extends AppCompatActivity {
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(DocumentSnapshot documentSnapshot) {
-                if (documentSnapshot.exists()){
+                if (documentSnapshot.exists()) {
 
                     docRef
                             .delete()
@@ -522,11 +596,11 @@ public class SharedListsActivity extends AppCompatActivity {
                             .addOnFailureListener(new OnFailureListener() {
                                 @Override
                                 public void onFailure(@NonNull Exception e) {
-
+                                    Timber.e("Failed to remove from database");
                                 }
                             });
+                }
             }
-        }
         });
 
 

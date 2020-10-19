@@ -17,7 +17,8 @@
         android:inputType="text"
         android:imeOptions="actionSearch"
         android:textColor="@color/text_color"
-        android:textColorHint="@color/hint_color" />
+        android:textColorHint="@color/hint_color"
+        android:visibility="visible" />
 
     <ImageView
         android:id="@+id/search_icon_shared_lists"
@@ -27,7 +28,8 @@
         android:layout_alignBottom="@+id/search_view"
         android:layout_marginEnd="0dp"
         android:layout_marginBottom="5dp"
-        app:srcCompat="@drawable/ic_search_grey_24dp" />
+        app:srcCompat="@drawable/ic_search_grey_24dp"
+        android:visibility="visible" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/downloadView"

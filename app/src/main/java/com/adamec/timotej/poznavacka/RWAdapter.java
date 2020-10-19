@@ -1,5 +1,6 @@
 package com.adamec.timotej.poznavacka;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,10 @@ import com.google.android.gms.ads.formats.MediaView;
 import com.google.android.gms.ads.formats.NativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
 import com.google.android.gms.ads.formats.UnifiedNativeAdView;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
@@ -21,15 +26,12 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.core.widget.ContentLoadingProgressBar;
 import androidx.core.widget.TextViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
-
 import timber.log.Timber;
 
 //ad holder
@@ -169,6 +171,7 @@ class PoznavackaInfoViewHolder extends RecyclerView.ViewHolder {
 public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Object> mPoznavackaInfoList;
     private OnItemClickListener mListener;
+    private Context mContext;
 
     // A menu item view type.
     private static final int MENU_ITEM_VIEW_TYPE = 0;
@@ -202,8 +205,9 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
         mListener = listener;
     }
 
-    public RWAdapter(ArrayList<Object> poznavackaInfoList) {
+    public RWAdapter(ArrayList<Object> poznavackaInfoList, Context context) {
         mPoznavackaInfoList = poznavackaInfoList;
+        mContext = context;
     }
 
     /**
@@ -274,11 +278,25 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
                     /*if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())
                             || doesExistInFirestore(currentPoznavackaInfo)) {*/
 
-                    if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+                    pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                    /*if (user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+                        pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
+                    } else if (currentPoznavackaInfo.isUploaded()) {
                         pivh.shareImg.setImageResource(R.drawable.ic_share_dark_purple_24dp);
                     } else {
                         pivh.shareImg.setEnabled(false);
                     }
+
+                    //TODO move this to welcome?
+                    if (currentPoznavackaInfo.isUploaded() && !user.getUid().equals(currentPoznavackaInfo.getAuthorsID())) {
+                        if (SharedListsActivity.checkInternet(mContext)) {
+                            if (!doesExistInFirestore(currentPoznavackaInfo)) {
+                                currentPoznavackaInfo.setUploaded(false);
+                                pivh.shareImg.setEnabled(false);
+                                notifyItemChanged(mPoznavackaInfoList.indexOf(currentPoznavackaInfo));
+                            }
+                        }
+                    }*/
 
 
                     if (MyListsActivity.sPositionOfActivePoznavackaInfo == position) {
@@ -297,11 +315,47 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private boolean doesExistInFirestore(PoznavackaInfo currentPoznavackaInfo) {
         //return false;
+        final boolean[] success = {false};
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference poznavackaReference = db.collection("Users").document(currentPoznavackaInfo.getAuthorsID()).collection("Poznavacky").document(currentPoznavackaInfo.getId());
+        try {
+            DocumentReference poznavackaReference = db.collection("Users").document(currentPoznavackaInfo.getAuthorsID()).collection("Poznavacky").document(currentPoznavackaInfo.getId());
 
-        Future<DocumentSnapshot> future = (Future<DocumentSnapshot>) poznavackaReference.get();
+            poznavackaReference.get()
+                    .addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                        @Override
+                        public void onSuccess(DocumentSnapshot documentSnapshot) {
+                            Timber.d("%s exists in firebase, onSuccess()", currentPoznavackaInfo.getName());
+                            success[0] = true;
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Timber.d("%s exists in firebase, onFailure()", currentPoznavackaInfo.getName());
+                            e.printStackTrace();
+                            success[0] = false;
+                        }
+                    })
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            Timber.d("%s exists in firebase, onComplete", currentPoznavackaInfo.getName());
+                            success[0] = task.isSuccessful();
+                        }
+                    });
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+
+        if (success[0]) {
+            Timber.d("%s exists in firebase = true", currentPoznavackaInfo.getName());
+        } else {
+            Timber.d("%s exists in firebase = false", currentPoznavackaInfo.getName());
+        }
+        return success[0];
+        /*Future<DocumentSnapshot> future = (Future<DocumentSnapshot>) poznavackaReference.get();
 
         try {
             DocumentSnapshot document = future.get();
@@ -323,13 +377,13 @@ public class RWAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
             return false;
 
 
-            /*if (poznavackaReference.get().isSuccessful()) {
+            if (poznavackaReference.get().isSuccessful()) {
                 Timber.d("doesExistInFirestore() is true");
             } else {
                 Timber.d("doesExistInFirestore() is false");
-            }*/
+            }
             //return poznavackaReference.get().isSuccessful();
-        }
+        }*/
     }
 
     private void populateNativeAdView(UnifiedNativeAd nativeAd,

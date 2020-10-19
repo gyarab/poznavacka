@@ -155,7 +155,7 @@ public class SharedListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             Picasso.get().load(item.getImageRecource()).fit().error(R.drawable.ic_image).into(viewHolder.mImageView);
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             TextViewCompat.setAutoSizeTextTypeWithDefaults(viewHolder.mTextView1, TextViewCompat.AUTO_SIZE_TEXT_TYPE_UNIFORM);
-            viewHolder.mTextView1.setText(item.getName());
+            viewHolder.mTextView1.setText(item.getName() + " (" + item.getRepresentativesCount() + ")");
             viewHolder.mTextView2.setText(item.getAuthorsName());
             viewHolder.mLangTextView.setText(item.getLanguageURL());
             viewHolder.mImageView2.setImageResource(R.drawable.ic_file_download);

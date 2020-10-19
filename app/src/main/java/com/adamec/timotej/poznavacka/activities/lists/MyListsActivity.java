@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.ClassificationData;
 import com.adamec.timotej.poznavacka.DBTestObject;
+import com.adamec.timotej.poznavacka.PoznavackaDbObject;
 import com.adamec.timotej.poznavacka.PoznavackaInfo;
 import com.adamec.timotej.poznavacka.R;
 import com.adamec.timotej.poznavacka.RWAdapter;
@@ -49,6 +50,8 @@ import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.formats.NativeAdOptions;
 import com.google.android.gms.ads.formats.UnifiedNativeAd;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -140,8 +143,10 @@ public class MyListsActivity extends AppCompatActivity {
 
     public static InterstitialAd mNewListInterstitialAd;
     public static UnifiedNativeAd mUnifiedNativeAd;
+    //private RewardedAd mRewardedAd;
     public static boolean initialized;
     private AdLoader nativeAdLoader;
+    public static boolean rewardAdWatched;
 
     private InterstitialAd mPracticeLoadInterstitialAd;
     private boolean mPracticeLoadInterstitalAdWatched = false;
@@ -239,7 +244,7 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.recyclerViewL);
         mRecyclerView.setHasFixedSize(true);
         mLManager = new LinearLayoutManager(getApplicationContext());
-        mAdapter = new RWAdapter(sPoznavackaInfoArr);
+        mAdapter = new RWAdapter(sPoznavackaInfoArr, getApplicationContext());
 
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
@@ -416,6 +421,48 @@ public class MyListsActivity extends AppCompatActivity {
                         startActivity(intent1);
                         overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                         finish();
+                        //RewardedAd
+                        /*if (mRewardedAd.isLoaded()) {
+                            RewardedAdCallback adCallback = new RewardedAdCallback() {
+                                @Override
+                                public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+                                    rewardAdWatched = true;
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                }
+
+                                @Override
+                                public void onRewardedAdClosed() {
+                                    super.onRewardedAdClosed();
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                    if (rewardAdWatched) {
+                                        Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                                        startActivity(intent1);
+                                        overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                        finish();
+                                    }
+                                }
+
+                                @Override
+                                public void onRewardedAdFailedToShow(AdError adError) {
+                                    super.onRewardedAdFailedToShow(adError);
+                                    mRewardedAd = createAndLoadRewardedAd();
+                                    Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                                    startActivity(intent1);
+                                    overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                                    finish();
+                                }
+                            };
+                            mRewardedAd.show(MyListsActivity.this, adCallback);
+                        } else {
+                            mRewardedAd = createAndLoadRewardedAd();
+                            rewardAdWatched = true;
+                            Intent intent1 = new Intent(getApplicationContext(), CreateListActivity.class);
+                            startActivity(intent1);
+                            overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
+                            finish();
+                            Timber.d("The rewarded ad wasn't loaded yet.");
+                        }
+                        rewardAdWatched = false;*/
                         break;
                 }
                 return true;
@@ -477,6 +524,21 @@ public class MyListsActivity extends AppCompatActivity {
                 return false;
             }
         });
+    }
+
+    public RewardedAd createAndLoadRewardedAd() {
+        RewardedAd rewardedAd = new RewardedAd(getApplicationContext(),
+                "ca-app-pub-2924053854177245/2892047910");
+        //ca-app-pub-3940256099942544/5224354917 Test add
+
+        RewardedAdLoadCallback adLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                // Ad successfully loaded.
+            }
+        };
+        rewardedAd.loadAd(new AdRequest.Builder().build(), adLoadCallback);
+        return rewardedAd;
     }
 
     private void loadNewListInterstitial() {
@@ -776,6 +838,16 @@ public class MyListsActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        //Test add ca-app-pub-3940256099942544/5224354917
+        //mRewardedAd = createAndLoadRewardedAd(); //RewardedAd
+        /*RewardedAdLoadCallback rewardedAdLoadCallback = new RewardedAdLoadCallback() {
+            @Override
+            public void onRewardedAdLoaded() {
+                super.onRewardedAdLoaded();
+            }
+        };
+        mRewardedAd.loadAd(new AdRequest.Builder().build(), rewardedAdLoadCallback);*/
+
         //checkForDynamicLinks();
     }
 
@@ -1110,7 +1182,7 @@ public class MyListsActivity extends AppCompatActivity {
                     return null;
                 }
 
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, false));
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(1)).getParameter(0), ((Zastupce) mZastupceArr.get(1)).getImageURL(), languageURL, zastupceArr.size(), false));
             } else {
                 // Saving mZastupceArr
                 ArrayList<Zastupce> zastupceArr = new ArrayList<>();
@@ -1125,7 +1197,7 @@ public class MyListsActivity extends AppCompatActivity {
                     return null;
                 }
 
-                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, false));
+                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(title, uuid, userName, userID, ((Zastupce) mZastupceArr.get(0)).getParameter(0), ((Zastupce) mZastupceArr.get(0)).getImageURL(), languageURL, mZastupceArr.size(), false));
             }
 
             String pathPoznavacka = "poznavacka.txt";
@@ -1225,7 +1297,7 @@ public class MyListsActivity extends AppCompatActivity {
                                 if (MyListsActivity.sPoznavackaInfoArr == null) {
                                     MyListsActivity.getSMC(getApplicationContext()).readFile(pathPoznavacka, true);
                                 }
-                                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), true));
+                                MyListsActivity.sPoznavackaInfoArr.add(new PoznavackaInfo(item.getName(), item.getId(), item.getAuthorsName(), item.getAuthorsID(), item.getHeadImagePath(), item.getHeadImageUrl(), item.getLanguageURL(), item.getRepresentativesCount(), true));
                                 //MyListsActivity.getSMC(getApplicationContext()).updatePoznavackaFile(pathPoznavacka, MyListsActivity.sPoznavackaInfoArr);
 
                                 Log.d("Files", "Saved successfully");
@@ -1415,7 +1487,7 @@ public class MyListsActivity extends AppCompatActivity {
             String classification = getSMC(getApplicationContext()).readFile(sActivePoznavacka.getId() + "/" + sActivePoznavacka.getId() + "classification.txt", false);
             if (!(user.getUid() == null)) {
                 Timber.d("Adding to firestore");
-                SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), System.currentTimeMillis()));
+                SharedListsActivity.addToFireStore(user.getUid(), new PoznavackaDbObject(sActivePoznavacka.getName(), sActivePoznavacka.getId(), classification, content, sActivePoznavacka.getAuthor(), sActivePoznavacka.getAuthorsID(), sActivePoznavacka.getPrewievImageUrl(), sActivePoznavacka.getPrewievImageLocation(), sActivePoznavacka.getLanguageURL(), sActivePoznavacka.getRepresentativesCount(), System.currentTimeMillis()));
             } else {
                 Intent intent0 = new Intent(getApplicationContext(), AuthenticationActivity.class);
                 startActivity(intent0);
