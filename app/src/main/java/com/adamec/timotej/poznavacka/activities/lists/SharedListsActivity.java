@@ -62,9 +62,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import timber.log.Timber;
 
-//import static com.example.timad.poznavacka.activities.lists.MyListsActivity.mInterstitialAd; //TODO what
-
-
 public class SharedListsActivity extends AppCompatActivity {
     private static final String TAG = "SharedFragment";
 

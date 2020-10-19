@@ -112,7 +112,7 @@ public class TestUserActivity extends AppCompatActivity {
      */
     private void loadContent(final String documentName){
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        DocumentReference docRef = db.collection("ActiveTest").document(documentName);
+        DocumentReference docRef = db.collection("ActiveTests").document(documentName);
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
             public void onSuccess(final DocumentSnapshot documentSnapshot) {

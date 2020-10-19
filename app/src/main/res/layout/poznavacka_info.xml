@@ -124,8 +124,8 @@
                 android:adjustViewBounds="true"
                 app:srcCompat="@drawable/brain_filled_dark_purple" />
 
-            <!-- TODO return -->
-            <!--<Space
+            <!-- TODO EXAM -->
+            <Space
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1" />
@@ -135,7 +135,7 @@
                 android:layout_width="35dp"
                 android:layout_height="35dp"
                 android:layout_gravity="center"
-                android:adjustViewBounds="true" />-->
+                android:adjustViewBounds="true" />
 
             <Space
                 android:layout_width="0dp"

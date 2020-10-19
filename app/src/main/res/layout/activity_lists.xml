@@ -48,7 +48,8 @@
 
             </com.google.android.material.appbar.AppBarLayout>
 
-            <!--<com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+            <!-- TODO EXAM -->
+            <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
                 android:id="@+id/exams_btn"
                 style="@style/Widget.MaterialComponents.ExtendedFloatingActionButton"
                 android:layout_width="wrap_content"
@@ -63,7 +64,7 @@
                 android:theme="@style/AppTheme.ExtendedFloatingActionButton"
 
                 app:icon="@drawable/ic_school_white_24dp"
-                app:iconTint="@color/text_color" /> -->
+                app:iconTint="@color/text_color" />
 
         </RelativeLayout>
 

@@ -40,6 +40,7 @@ import com.adamec.timotej.poznavacka.activities.AuthenticationActivity;
 import com.adamec.timotej.poznavacka.activities.lists.createList.CreateListActivity;
 import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity;
 import com.adamec.timotej.poznavacka.activities.practice.PracticeActivity2;
+import com.adamec.timotej.poznavacka.activities.test.TestActivity;
 import com.google.android.gms.ads.AdListener;
 import com.google.android.gms.ads.AdLoader;
 import com.google.android.gms.ads.AdRequest;
@@ -221,7 +222,7 @@ public class MyListsActivity extends AppCompatActivity {
             }
         }
 
-        /*examEFAB = findViewById(R.id.exams_btn); //TODO return exams
+        examEFAB = findViewById(R.id.exams_btn); //TODO EXAM
         examEFAB.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -230,7 +231,7 @@ public class MyListsActivity extends AppCompatActivity {
                 overridePendingTransition(R.anim.ttlm_tooltip_anim_enter, R.anim.ttlm_tooltip_anim_exit);
                 finish();
             }
-        });*/
+        });
 
         /**
          * Inicializace Recycler View
@@ -243,7 +244,6 @@ public class MyListsActivity extends AppCompatActivity {
         mRecyclerView.setLayoutManager(mLManager);
         mRecyclerView.setAdapter(mAdapter);
 
-        //TODO return
         if ((sPositionOfActivePoznavackaInfo != -1) && (mUnifiedNativeAd == null)) {
             loadNativeAd();
         }
@@ -455,11 +455,12 @@ public class MyListsActivity extends AppCompatActivity {
                 startActivity(intent1);*/
                         break;
 
-                    /*case R.id.nav_test:
+                    //TODO EXAM
+                    case R.id.nav_test:
                         Intent intent3 = new Intent(MyListsActivity.this, TestActivity.class);
                         startActivity(intent3);
                         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
-                        break;*/
+                        break;
 
                     case R.id.nav_account:
                         if (savingDownloadedList || savingNewList) {
@@ -926,7 +927,6 @@ public class MyListsActivity extends AppCompatActivity {
         getBaseContext().getResources().updateConfiguration(config, getBaseContext().getResources().getDisplayMetrics());
     }
 
-    //TODO return
 
     private void loadNativeAd() {
 
@@ -1033,7 +1033,6 @@ public class MyListsActivity extends AppCompatActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
 
-            //TODO return
             if (sPoznavackaInfoArr.contains(mUnifiedNativeAd)) {
                 sPoznavackaInfoArr.remove(mUnifiedNativeAd);
                 mAdapter.notifyItemRemoved(sPoznavackaInfoArr.size());
@@ -1048,7 +1047,6 @@ public class MyListsActivity extends AppCompatActivity {
             newListBTNProgressBar.setVisibility(View.GONE);
             newListBTNProgressBar.startAnimation(AnimationUtils.loadAnimation(getApplicationContext(), android.R.anim.fade_out));
 
-            //TODO return
             if (mUnifiedNativeAd != null) {
                 sPoznavackaInfoArr.add(mUnifiedNativeAd);
                 mAdapter.notifyItemInserted(sPoznavackaInfoArr.size());

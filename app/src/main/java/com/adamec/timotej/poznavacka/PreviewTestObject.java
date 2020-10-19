@@ -9,6 +9,7 @@ public class PreviewTestObject {
     private String previewImgUrl;
     private String databaseID;
     private String userID;
+    private String classification;
     private String content;
     private boolean finished;
     private String activeTestID;
@@ -19,17 +20,26 @@ public class PreviewTestObject {
     public PreviewTestObject() {
     }
 
-    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String content, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
+    public PreviewTestObject(String name, boolean started, String previewImgUrl, String databaseID, String userID, String classification, String content, boolean finished, String activeTestID, String testCode, boolean resultsEmpty) {
         this.name = name;
         this.started = started;
         this.previewImgUrl = previewImgUrl;
         this.databaseID = databaseID;
         this.userID = userID;
+        this.classification = classification;
         this.content = content;
         this.finished = finished;
         this.activeTestID = activeTestID;
         this.testCode = testCode;
         this.resultsEmpty = resultsEmpty;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     public String getName() {

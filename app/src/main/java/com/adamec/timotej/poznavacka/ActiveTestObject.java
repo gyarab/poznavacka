@@ -4,19 +4,29 @@ package com.adamec.timotej.poznavacka;
  * objekt aktivního testu
  */
 public class ActiveTestObject {
-   private String content;
-   private String testCode;
-   private String userID;
-   private String testDBID;
+    private String classification;
+    private String content;
+    private String testCode;
+    private String userID;
+    private String testDBID;
 
     public ActiveTestObject() {
     }
 
-    public ActiveTestObject(String content, String testCode, String userID, String testDBID) {
+    public ActiveTestObject(String classification, String content, String testCode, String userID, String testDBID) {
+        this.classification = classification;
         this.content = content;
         this.testCode = testCode;
         this.userID = userID;
         this.testDBID = testDBID;
+    }
+
+    public String getClassification() {
+        return classification;
+    }
+
+    public void setClassification(String classification) {
+        this.classification = classification;
     }
 
     public String getContent() {

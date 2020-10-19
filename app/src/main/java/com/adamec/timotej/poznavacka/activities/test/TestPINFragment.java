@@ -21,6 +21,8 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import timber.log.Timber;
+
 
 public class TestPINFragment extends Fragment {
     private static final String TAG = "TestPINFragment";
@@ -28,7 +30,7 @@ public class TestPINFragment extends Fragment {
     private Button enterPinButton;
     private EditText pinInput;
 
-    private  String PIN;
+    private String PIN;
     public static String firebaseTestID;
 
     @Nullable
@@ -68,7 +70,7 @@ public class TestPINFragment extends Fragment {
     private void checkForTest(String PIN){
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        Query test = db.collection("ActiveTest").whereEqualTo("testCode", PIN);
+        Query test = db.collection("ActiveTests").whereEqualTo("testCode", PIN);
         test.get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override

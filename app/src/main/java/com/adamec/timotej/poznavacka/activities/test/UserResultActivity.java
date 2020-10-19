@@ -30,7 +30,7 @@ public class UserResultActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_result);
-        fetchResults(MyExamsActivity.currentCollectionResultID);
+        fetchResults(MyExamsActivity.currentUserID, MyExamsActivity.currentCollectionResultID);
     }
     @Override
     public void onBackPressed() {
@@ -43,7 +43,8 @@ public class UserResultActivity extends AppCompatActivity {
         previewResultObjects = new ArrayList<>();
 
     }
-    private void buildRecyclerview(){
+
+    private void buildRecyclerview() {
         mRecyclerView = findViewById(R.id.resultView);
         mRecyclerView.setHasFixedSize(false);
         mLayoutManager = new LinearLayoutManager(getApplication());
@@ -53,17 +54,18 @@ public class UserResultActivity extends AppCompatActivity {
 
         mTestAdapter.notifyDataSetChanged();
     }
-    private void fetchResults(String collectionName){
-            FirebaseFirestore db = FirebaseFirestore.getInstance();
-            db.collection(collectionName)
-                    .get()
-                    .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                        @Override
-                        public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                            if (task.isSuccessful()) {
-                                createArr();
-                                for (QueryDocumentSnapshot document : task.getResult()) {
-                                    String userID = document.getString("userID");
+
+    private void fetchResults(String userID, String examID) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("Users").document(userID).collection("Exams").document(examID).collection("Results")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        if (task.isSuccessful()) {
+                            createArr();
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                String userID = document.getString("userID");
                                     String result = document.getString("result");
                                     String userName = document.getString("userName");
                                     String databaseID = document.getId();
