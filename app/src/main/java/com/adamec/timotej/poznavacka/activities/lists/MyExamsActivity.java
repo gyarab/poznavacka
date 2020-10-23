@@ -1,11 +1,5 @@
 package com.adamec.timotej.poznavacka.activities.lists;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -14,10 +8,10 @@ import android.widget.Toast;
 
 import com.adamec.timotej.poznavacka.ActiveTestObject;
 import com.adamec.timotej.poznavacka.DBTestObject;
+import com.adamec.timotej.poznavacka.PreviewTestObject;
 import com.adamec.timotej.poznavacka.R;
 import com.adamec.timotej.poznavacka.ResultObjectDB;
 import com.adamec.timotej.poznavacka.TestAdapter;
-import com.adamec.timotej.poznavacka.PreviewTestObject;
 import com.adamec.timotej.poznavacka.activities.test.UserResultActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -35,6 +29,12 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 public class MyExamsActivity extends AppCompatActivity {
 
@@ -277,7 +277,9 @@ public class MyExamsActivity extends AppCompatActivity {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                DocumentReference docRef = db.collection(previewTestObjectArrayList1.get(position).getUserID()).document(previewTestObjectArrayList1.get(position).getDatabaseID());
+                                String userID = previewTestObjectArrayList1.get(position).getUserID();
+                                String dbID = previewTestObjectArrayList1.get(position).getDatabaseID();
+                                DocumentReference docRef = db.collection("Users").document(userID).collection("Exams").document(dbID);
 
                                 docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
                                     @Override
@@ -389,7 +391,7 @@ public class MyExamsActivity extends AppCompatActivity {
      */
     private void fetchTests(final String userID) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection(userID)
+        db.collection("Users").document(userID).collection("Exams")
                 .get()
                 .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                     @Override
@@ -426,17 +428,16 @@ public class MyExamsActivity extends AppCompatActivity {
      * dá vědět testu, že byla založená databáze testů
      *
      * @param userID
-     * @param testID
+     * @param examID
      * @param context
      */
-    public static void updateResultsEmpty(String userID, String testID, Context context) {
+    public static void updateResultsEmpty(String userID, String examID, Context context) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-        Toast.makeText(context, userID + "," + testID, Toast.LENGTH_LONG).show();
-        DocumentReference docRef = db.collection(userID).document(testID);
+        Toast.makeText(context, userID + "," + examID, Toast.LENGTH_LONG).show();
+        DocumentReference docRef = db.collection("Users").document(userID).collection("Exams").document(examID);
         docRef.update(
                 "resultsEmpty", true
         );
-
     }
 
     /**
@@ -458,8 +459,7 @@ public class MyExamsActivity extends AppCompatActivity {
      */
     private void setFinished(String userID, String documentName, int position) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        DocumentReference docRef = db.collection(userID).document(documentName);
+        DocumentReference docRef = db.collection("Users").document(userID).collection("Exams").document(documentName);
         docRef.update(
                 "finished", previewTestObjectArrayList.get(position).isFinished()
         );
@@ -607,7 +607,7 @@ public class MyExamsActivity extends AppCompatActivity {
      */
     public static void addResultToDB(final String activeTestID, final ResultObjectDB data, final String userID, final String databaseTestID) {
         final FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final DocumentReference docRef = db.collection(userID).document(databaseTestID);
+        final DocumentReference docRef = db.collection("Users").document(userID).collection("Exams").document(databaseTestID);
 
         docRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
             @Override
@@ -616,37 +616,27 @@ public class MyExamsActivity extends AppCompatActivity {
                     boolean finished = documentSnapshot.getBoolean("finished");
 
                     if (!finished) {
-                        Query userExists = db.collection(databaseTestID).whereEqualTo("userID", FirebaseAuth.getInstance().getCurrentUser().getUid());
-                        userExists.get()
-                                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                        db.collection("Users").document(userID).collection("Exams").document(databaseTestID).collection("Results")
+                                .add(data)
+                                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                                     @Override
-                                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                        if (task.isSuccessful()) {
-                                            if (task.getResult().size() == 0) {
-                                                db.collection(databaseTestID)
-                                                        .add(data)
-                                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                                            @Override
-                                                            public void onSuccess(DocumentReference documentReference) {
+                                    public void onSuccess(DocumentReference documentReference) {
 
-                                                            }
-                                                        })
-                                                        .addOnFailureListener(new OnFailureListener() {
-                                                            @Override
-                                                            public void onFailure(@NonNull Exception e) {
+                                    }
+                                })
+                                .addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@NonNull Exception e) {
 
-                                                            }
-                                                        });
-                                            }
-                                        }
                                     }
                                 });
                     }
                 }
             }
         });
-
     }
+
+    ;
 
     /**
      * smaže výsledky v databázi
@@ -672,7 +662,7 @@ public class MyExamsActivity extends AppCompatActivity {
     }
 
 
-    // in plan to be done later or already finished
+// in plan to be done later or already finished
 
     /**
      * akce provedená při zmačknutí vracecího se tlačítka na telefonu
@@ -694,7 +684,7 @@ public class MyExamsActivity extends AppCompatActivity {
     public static void addToTests(final String userID, final DBTestObject data) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-        db.collection(userID)
+        db.collection("Users").document(userID).collection("Exams")
                 .add(data)
                 .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
                     @Override
@@ -737,11 +727,11 @@ public class MyExamsActivity extends AppCompatActivity {
 
                     }
                 });
-    }
+        }
 
-    private void checkResults() {
+private void checkResults(){
 
-    }
+        }
 
 
-}
+        }
