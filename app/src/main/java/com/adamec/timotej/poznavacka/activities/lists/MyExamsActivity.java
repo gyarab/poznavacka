@@ -52,9 +52,6 @@ public class MyExamsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_exams);
-        for (int i = 0; i < 10; i++) {
-            Timber.d("code = %s", HashCode());
-        }
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
