@@ -36,6 +36,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
+import timber.log.Timber;
+
 public class MyExamsActivity extends AppCompatActivity {
 
     private RecyclerView mRecyclerView;
@@ -50,6 +52,9 @@ public class MyExamsActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_exams);
+        for (int i = 0; i < 10; i++) {
+            Timber.d("code = %s", HashCode());
+        }
 
         String userID = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -332,7 +337,7 @@ public class MyExamsActivity extends AppCompatActivity {
      */
     private String HashCode() {
         List<String> arr = new ArrayList();
-        final String chars = "123456789";
+        final String chars = "0123456789";
         String a = "a";
         String b = "A";
         for (char ch : chars.toCharArray()) {
@@ -340,8 +345,8 @@ public class MyExamsActivity extends AppCompatActivity {
         }
         Random rand = new Random();
         String code = "";
-        for (int i = 0; i < 9; i++) {
-            int x = rand.nextInt(chars.length() - 1);
+        for (int i = 0; i < 6; i++) {
+            int x = rand.nextInt(chars.length());
             code += arr.get(x);
         }
         return code;
